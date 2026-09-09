@@ -23,9 +23,6 @@
 #include "adc.h"
 #include "gpio.h"
 
-
-
-
 #include "bsp.h"
 
 #include "tx_api.h"

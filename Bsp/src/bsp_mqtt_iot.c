@@ -95,10 +95,10 @@ static void Mqtt_Value_update_data(void)
     sg_info.open = 1;
 	if(AI_led_open_f==1)gmode =1;
 	sg_info.state = gmode;
-	sg_info.ptc  = PTC_heat_open_f;//esp_t.gDry;
+	sg_info.ptc  = ptc_heat_open_f;//esp_t.gDry;
     //sg_info.ptc = g_dry_open_flag;
 	sg_info.anion = plasma_open_f;
-	sg_info.sonic = Ultra_Sound_open_f;//esp_t.gUlransonic ;
+	sg_info.sonic = ultra_sound_open_f;//esp_t.gUlransonic ;
     sg_info.find = fan_speed_level;//esp_t.set_wind_speed_value;
     //if(esp_t.set_temperature_value <20)esp_t.set_temperature_value = 20;
 	//else if(esp_t.set_temperature_value > 40)esp_t.set_temperature_value = 40;

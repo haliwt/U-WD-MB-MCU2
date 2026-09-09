@@ -76,7 +76,7 @@ extern uint16_t fan_current;
 extern uint16_t ptc_current;
 
 
-extern uint8_t discharge_f;
+extern uint8_t gpro_t.g_power_flag;
 
 
 
@@ -87,12 +87,12 @@ extern uint16_t disp_timing_time;
 extern uint16_t disp_humidity;
 
 extern uint8_t AI_led_open_f;
-extern uint8_t PTC_heat_open_f;
+extern uint8_t ptc_heat_open_f;
 extern uint8_t first_temp_compare_f;
 
 extern uint8_t ptc_prohibit_off_f;
 
-extern uint8_t Ultra_Sound_open_f;
+extern uint8_t ultra_sound_open_f;
 extern uint8_t plasma_open_f;
 
 extern uint16_t timing_is_reach_disptime;
@@ -374,7 +374,7 @@ void beep_power_sound(void);
 void power_on_off_handler(void);
 
 	
-void BEEP_ON(void);
+//void BEEP_ON(void);
 
 void printf_ptc_adc_numbers(void);
 

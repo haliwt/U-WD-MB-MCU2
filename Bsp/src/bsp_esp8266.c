@@ -40,7 +40,7 @@ void wifi_auto_detected_link_state(void)
            wifi_linking_tencent_f =0;//wifi_t.linking_tencent_cloud_doing = 0;
            time_link_net_counter =0;
         
-          if(discharge_f==1){
+          if(gpro_t.g_power_flag==1){
 		  	 MqttData_Publish_SetOpen(0);
 			 tx_thread_sleep(20);//wait_timeout = tx_time_get()+30;
 		     MqttData_Publish_Update_Data();//MqttData_Publish_PowerOn_Ref();
@@ -48,7 +48,7 @@ void wifi_auto_detected_link_state(void)
              
 
           }
-		  else if(discharge_f==0){
+		  else if(gpro_t.g_power_flag==0){
 		  	  MqttData_Publish_SetOpen(0);
 			  tx_thread_sleep(20);//wait_timeout = tx_time_get()+30;
               MqttData_Publish_PowerOff_Ref(); //
@@ -239,7 +239,7 @@ void wifi_power_on_handler(void)
 //        return; 
 //    }
 
-	if(key_net_config_f == 1 || discharge_f == 0 || wifi_connected_success_f==0) return ;
+	if(key_net_config_f == 1 || gpro_t.g_power_flag == 0 || wifi_connected_success_f==0) return ;
 		
      switch(wifi_run_step){
 
@@ -254,7 +254,7 @@ void wifi_power_on_handler(void)
 	   }
 	   else if(wifi_connected_success_f ==1 && wifi_app_timer_power_on_f ==0){
     
-		     if(discharge_f){
+		     if(gpro_t.g_power_flag){
 		         MqttData_Publish_SetOpen(1);  
 				 wait_timeout=tx_time_get()+20;// tx_thread_sleep(20);
 				 //delay_ms(100);
@@ -290,7 +290,7 @@ void wifi_power_on_handler(void)
 	 
 	 case 2:
 			
-		if(wifi_app_timer_power_on_f ==1 && discharge_f == 1){
+		if(wifi_app_timer_power_on_f ==1 && gpro_t.g_power_flag == 1){
 		     	//smartphone_timer_power_on_handler();
 				 wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//Publish_Data_fan_Warning(2);//fan warning 
 			
@@ -304,7 +304,7 @@ void wifi_power_on_handler(void)
 	 break;
 
 	 case 3:
-	 	if(wifi_app_timer_power_on_f == 1 && discharge_f ==1 ){
+	 	if(wifi_app_timer_power_on_f == 1 && gpro_t.g_power_flag ==1 ){
 
            	fan_speed_level = 100;//gctl_t.set_wind_speed_value=100;
             MqttData_Publis_SetFan(fan_speed_level);//WT.EDIT 2025.12.19
@@ -321,7 +321,7 @@ void wifi_power_on_handler(void)
 
 	 case 4:
 	 	
-		 if(wifi_app_timer_power_on_f == 1 && discharge_f ==1 ){   
+		 if(wifi_app_timer_power_on_f == 1 && gpro_t.g_power_flag ==1 ){   
             setting_temperature=40;
            
             MqttData_Publis_SetTemp(setting_temperature);
@@ -363,7 +363,7 @@ void wifi_power_on_handler(void)
 		counter++;
          if(wifi_connected_success_f ==1 &&  wifi_app_timer_power_on_f ==0 && wifi_first_connectoed_cloud_f==0){
           
-	      if(discharge_f){
+	      if(gpro_t.g_power_flag){
 		        fan_warning_f = 0;
 			 	Publish_Data_fan_Warning(0); //fan warning .
 			    wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
@@ -667,7 +667,7 @@ static void smartphone_timer_power_on_handler(void)
 	}
 
 
-	if(Ultra_Sound_open_f==1){
+	if(ultra_sound_open_f==1){
 
 	if(disp_second_f == 1){
 		SendWifiData_To_Cmd(0x04,0x01);
@@ -675,7 +675,7 @@ static void smartphone_timer_power_on_handler(void)
 		}
 	}
 	else {
-	Ultra_Sound_open_f=0;
+	ultra_sound_open_f=0;
 	if(disp_second_f == 1){
 		SendWifiData_To_Cmd(0x04,0x0);
 	    tx_thread_sleep(10);//wait_timeout = tx_time_get() + 10; //tx_thread_sleep(10);//delay_ms(100);
@@ -684,14 +684,14 @@ static void smartphone_timer_power_on_handler(void)
 
 
 
-	if(PTC_heat_open_f==1){
+	if(ptc_heat_open_f==1){
 
 	if(disp_second_f == 1){
 		SendWifiData_To_Cmd(0x02,0x01);
 	    tx_thread_sleep(10);//wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);//delay_ms(100);
 		}
 	}
-	else if(PTC_heat_open_f  ==0){
+	else if(ptc_heat_open_f ==0){
 		ptc_prohibit_off_f =1;
 		//LED_PTC_OFF();
 		RELAY_OFF();

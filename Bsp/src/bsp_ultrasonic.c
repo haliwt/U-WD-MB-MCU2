@@ -11,9 +11,9 @@
 **/
 void Ultra_Sound_Ctrl(void)
 {
-    if(discharge_f)
+    if(gpro_t.g_power_flag)
     {
-		    if(Ultra_Sound_open_f)
+		    if(ultra_sound_open_f)
 				{
 				    ultra_sound_on(20); //
 					//LED_MOUSE_ON();

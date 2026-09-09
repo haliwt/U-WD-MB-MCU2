@@ -254,7 +254,7 @@ void tx_application_define(void *first_unused_memory)
 	// 物理层扫描
     if(KEY_POWER_VALUE() == KEY_DOWN){ //power key
 		  power_cnt++;
-            if(power_cnt == LONG_PRESS_TIME && discharge_f == 1){
+            if(power_cnt == LONG_PRESS_TIME && gpro_t.g_power_flag == 1){
                 tx_event_flags_set(&key_event, KEY_POWER_LONG, TX_OR);
              }
     }
@@ -265,7 +265,7 @@ void tx_application_define(void *first_unused_memory)
             power_cnt = 0;
 
 	}
-	else if(KEY_MODE_VALUE() == KEY_DOWN && discharge_f ==1){// == 1 && discharge_f ==1){ //key mode
+	else if(KEY_MODE_VALUE() == KEY_DOWN && gpro_t.g_power_flag ==1){// == 1 && gpro_t.g_power_flag ==1){ //key mode
 
 	   
 		 mode_cnt++;
@@ -282,8 +282,7 @@ void tx_application_define(void *first_unused_memory)
         mode_cnt = 0;
 
 	}
-    else if (KEY_UP_VALUE() == KEY_DOWN && discharge_f ==1){ //up key
-		//key_i = _UP_KEY_DOWN;
+    else if (KEY_UP_VALUE() == KEY_DOWN && gpro_t.g_power_flag ==1){ //up key
 	  
 		up_cnt++;
         if(up_cnt == LONG_PRESS_TIME)
@@ -297,7 +296,7 @@ void tx_application_define(void *first_unused_memory)
 
           up_cnt = 0;
 	}
-	else if (KEY_DOWN_VALUE() == KEY_DOWN && discharge_f ==1){ //dwon key
+	else if (KEY_DOWN_VALUE() == KEY_DOWN && gpro_t.g_power_flag ==1){ //dwon key
 		
 		  down_cnt++;
           if(down_cnt == LONG_PRESS_TIME && down_cnt_long_f ==0){

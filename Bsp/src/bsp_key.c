@@ -64,7 +64,7 @@ void Process_Long_Key(uint16_t key) {
         case _POWER_KEY_DOWN:
             if (key_time >= KEY_TICKS_LONG_P) {
                 //key_long_f = 1;
-                if (discharge_f && !key_net_config_f) {
+                if (gpro_t.g_power_flag && !key_net_config_f) {
                     key_net_config_f = 1;
 					link_net_step=0;
 				    wifi_connected_success_f =0;
@@ -78,7 +78,7 @@ void Process_Long_Key(uint16_t key) {
         case _MODE_KEY_DOWN://LONG KEY MODE ID 
             if (key_time >= KEY_TICKS_LONG_M) {
                 //key_long_f = 1;
-                if (discharge_f && !fan_warning_f) {
+                if (gpro_t.g_power_flag && !fan_warning_f) {
                     Is_time_setting_f = 1;
                    
                     time_set_hours_counter =0;
@@ -90,7 +90,7 @@ void Process_Long_Key(uint16_t key) {
         case _DOWN_KEY_DOWN:
             if (key_time >= KEY_TICKS_LONG_M) {
                 //key_long_f = 1;
-                if (discharge_f) {
+                if (gpro_t.g_power_flag) {
 					if(led_strip_open_f==1){
 						led_strip_open_f=0;
 						LED_TAPE_OFF();
@@ -111,13 +111,13 @@ void Process_Long_Key(uint16_t key) {
 void Process_Short_Key(uint16_t key) 
 {
     if (key == _POWER_KEY_DOWN  && !KEY10_PIN) {
-        if (discharge_f) System_Status_PowerOff();
+        if (gpro_t.g_power_flag) System_Status_PowerOff();
         else System_Status_PowerOn();
         return;
     }
 
     // 仅在开机且无负载故障时允许操作
-    if (!discharge_f || fan_warning_f) return;
+    if (!gpro_t.g_power_flag || fan_warning_f) return;
 
     switch (key) {
         case _MODE_KEY_DOWN:
@@ -215,15 +215,15 @@ void Handle_Value_Adjustment(uint8_t is_up)
 void System_Status_PowerOn(void) 
 {
     // 1. 开启核心工作标志位
-    discharge_f = 1; 
+    gpro_t.g_power_flag = 1; 
 	fan_start_power_on();
 	fan_full_fun(); //WT.EDIT 2026-06-20
 	
 
     if(wifi_app_timer_power_on_f==0){ //手机定时开机
-	    discharge_f = 1;            // 总输出使能
-	    PTC_heat_open_f = 1;        // 默认开启加热
-	    Ultra_Sound_open_f = 1;     // 默认开启超声波
+	    gpro_t.g_power_flag = 1;            // 总输出使能
+	    ptc_heat_open_f= 1;        // 默认开启加热
+	    ultra_sound_open_f = 1;     // 默认开启超声波
 	    plasma_open_f = 1;          // 默认开启等离子
 	    power_on_peripheral_handler();
     }
@@ -279,19 +279,19 @@ void System_Status_PowerOff(void)
 {
     // 1. 关闭所有输出负载标志
     
-    discharge_f = 0;
+    gpro_t.g_power_flag = 0;
 	wifi_app_timer_power_on_f =0; //smart app power on by timer timing clear .
    
 	first_temp_compare_f=0;
-    Ultra_Sound_open_f = 0;
+    ultra_sound_open_f = 0;
     led_strip_open_f = 0;
     plasma_open_f = 0;
     fan_open_f = 0;
 	key_net_config_f =0;
 
 
-	 PTC_heat_open_f = 0;        // 默认--from smart phone define.
-	 Ultra_Sound_open_f = 0;     // 默
+	 ptc_heat_open_f= 0;        // 默认--from smart phone define.
+	 ultra_sound_open_f = 0;     // 默
 	 plasma_open_f = 0;          // 默
      set_temperature_value_f =0; 
     // 2. 重置所有功能模式标志
@@ -337,7 +337,7 @@ void System_Status_PowerOff(void)
 void key_power_short_handler(void)
 {
 
-	if (discharge_f) System_Status_PowerOff();
+	if (gpro_t.g_power_flag) System_Status_PowerOff();
     else System_Status_PowerOn();
 
 }
@@ -392,7 +392,7 @@ void key_mode_short_handler(void)
 void key_mode_long_handler(void)
 {
 	//key_long_f = 1;
-    if (discharge_f && !fan_warning_f) {
+    if (gpro_t.g_power_flag && !fan_warning_f) {
         Is_time_setting_f = 1;
        
         time_set_hours_counter =0;

@@ -188,19 +188,19 @@ void Parse_Tencent_Data(void)
 		
 	    //wifi_app_timer_power_on_f= 1;
 	    // 寻找 "open": 之后的值
-	    if(discharge_f == 0){
+	    if(gpro_t.g_power_flag == 0){
 		     // 寻找 "ptc": 之后的值
 		
 
             if(strstr((const char *)wifi_t.rx_data_array, "\"sonic\":1"))
 		    {
-		        Ultra_Sound_open_f =1;
+		        ultra_sound_open_f =1;
 				wifi_app_timer_power_on_f= 1;
 				wifi_connected_success_f =1;
 		    }
 			else if(strstr((const char *)wifi_t.rx_data_array, "\"sonic\":0")){
 
-			     Ultra_Sound_open_f= 0;
+			     ultra_sound_open_f= 0;
 				 wifi_app_timer_power_on_f= 1;
 			     wifi_connected_success_f =1;
 
@@ -226,14 +226,14 @@ void Parse_Tencent_Data(void)
 				p2 = strchr(p2, ':');   // 找到真正的冒号
 				if (p2)
 				{
-					PTC_heat_open_f = atoi(p2 + 1);	 // 冒号后面一定是数字
+					ptc_heat_open_f= atoi(p2 + 1);	 // 冒号后面一定是数字
 					set_temperature_value_f =0;
 				     wifi_app_timer_power_on_f= 1;
 				}
 				#else 
 					 // 速度比 strchr 快，兼容性比固定字符串好
-				    PTC_heat_open_f = atoi(p2 + 6); 
-				    //ptc_prohibit_off_f = (PTC_heat_open_f == 0) ? 1 : 0; // 自动处理联动逻辑
+				    ptc_heat_open_f= atoi(p2 + 6); 
+				    //ptc_prohibit_off_f = (ptc_heat_open_f== 0) ? 1 : 0; // 自动处理联动逻辑
 				    set_temperature_value_f =0;
 				    wifi_app_timer_power_on_f = 1;
 
@@ -242,13 +242,13 @@ void Parse_Tencent_Data(void)
 			}
           #else  
 		    if(strstr((const char *)wifi_t.rx_data_array, "\"ptc\":0")){
-				PTC_heat_open_f =0; 
-				ptc_prohibit_off_f = 1;
+				ptc_heat_open_f=0; 
+				ptc_prohibit_off_f = 1; //disable open ptc heat.
 		        wifi_app_timer_power_on_f= 1;
 				wifi_connected_success_f =1;
 			}
 			else if(strstr((const char *)wifi_t.rx_data_array, "\"ptc\":1")){
-				PTC_heat_open_f =1; 
+				ptc_heat_open_f=1; 
 				ptc_prohibit_off_f = 0;
 			    wifi_app_timer_power_on_f= 1;
 				wifi_connected_success_f =1;
@@ -283,7 +283,7 @@ void Parse_Tencent_Data(void)
 	     return ;
 	   
 	 }
-     else if(strstr((const char *)wifi_t.rx_data_array,"\"ptc\":0") && discharge_f == 1){
+     else if(strstr((const char *)wifi_t.rx_data_array,"\"ptc\":0") && gpro_t.g_power_flag == 1){
                 
 			
 			 memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
@@ -292,7 +292,7 @@ void Parse_Tencent_Data(void)
                
 				return;
     }
-    else if(strstr((const char *)wifi_t.rx_data_array,"\"ptc\":1") && discharge_f == 1){
+    else if(strstr((const char *)wifi_t.rx_data_array,"\"ptc\":1") && gpro_t.g_power_flag == 1){
         
 		
 	    memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);    
@@ -302,7 +302,7 @@ void Parse_Tencent_Data(void)
 
 		return ;
 	}
-	else if(strstr((const char *)wifi_t.rx_data_array,"\"Anion\":0") && discharge_f == 1){
+	else if(strstr((const char *)wifi_t.rx_data_array,"\"Anion\":0") && gpro_t.g_power_flag == 1){
         
 	        plasma_open_f =0; //  esp_t.gPlasma=0;
 	        
@@ -315,7 +315,7 @@ void Parse_Tencent_Data(void)
 		     return ;
 		  
     }
-    else if(strstr((const char *)wifi_t.rx_data_array,"\"Anion\":1") &&  discharge_f == 1){
+    else if(strstr((const char *)wifi_t.rx_data_array,"\"Anion\":1") &&  gpro_t.g_power_flag == 1){
      
             plasma_open_f =1;//esp_t.gPlasma=1;
             
@@ -327,9 +327,9 @@ void Parse_Tencent_Data(void)
 		     return ;
             
     }
-	else if(strstr((const char *)wifi_t.rx_data_array,"\"sonic\":0") && discharge_f == 1){  // {//if(strstr((char *)wifi_t.rx_data_array,"sonic\":0")){
+	else if(strstr((const char *)wifi_t.rx_data_array,"\"sonic\":0") && gpro_t.g_power_flag == 1){  // {//if(strstr((char *)wifi_t.rx_data_array,"sonic\":0")){
        
-            Ultra_Sound_open_f =0;// esp_t.gUlransonic=0;
+            ultra_sound_open_f =0;// esp_t.gUlransonic=0;
             
 			wifi_t.rx_data_array[0]='\0';
 
@@ -342,9 +342,9 @@ void Parse_Tencent_Data(void)
             
 		
     }
-    else if(strstr((const char *)wifi_t.rx_data_array,"\"sonic\":1") && discharge_f == 1){//else if(strstr((char *)wifi_t.rx_data_array,"sonic\":1")){ 
+    else if(strstr((const char *)wifi_t.rx_data_array,"\"sonic\":1") && gpro_t.g_power_flag == 1){//else if(strstr((char *)wifi_t.rx_data_array,"sonic\":1")){ 
        
-            Ultra_Sound_open_f = 1;//esp_t.gUlransonic=1;
+            ultra_sound_open_f = 1;//esp_t.gUlransonic=1;
             
 			wifi_t.rx_data_array[0]='\0';
 	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
@@ -357,7 +357,7 @@ void Parse_Tencent_Data(void)
            
 			
     }
-	else if(strstr((const char *)wifi_t.rx_data_array,"\"state\":1") && discharge_f == 1){
+	else if(strstr((const char *)wifi_t.rx_data_array,"\"state\":1") && gpro_t.g_power_flag == 1){
           
             AI_led_open_f = 1;//esp_t.gModel=1;
             
@@ -371,7 +371,7 @@ void Parse_Tencent_Data(void)
         	
 		  
     }
-    else if(strstr((const char *)wifi_t.rx_data_array,"\"state\":2") && discharge_f == 1){
+    else if(strstr((const char *)wifi_t.rx_data_array,"\"state\":2") && gpro_t.g_power_flag == 1){
         
             AI_led_open_f = 0; //esp_t.gModel=2;
             
@@ -385,7 +385,7 @@ void Parse_Tencent_Data(void)
     }
 
 	
-	 if((p=strstr((const char *)wifi_t.rx_data_array,"\"find\":"))!=NULL && discharge_f == 1){ //fan){
+	 if((p=strstr((const char *)wifi_t.rx_data_array,"\"find\":"))!=NULL && gpro_t.g_power_flag == 1){ //fan){
 
 
 		   fan_speed_level =  atoi(p + 7);
@@ -397,7 +397,7 @@ void Parse_Tencent_Data(void)
 		    return ;
 
 		} 
-        else if((p1 = strstr((const char *)wifi_t.rx_data_array, "\"temperature\":")) != NULL && discharge_f == 1){
+        else if((p1 = strstr((const char *)wifi_t.rx_data_array, "\"temperature\":")) != NULL && gpro_t.g_power_flag == 1){
 	 
 
        setting_temperature =  atoi(p1 + 14);
@@ -456,7 +456,7 @@ static void evt_open_on(void)
 {
     if (wifi_connected_success_f == 1)
     {
-        discharge_f = 1;
+        gpro_t.g_power_flag = 1;
         System_Status_PowerOn();
         MqttData_Publish_SetOpen(1);
 		tx_thread_sleep(20);
@@ -475,7 +475,7 @@ static void evt_open_off(void)
     if (wifi_connected_success_f == 1)
     {
   
-        discharge_f = 0;
+        gpro_t.g_power_flag = 0;
         System_Status_PowerOff();
 
         if (disp_second_f == 1){
@@ -492,10 +492,10 @@ static void evt_open_off(void)
 
 static void evt_ptc_on(void)
 {
-    if (discharge_f == 1)
+    if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
-        PTC_heat_open_f = 1;
+        ptc_heat_open_f= 1;
         ptc_prohibit_off_f = 0;
 
        // LED_PTC_ON();
@@ -517,10 +517,10 @@ static void evt_ptc_on(void)
 
 static void evt_ptc_off(void)
 {
-    if (discharge_f == 1)
+    if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
-        PTC_heat_open_f = 0;
+        ptc_heat_open_f= 0;
         ptc_prohibit_off_f = 1;
 
         //LED_PTC_OFF();
@@ -542,7 +542,7 @@ static void evt_ptc_off(void)
 
 static void evt_anion_on(void)
 {
-    if (discharge_f == 1)
+    if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
         plasma_open_f = 1;
@@ -564,7 +564,7 @@ static void evt_anion_on(void)
 
 static void evt_anion_off(void)
 {
-    if (discharge_f == 1)
+    if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
         plasma_open_f = 0;
@@ -585,10 +585,10 @@ static void evt_anion_off(void)
 
 static void evt_sonic_on(void)
 {
-    if (discharge_f == 1)
+    if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
-        Ultra_Sound_open_f = 1;
+        ultra_sound_open_f = 1;
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x04, 0x01);
@@ -605,10 +605,10 @@ static void evt_sonic_on(void)
 
 static void evt_sonic_off(void)
 {
-    if (discharge_f == 1)
+    if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
-        Ultra_Sound_open_f = 0;
+        ultra_sound_open_f = 0;
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x04, 0x00);
@@ -626,7 +626,7 @@ static void evt_sonic_off(void)
 
 static void evt_timer_mode(void)
 {
-    if (discharge_f == 1)
+    if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
         AI_led_open_f = 0;
@@ -651,7 +651,7 @@ static void evt_timer_mode(void)
 static void evt_ai_mode(void)
 {
  
-	if (discharge_f == 1)
+	if (gpro_t.g_power_flag == 1)
     {
      
         key_mode_short_handler();
@@ -672,7 +672,7 @@ static void evt_ai_mode(void)
 static void evt_temperature(void)
 {
   
-	if (discharge_f == 1)
+	if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
 
@@ -690,7 +690,7 @@ static void evt_temperature(void)
 
         MqttData_Publis_SetTemp(setting_temperature);
 		
-		if(PTC_heat_open_f==1){//WT.EDIT 2026-07-03
+		if(ptc_heat_open_f==1){//WT.EDIT 2026-07-03
 			MqttData_Publish_SetPtc(1);
 		}
 		else{
@@ -705,7 +705,7 @@ static void evt_temperature(void)
 static void evt_fan(void)
 {
 
-	if (discharge_f == 1)
+	if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
 		wifiFan_Ctrl_Process();

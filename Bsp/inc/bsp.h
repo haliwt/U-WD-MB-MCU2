@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 
 
@@ -74,7 +75,12 @@
 
 typedef struct _main_ref{
 
- 
+
+
+ bool  g_power_flag ;
+ bool  external_display_flag ;
+
+
  volatile uint8_t time_10ms_f;
  volatile uint8_t time_20ms_f;
  volatile uint8_t time_50ms_f;

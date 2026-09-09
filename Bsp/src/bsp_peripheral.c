@@ -135,7 +135,7 @@ void Beep(Beep_TypeDef music)
 **/
 void LED_Strip_Ctrl(void)
 {
-	  if(discharge_f){
+	  if(gpro_t.g_power_flag){
         if((led_strip_open_f))
         {
 		        //LED_TAPE_ON();
@@ -168,20 +168,20 @@ void LED_Strip_Ctrl(void)
 **/
 void workd_interval_time_peripheral_handle(void)
 {
-	if(discharge_f){
+	if(gpro_t.g_power_flag){
 
-		if((PTC_heat_open_f==1)&& ptc_prohibit_off_f == 0)
+		if((ptc_heat_open_f==1)&& ptc_prohibit_off_f == 0)
 		{
 			//LED_PTC_ON();
         }
-		else if(PTC_heat_open_f ==0)
+		else if(ptc_heat_open_f==0)
 		{
 			//LED_PTC_OFF();
 
 
 		}
 		
-		if(Ultra_Sound_open_f)
+		if(ultra_sound_open_f)
 		{
 
 			//LED_MOUSE_ON();
@@ -238,7 +238,7 @@ void compare_set_temp_value(void)
 
 	if(temperature >= setting_temperature){
 	     ptc_prohibit_off_f = 0;
-	     PTC_heat_open_f = 0;   // 立即关闭
+	     ptc_heat_open_f= 0;   // 立即关闭
 	     RELAY_OFF();
 		 LED_PTC_OFF();
 		 if(disp_second_f == 1){
@@ -253,7 +253,7 @@ void compare_set_temp_value(void)
     }
 	else{
 	    ptc_prohibit_off_f = 0;
-		PTC_heat_open_f = 1;   // 立即open
+		ptc_heat_open_f= 1;   // 立即open
 		LED_PTC_ON();
 		if(works_interval_f == 0)RELAY_ON();
 		 
@@ -276,7 +276,7 @@ void compare_set_temp_value(void)
 		//wait_timeout = tx_time_get()+20;
 	}
 
-	if(PTC_heat_open_f == 1 && wifi_connected_success_f==1){
+	if(ptc_heat_open_f== 1 && wifi_connected_success_f==1){
      	MqttData_Publish_SetPtc(1);
 
 	}
@@ -296,7 +296,7 @@ void direct_compare_set_temp_value(void)
    
 	if(temperature >= setting_temperature){
 	     ptc_prohibit_off_f = 0;
-	     PTC_heat_open_f = 0;   // 立即关闭
+	     ptc_heat_open_f= 0;   // 立即关闭
 	     RELAY_OFF();
 		 //LED_PTC_OFF();
 		
@@ -304,7 +304,7 @@ void direct_compare_set_temp_value(void)
     }
 	else{
 	    ptc_prohibit_off_f = 0;
-		PTC_heat_open_f = 1;   // 立即open
+		ptc_heat_open_f= 1;   // 立即open
 		//LED_PTC_ON();
 		if(works_interval_f == 0)RELAY_ON();
 		 
@@ -323,7 +323,7 @@ void direct_compare_set_temp_value(void)
 **/
 void peripheral_fun_handler(void)
 {
-   if(discharge_f==1){
+   if(gpro_t.g_power_flag==1){
 
     switch(works_interval_f){
 

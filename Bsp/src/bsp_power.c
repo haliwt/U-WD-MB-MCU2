@@ -29,7 +29,7 @@ uint16_t fan_adc_value[1];
 uint16_t ad_ptc_value[1];
 uint16_t fan_current;
 uint16_t ptc_current;
-uint8_t discharge_f;
+uint8_t gpro_t.g_power_flag;
 
 
 uint16_t current_temperature;
@@ -39,13 +39,13 @@ uint16_t disp_timing_time;
 uint16_t disp_humidity;
 
 uint8_t AI_led_open_f;
-uint8_t PTC_heat_open_f;
+bool ptc_heat_open_f;
 uint8_t first_temp_compare_f;
 
-uint8_t ptc_prohibit_off_f;
+bool ptc_prohibit_off_f;
 
-uint8_t Ultra_Sound_open_f;
-uint8_t plasma_open_f;
+bool    ultra_sound_open_f;
+bool    plasma_open_f;
 
 uint16_t timing_is_reach_disptime;
 
@@ -91,11 +91,11 @@ uint8_t  time_set_hours_counter;
 
 //wroks time two hours
 
-uint8_t  works_interval_f;
+bool  works_interval_f;
 
 
 
-uint8_t fan_open_f;
+bool fan_open_f;
 uint8_t fan_speed_level;
 
 
@@ -127,7 +127,7 @@ uint8_t soft_version;
 uint8_t  link_net_step;
 uint8_t  time_link_net_counter;
 uint8_t  wifi_linking_tencent_f;
-uint8_t  wifi_connected_success_f;
+bool     wifi_connected_success_f;
 volatile uint8_t  wifi_rx_numbers;
 uint8_t  wifi_cofig_success_f;
 uint8_t  wifi_app_timer_power_on_f;
@@ -232,7 +232,7 @@ void Clear_Ram(void)
 	  key_data = 0;
 	  key_time = 0;
 	
-	  discharge_f = 0;
+	  gpro_t.g_power_flag = 0;
 		
 		
 		device_rest_time = 0;
@@ -242,9 +242,9 @@ void Clear_Ram(void)
 	
 		
 		AI_led_open_f = 0;
-		PTC_heat_open_f = 0;
+		ptc_heat_open_f= 0;
 		first_temp_compare_f=0;
-		Ultra_Sound_open_f = 0;
+		ultra_sound_open_f = 0;
 		plasma_open_f = 0;
 		led_strip_open_f = 0;
 		
@@ -1062,7 +1062,7 @@ void Countdown_timer_Handler(void)
 
         if (setting_timing_hour < 0)
         {
-             discharge_f = 0;
+             gpro_t.g_power_flag = 0;
 			 System_Status_PowerOff() ;
 
         }
@@ -1115,7 +1115,7 @@ void works_nomal_run_time_handler(void)
 		if(interval_10m_f == 1 && works_interval_f==0){
              interval_10m_f ++;
 		   fan_full_fun();
-		  if(ptc_prohibit_off_f == 0 &&  PTC_heat_open_f == 1){
+		  if(ptc_prohibit_off_f == 0 &&  ptc_heat_open_f== 1){
 			 // 立即open
 		     // LED_PTC_ON();
 		      RELAY_ON();
@@ -1153,7 +1153,7 @@ void Heat_Process(void)
 {
      static uint8_t default_init = 0xff;   // 第一次比较标志
      
-     if(discharge_f == 1){
+     if(gpro_t.g_power_flag == 1){
 	   if(ptc_prohibit_off_f == 1 || set_temperature_value_f ==1 ) return ;
 
 	  uint8_t target_temp;
@@ -1162,10 +1162,10 @@ void Heat_Process(void)
 
 	  if(temperature > 39){
 
-        PTC_heat_open_f = 0;   // 立即关闭
+        ptc_heat_open_f= 0;   // 立即关闭
 	    first_temp_compare_f = 1; 
-	    if(default_init != PTC_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init= PTC_heat_open_f;
+	    if(default_init != ptc_heat_open_f|| key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init= ptc_heat_open_f;
 					key_input_temp_f++;
 				if(disp_second_f == 1){
 					SendWifiData_To_Cmd(0x02,0);
@@ -1187,10 +1187,10 @@ void Heat_Process(void)
 	  if(first_temp_compare_f == 0){
 
 		if(temperature >= target_temp){
-            PTC_heat_open_f = 0;   // 立即关闭
+            ptc_heat_open_f= 0;   // 立即关闭
 
-		       if(default_init != PTC_heat_open_f  || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = PTC_heat_open_f;
+		       if(default_init != ptc_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init = ptc_heat_open_f;
 					key_input_temp_f ++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
 		        //delay_ms(100);//HAL_Delay(5);
@@ -1199,10 +1199,10 @@ void Heat_Process(void)
 				}
 		}
         else{
-            PTC_heat_open_f = 1;   // 立即打开
+            ptc_heat_open_f= 1;   // 立即打开
             first_temp_compare_f = 1;         // 以后进入滞后控制
-            if(default_init!= PTC_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = PTC_heat_open_f;
+            if(default_init!= ptc_heat_open_f|| key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init = ptc_heat_open_f;
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
 		        //delay_ms(100);//HAL_Delay(5);
@@ -1222,9 +1222,9 @@ void Heat_Process(void)
 		{
 			// 当前是开启状态 → 高于设定温度则关闭
 			if(temperature >= target_temp){
-					PTC_heat_open_f = 0;
-				if(default_init != PTC_heat_open_f  || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = PTC_heat_open_f;
+					ptc_heat_open_f= 0;
+				if(default_init != ptc_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init = ptc_heat_open_f;
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
 		       // delay_ms(100);//HAL_Delay(5);
@@ -1236,10 +1236,10 @@ void Heat_Process(void)
 			{
 				// 当前是关闭状态 → 低于设定温度 - 2 才重新打开
 				if(temperature <  (target_temp - 2))
-				PTC_heat_open_f = 1;
+				ptc_heat_open_f= 1;
 				
-				if(default_init!= PTC_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = PTC_heat_open_f;
+				if(default_init!= ptc_heat_open_f|| key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init = ptc_heat_open_f;
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
 		       // delay_ms(100);//HAL_Delay(5);
@@ -1262,7 +1262,7 @@ void power_on_off_handler(void)
 {
 
  
-	 switch(discharge_f){
+	 switch(gpro_t.g_power_flag){
 
       case 1:
            power_on_handler();

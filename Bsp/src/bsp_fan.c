@@ -14,7 +14,7 @@
 **/
 void Fan_Current_Det(void)
 {
-	if((discharge_f)&&(fan_open_f) && works_interval_f == 0)
+	if((gpro_t.g_power_flag)&&(fan_open_f) && works_interval_f == 0)
 	{
 		if(fan_current<_NO_FAN_LOAD_CURRENT){
 			fan_current_det_time++;
@@ -50,7 +50,7 @@ void Fan_Current_Det(void)
 void Fan_Ctrl_Process(void)
 {
    static uint8_t  fan_stop_f;
-	if(discharge_f){
+	if(gpro_t.g_power_flag){
 	   if(works_interval_f == 0 && fan_rx_stop_flag ==0){
 	      	
 			fan_stop_f = 0;
@@ -103,7 +103,7 @@ void Fan_Ctrl_Process(void)
 void wifiFan_Ctrl_Process(void)
 {
    
-	if(discharge_f){
+	if(gpro_t.g_power_flag){
 	   if(works_interval_f == 0 && fan_rx_stop_flag ==0){
 	      	
 	     
