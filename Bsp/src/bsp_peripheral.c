@@ -243,14 +243,6 @@ void workd_interval_turn_off_handle(void)
 		
 }
 
-/**
-*
-*@brief environment temperature value compare set temperater value
-*@notice
-*@param
-*@retrval 
-*
-**/
 
 /************************************************************************
 *

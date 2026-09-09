@@ -20,6 +20,7 @@
 #include "iwdg.h"
 #include "key.h"
 #include "adc.h"
+#include "gpio.h"
 
 
 #include "ys32t031_tsc.h"

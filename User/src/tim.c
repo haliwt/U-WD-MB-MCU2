@@ -27,7 +27,14 @@ void ultra_sound_off(void);
 
 
 
-// TIM1 ³õÊ¼»¯ÅäÖÃ
+/**
+*
+*@brief TIM1 CH1 as ULTRASONIC PWM IS 25KHZ
+*@param  sysClock 64MHZ
+*@retrval 
+*
+**/
+
 void TIM1_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -35,10 +42,10 @@ void TIM1_Configuration(void)
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
-    // Òç³öÊ±¼ä = ((×Ô¶¯ÖØ×°Öµ319 + 1) * (·ÖÆµÏµÊı 5 + 1)) / 48000000 = 40 ¦Ìs, ÆµÂÊ= 25 kHz
+   // å®šæ—¶å‘¨æœŸ = ((è‡ªåŠ¨é‡è£…è½½å€¼426 + 1) * (é¢„åˆ†é¢‘ç³»æ•° 5 + 1)) / 64000000 = 40 us, é¢‘ç‡= 25 kH
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-    TIM_TimeBaseStructure.TIM_Prescaler = 47;// 5;
-    TIM_TimeBaseStructure.TIM_Period = 39;//319;
+    TIM_TimeBaseStructure.TIM_Prescaler =  5;
+    TIM_TimeBaseStructure.TIM_Period = 426;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
@@ -61,6 +68,7 @@ void TIM1_Configuration(void)
 
 
 // TIM3 FAN IS SET 25KHZ FREQUENCY 
+//sysClock 64MHZ
 void TIM3_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -68,10 +76,11 @@ void TIM3_Configuration(void)
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 
-    // Òç³öÊ±¼ä = ((×Ô¶¯ÖØ×°Öµ319 + 1) * (·ÖÆµÏµÊı 5 + 1)) / 48000000 = 40 ¦Ìs, ÆµÂÊ= 25 kHz
+	// å®šæ—¶å‘¨æœŸ = ((è‡ªåŠ¨é‡è£…è½½å€¼426 + 1) * (é¢„åˆ†é¢‘ç³»æ•° 5 + 1)) / 64000000 = 40 us, é¢‘ç‡= 25 kH
+
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
     TIM_TimeBaseStructure.TIM_Prescaler = 5;//47;//5; SYSCLOCK IS 48MHZ .
-    TIM_TimeBaseStructure.TIM_Period = 319;//39;//319; //F =1/(39+1)= 0.025MHZ 
+    TIM_TimeBaseStructure.TIM_Period = 426;//319;//39;//319; //F =1/(39+1)= 0.025MHZ 
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
@@ -90,28 +99,40 @@ void TIM3_Configuration(void)
 
 
 
-// TIM6 ³õÊ¼»¯ÅäÖÃ
+/**
+*
+*@brief TIM6 as timer is 5ms 
+*@param  sysClock 64MHZ
+*@retrval 
+*
+**/
 void TIM6_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
 
-    // Òç³öÊ±¼ä = ((×Ô¶¯ÖØ×°Öµ3332 + 1) * (·ÖÆµÏµÊı 47 + 1)) / 48000000 = 5 ms, ÆµÂÊ= 200 Hz
+    // Òç³öÊ±¼ä = ((63 + 1) * (4999 + 1)) / 64000000 = 5 ms, Ê= 200 Hz
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-    TIM_TimeBaseStructure.TIM_Prescaler = 95;
-    TIM_TimeBaseStructure.TIM_Period = 2499;
+    TIM_TimeBaseStructure.TIM_Prescaler = 63;//95;
+    TIM_TimeBaseStructure.TIM_Period = 4999;//2499;
     TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
 
-	  TIM_ClearFlag(TIM6, TIM_FLAG_Update);                   // Çå³ı¼ÆÊıÆ÷ÖĞ¶Ï±êÖ¾Î»  
+	TIM_ClearFlag(TIM6, TIM_FLAG_Update);                   // Çå³ı¼ÆÊıÆ÷ÖĞ¶Ï±êÖ¾Î»  
     TIM_ITConfig(TIM6,TIM_IT_Update,ENABLE);
 	
     TIM_Cmd(TIM6, ENABLE);
 }
 
 
-
-// TIM14 FOR BUZZER IS 4 KHZ -TIM14-CH1
+/**
+*
+*@brief TIM14 FOR BUZZER IS 4 KHZ -TIM14-CH1
+*@notice  sysClock is 64MHZ
+*@param
+*@retrval 
+*
+**/
 void TIM14_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -119,10 +140,10 @@ void TIM14_Configuration(void)
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM14, ENABLE);
 
-    // Òç³öÊ±¼ä = ((×Ô¶¯ÖØ×°Öµ749 + 1) * (·ÖÆµÏµÊı 15 + 1)) / 48000000 = 250 ¦Ìs, ÆµÂÊ= 4 kHz
+    // Òç³öÊ±¼ä = (preio d999 + 1) * (Prescaler 15 + 1)) 648000000 = 250 ¦Ìs, ÆµÂÊ= 4 kHz
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
     TIM_TimeBaseStructure.TIM_Prescaler = 15;
-    TIM_TimeBaseStructure.TIM_Period = 749;
+    TIM_TimeBaseStructure.TIM_Period = 999;//749;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseInit(TIM14, &TIM_TimeBaseStructure);
 
@@ -140,34 +161,20 @@ void TIM14_Configuration(void)
 
 
 
-//·äÃùÆ÷¿ª
-//void BEEP_ON(void)
-//{
-//    TIM_SetCompare1(TIM14,374);
-//    TIM_Cmd(TIM14, ENABLE);
-//    TIM_CtrlPWMOutputs(TIM14, ENABLE);
-//	tx_thread_sleep(2);//2*10ms =20ms
-//	//TIM_SetCompare1(TIM14,0);
-	
-//	TIM_Cmd(TIM14, DISABLE);
-//}
-
-
-////·äÃùÆ÷¹Ø
-//void BEEP_OFF(void)
-//{
-//    TIM_SetCompare1(TIM14,0);
-	
-//	TIM_Cmd(TIM14, DISABLE);
-//    //TIM_CtrlPWMOutputs(TIM14, ENABLE);
-//}
 
 
 
-//·çÉÈ¿ª
+/**
+*
+*@brief 
+*@notice
+*@param
+*@retrval 
+*
+**/
 void fan_on(uint16_t fan_duty)
 {
-    #if 0
+    #if 1
 	TIM_SetCompare1(TIM3,fan_duty);
 	
 	TIM_Cmd(TIM3, ENABLE);
