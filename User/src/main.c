@@ -1,0 +1,111 @@
+/* USER CODE BEGIN header */
+/**
+  ******************************************************************************
+  * @file    main.c  
+  * @author  YSPRING Application Team
+  * @version 1.0.0
+  * @date    2023.3.20
+  * @brief   Main program
+  *
+  * version: 02 .DATA.20260-05-08
+  *          add outside touch IC .
+  * version: 03. DATA.2026-05-14 Modify.
+  * version: 031. DATA.2026-025-26 ,the second freeze in only temperature or 
+  *          humidity of scree. is bug .
+  * version: 032  DATA.2026-05-29
+  *          be solved run one hour , touch IWDG,reset .
+  *
+  ******************************************************************************
+  * @attention
+  ******************************************************************************
+  */
+/* USER CODE END header */
+#include "ys32t031.h"
+#include "main.h"
+#include "delay.h"
+#include "system_init.h"
+#include "uart.h"  
+#include "tim.h"
+#include "iwdg.h"
+#include "adc.h"
+#include "gpio.h"
+
+
+
+
+#include "bsp.h"
+
+#include "tx_api.h"
+
+///* ThreadX 强制要求的应用定义入口 */
+//void tx_application_define(void *first_unused_memory)
+//{
+//    /* 
+//       此时硬件和内核已就绪。
+//       你可以在这里调用 tx_thread_create 来创建你的 WiFi 或传感器线程。
+//       暂时留空以通过编译。
+//    */
+//    threadx_handler();
+//}
+
+
+/******************************************************
+函数名：main
+功能：主函数入口
+参数：无
+返回值：int
+*********************** ********************************/
+int main(void)
+{
+    RCC_Configuration();           //系统时钟配置   
+	
+    GPIO_Configuration();          //IO口配置
+	
+   Clear_Ram();                   //变量初始化
+	
+    UART1_Configuration(9600);    //串口1 用于和外接显示板通信
+	
+	UART2_Configuration(115200);     //串口2 用于和WIFI模组通信
+	
+    TIM1_Configuration();          //TIM1-PWM输出配置
+	
+    //TIM3_Configuration();          //TIM3-PWM输出配置
+	
+    TIM6_Configuration();          //TIM6基本定时配置
+	
+    TIM14_Configuration();         //TIM14-PWM输出配置
+	
+    IWDG_Configuration();          //独立看门狗配置
+
+	
+	//  TSC_Lib_Init();                //触摸初始化
+	    ADC_Channel_Init(3);
+        ADC_Configuration();           //ADC配置
+		
+		NVIC_Configuration();          //中断嵌套向量配置
+		
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
+		
+		//TSC_StartCmd(ENABLE);          //开始扫描
+		gpio_init();
+		bsp_init();
+		DHT11_Init();
+		
+
+		
+		 tx_kernel_enter(); 
+		
+		
+    while(1)
+    {
+       
+			  
+    }
+}
+
+
+			  
+			
+			
+
+
