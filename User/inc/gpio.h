@@ -50,37 +50,37 @@
 #define LED_AI_PIN              GPIO_Pin_8
 #define LED_AI_GPIO_PORT        GPIOB
 
-#define LED_AI_ON()             {GPIO_ResetBits(LED_AI_GPIO_PORT, LED_AI_PIN);}
-#define LED_AI_OFF()            {GPIO_SetBits(LED_AI_GPIO_PORT, LED_AI_PIN);}
+#define LED_AI_ON()             LL_GPIO_ResetOutputPin(LED_AI_GPIO_PORT, LED_AI_PIN) //{GPIO_ResetBits(LED_AI_GPIO_PORT, LED_AI_PIN);}
+#define LED_AI_OFF()            LL_GPIO_SetOutputPin(LED_AI_GPIO_PORT, LED_AI_PIN)//{GPIO_SetBits(LED_AI_GPIO_PORT, LED_AI_PIN);}
 
 
 #define LED_PTC_PIN             GPIO_Pin_7
 #define LED_PTC_GPIO_PORT       GPIOB
 
-#define LED_PTC_ON()            {GPIO_ResetBits(LED_PTC_GPIO_PORT, LED_PTC_PIN);}
-#define LED_PTC_OFF()           {GPIO_SetBits(LED_PTC_GPIO_PORT, LED_PTC_PIN);}
+#define LED_PTC_ON()          LL_GPIO_ResetOutputPin(LED_PTC_GPIO_PORT, LED_PTC_PIN) // {GPIO_ResetBits(LED_PTC_GPIO_PORT, LED_PTC_PIN);}
+#define LED_PTC_OFF()         LL_GPIO_SetOutputPin(LED_PTC_GPIO_PORT, LED_PTC_PIN)  //{GPIO_SetBits(LED_PTC_GPIO_PORT, LED_PTC_PIN);}
 
 
 #define LED_PLASMA_PIN          GPIO_Pin_7
 #define LED_PLASMA_GPIO_PORT    GPIOF
 
-#define LED_PLASMA_ON()         {GPIO_ResetBits(LED_PLASMA_GPIO_PORT, LED_PLASMA_PIN);}
-#define LED_PLASMA_OFF()        {GPIO_SetBits(LED_PLASMA_GPIO_PORT, LED_PLASMA_PIN);}
+#define LED_PLASMA_ON()         LL_GPIO_ResetOutputPin(LED_PLASMA_GPIO_PORT, LED_PLASMA_PIN)//{GPIO_ResetBits(LED_PLASMA_GPIO_PORT, LED_PLASMA_PIN);}
+#define LED_PLASMA_OFF()        LL_GPIO_SetOutputPin(LED_PLASMA_GPIO_PORT, LED_PLASMA_PIN) //{GPIO_SetBits(LED_PLASMA_GPIO_PORT, LED_PLASMA_PIN);}
 
 
 #define LED_MOUSE_PIN           GPIO_Pin_6
 #define LED_MOUSE_GPIO_PORT     GPIOF
 
-#define LED_MOUSE_ON()          {GPIO_ResetBits(LED_MOUSE_GPIO_PORT, LED_MOUSE_PIN);}
-#define LED_MOUSE_OFF()         {GPIO_SetBits(LED_MOUSE_GPIO_PORT, LED_MOUSE_PIN);}
+#define LED_MOUSE_ON()          LL_GPIO_ResetOutputPin(LED_MOUSE_GPIO_PORT, LED_MOUSE_PIN)//{GPIO_ResetBits(LED_MOUSE_GPIO_PORT, LED_MOUSE_PIN);}
+#define LED_MOUSE_OFF()         LL_GPIO_SetOutputPin(LED_MOUSE_GPIO_PORT, LED_MOUSE_PIN)//{GPIO_SetBits(LED_MOUSE_GPIO_PORT, LED_MOUSE_PIN);}
 
 
 #define LED_WIFI_PIN            GPIO_Pin_9
 #define LED_WIFI_GPIO_PORT      GPIOB
 
-#define LED_WIFI_ON()           {GPIO_ResetBits(LED_WIFI_GPIO_PORT, LED_WIFI_PIN);}
-#define LED_WIFI_OFF()          {GPIO_SetBits(LED_WIFI_GPIO_PORT, LED_WIFI_PIN);}
-#define LED_WIFI_TOGGLE()       GPIO_TogglePin(LED_WIFI_GPIO_PORT, LED_WIFI_PIN)
+#define LED_WIFI_ON()           LL_GPIO_ResetOutputPin(LED_WIFI_GPIO_PORT, LED_WIFI_PIN)  //{GPIO_ResetBits(LED_WIFI_GPIO_PORT, LED_WIFI_PIN);}
+#define LED_WIFI_OFF()          LL_GPIO_SetOutputPin(LED_WIFI_GPIO_PORT, LED_WIFI_PIN)      // {GPIO_SetBits(LED_WIFI_GPIO_PORT, LED_WIFI_PIN);}
+#define LED_WIFI_TOGGLE()       LL_GPIO_TogglePin(LED_WIFI_GPIO_PORT, LED_WIFI_PIN)//GPIO_TogglePin(LED_WIFI_GPIO_PORT, LED_WIFI_PIN)
 
 #define LED_POWER_PIN           GPIO_Pin_15
 #define LED_POWER_GPIO_PORT     GPIOA
@@ -94,15 +94,21 @@
 #define LED_TEMP_PIN            GPIO_Pin_12
 #define LED_TEMP_GPIO_PORT      GPIOA
 
-#define LED_TEMP_ON()           {GPIO_ResetBits(LED_TEMP_GPIO_PORT, LED_TEMP_PIN);}
-#define LED_TEMP_OFF()          {GPIO_SetBits(LED_TEMP_GPIO_PORT, LED_TEMP_PIN);}
+//#define LED_TEMP_ON()           {GPIO_ResetBits(LED_TEMP_GPIO_PORT, LED_TEMP_PIN);}
+//#define LED_TEMP_OFF()          {GPIO_SetBits(LED_TEMP_GPIO_PORT, LED_TEMP_PIN);}
 
+
+#define LED_TEMP_ON()           do{LED_TEMP_GPIO_PORT -> BRR = LED_TEMP_PIN;}while(0) //{GPIO_ResetBits(LED_TEMP_GPIO_PORT, LED_TEMP_PIN);}
+#define LED_TEMP_OFF()          do{LED_TEMP_GPIO_PORT -> BSRR = LED_TEMP_PIN;}while(0) // {GPIO_SetBits(LED_TEMP_GPIO_PORT, LED_TEMP_PIN);}
 
 #define LED_HUMI_PIN            GPIO_Pin_11
 #define LED_HUMI_GPIO_PORT      GPIOA
 
-#define LED_HUMI_ON()           {GPIO_ResetBits(LED_HUMI_GPIO_PORT, LED_HUMI_PIN);}
-#define LED_HUMI_OFF()          {GPIO_SetBits(LED_HUMI_GPIO_PORT, LED_HUMI_PIN);}
+//#define LED_HUMI_ON()           {GPIO_ResetBits(LED_HUMI_GPIO_PORT, LED_HUMI_PIN);}
+//#define LED_HUMI_OFF()          {GPIO_SetBits(LED_HUMI_GPIO_PORT, LED_HUMI_PIN);}
+#define LED_HUMI_ON()             do{ LED_HUMI_GPIO_PORT->BRR = LED_HUMI_PIN; }while(0)
+#define LED_HUMI_OFF()            do{ LED_HUMI_GPIO_PORT->BSRR = LED_HUMI_PIN; }while(0)
+
 
 
 void gpio_init(void);
