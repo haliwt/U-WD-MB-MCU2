@@ -13,17 +13,17 @@
 
 
 void LED_Strip_Ctrl(void);
-void Plasma_Ctrl(void);
-void Fan_Ctrl_Process(void);
+
+
 
 //void Beep(Beep_TypeDef music);
 
-void Ultra_Sound_Ctrl(void);
+
 void Relay_Ctrl(void);
 
 void Heat_Process(void);
 
-void Fan_Current_Det(void);
+
 
 
 
@@ -36,18 +36,14 @@ void power_off_peripheral_handler(void);
 
 void power_on_peripheral_handler(void);
 
-void fan_full_fun(void);
-void fan_stop(void);
+
 
 void compare_set_temp_value(void);
 
-
-
-void fan_start_power_on(void);
-
 void direct_compare_set_temp_value(void);
 
-void wifiFan_Ctrl_Process(void);
+
+
 
 
 #endif 

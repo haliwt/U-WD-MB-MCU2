@@ -111,7 +111,7 @@ void TIM6_Configuration(void)
 
 
 
-// TIM14 ≥ı ºªØ≈‰÷√
+// TIM14 FOR BUZZER IS 4 KHZ -TIM14-CH1
 void TIM14_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
