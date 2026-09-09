@@ -44,13 +44,14 @@
 #include "bsp_xdp.h"
 #include "bsp_tm1639.h"
 #include "bsp_smg.h"
-#include "bsp_sensor.h"
+#include "bsp_dht11.h"
 #include "bsp_threadx.h"
 #include "bsp_ntc.h"
 #include "bsp_buzzer.h"
 #include "bsp_plasma.h"
 #include "bsp_fan.h"
 #include "bsp_ultrasonic.h"
+#include "bsp_relay.h"
 
 //wifi
 #include "bsp_usart_wifi.h"

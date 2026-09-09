@@ -319,8 +319,8 @@ void TM1639_Display_Decimal(uint16_t num, uint8_t dot_pos)
 void TM1639_Display_Temperature(int8_t temp)
 {
 
-        LED_TEMP_ON();//LED_TEMP_ON();
-		LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
+        //LED_TEMP_ON();//LED_TEMP_ON();
+		//LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
         // 显示十位
        if(temp >= 10){
 	   	     
@@ -348,8 +348,8 @@ void TM1639_Display_Humidity(uint8_t humi)
 {
     if(humi > 99) humi = 99;
 
-	LED_HUMI_ON();
-    LED_TEMP_OFF() ;
+	//LED_HUMI_ON();
+   // LED_TEMP_OFF() ;
     // 显示十位
     if(humi >= 10){
         TM1639_Write_Digit_Full(TM1639_ADDR_DIG1_H, TM1639_ADDR_DIG1_L, 

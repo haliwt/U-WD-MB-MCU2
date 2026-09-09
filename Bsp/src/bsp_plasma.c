@@ -12,12 +12,12 @@ void Plasma_Ctrl(void)
         if(plasma_open_f)
 		    {
 		        PLASMA_ON();
-				LED_PLASMA_ON();
+				//LED_PLASMA_ON();
 		    }
 		    else
 		    {
 		        PLASMA_OFF();
-				LED_PLASMA_OFF();
+				//LED_PLASMA_OFF();
 		    }
         }
 		

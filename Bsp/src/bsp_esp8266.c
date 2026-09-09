@@ -693,7 +693,7 @@ static void smartphone_timer_power_on_handler(void)
 	}
 	else if(PTC_heat_open_f  ==0){
 		ptc_prohibit_off_f =1;
-		LED_PTC_OFF();
+		//LED_PTC_OFF();
 		RELAY_OFF();
 		if(disp_second_f == 1){
 			SendWifiData_To_Cmd(0x02,0x0);

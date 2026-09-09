@@ -52,7 +52,7 @@ int main(void)
 {
     RCC_Configuration();           //系统时钟配置   
 	
-    GPIO_Configuration();          //IO口配置
+    gpio_init();//GPIO_Configuration();          //IO口配置
 	
    Clear_Ram();                   //变量初始化
 	
@@ -62,7 +62,7 @@ int main(void)
 	
     TIM1_Configuration();          //TIM1-PWM输出配置
 	
-    //TIM3_Configuration();          //TIM3-PWM输出配置
+    TIM3_Configuration();          //TIM3-PWM输出配置
 	
     TIM6_Configuration();          //TIM6基本定时配置
 	
@@ -79,7 +79,7 @@ int main(void)
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
 		
 		//TSC_StartCmd(ENABLE);          //开始扫描
-		gpio_init();
+		
 		bsp_init();
 		DHT11_Init();
 		

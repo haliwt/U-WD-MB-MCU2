@@ -1,5 +1,5 @@
-#ifndef __BSP_SENSOR_H
-#define __BSP_SENSOR_H
+#ifndef __BSP_DHT11_H
+#define __BSP_DHT11_H
 #include "main.h"
 
 
@@ -8,12 +8,12 @@
 #include <stdint.h>
 
 /* 根据你的实际接线修改 */
-#define DHT11_GPIO_PORT      GPIOA
-#define DHT11_GPIO_PIN       GPIO_Pin_4
-#define DHT11_GPIO_CLK       RCC_AHB2Periph_GPIOA
+#define DHT11_GPIO_PORT      GPIOB // GPIOA
+#define DHT11_GPIO_PIN       GPIO_Pin_13// GPIO_Pin_4
+#define DHT11_GPIO_CLK       RCC_AHB2Periph_GPIOB  // RCC_AHB2Periph_GPIOA
 
-#define DHT11_DATA_PIN              GPIO_Pin_4
-#define DHT11_DATA_GPIO_PORT        GPIOA
+#define DHT11_DATA_PIN             GPIO_Pin_13// GPIO_Pin_4
+#define DHT11_DATA_GPIO_PORT       GPIOB //GPIOA
 
 
 /* 对外接口 */

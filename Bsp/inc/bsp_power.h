@@ -380,7 +380,8 @@ void printf_ptc_adc_numbers(void);
 
 void ptc_adc_detected_voltage(void);
 void ptc_switch_temperature(void);
-	
+
+void Heat_Process(void);
 
 
 

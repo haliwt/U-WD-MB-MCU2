@@ -196,10 +196,10 @@ void Handle_Value_Adjustment(uint8_t is_up)
 		key_pressed_set_temp_f =1;
 		if(AI_led_open_f == 0){//if(g_pro.set_timing_or_timer_time_flag ==TIMER_TIME){
 			         
-		     LED_AI_OFF(); 
+		     //LED_AI_OFF(); 
 		 }
 		  else{
-		     LED_AI_ON(); 
+		     //LED_AI_ON(); 
 
 		}
        TM1639_Display_Temperature(setting_temperature);
@@ -375,7 +375,7 @@ void key_mode_short_handler(void)
 		      
 	    Is_time_setting_f = 0;
 	    disp_set_hours_time_f = 1;
-	    LED_AI_OFF();
+	    //LED_AI_OFF();
 		
 		time_set_hours_counter =0;
 	}
@@ -441,11 +441,11 @@ void key_down_long_handler(void)
 
 	if(led_strip_open_f==1){
 		led_strip_open_f=0;
-		LED_TAPE_OFF();
+		//LED_TAPE_OFF();
 	}
 	else{
 		led_strip_open_f = 1;// 翻转灯带状态
-	 	LED_TAPE_ON();
+	 //	LED_TAPE_ON();
 	}
 
 	BEEP_ON() ;	//Beep(BEEP_ONCE);

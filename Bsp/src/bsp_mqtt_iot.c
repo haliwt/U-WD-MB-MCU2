@@ -766,7 +766,7 @@ void link_wifi_net_handler(void)
              if(wifi_connected_success_f==1){
 			
 	           
-                LED_WIFI_ON();
+               // LED_WIFI_ON();
 
 			   MqttData_Publish_SetOpen(0x01);
 			   

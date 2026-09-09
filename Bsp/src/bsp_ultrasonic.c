@@ -16,12 +16,12 @@ void Ultra_Sound_Ctrl(void)
 		    if(Ultra_Sound_open_f)
 				{
 				    ultra_sound_on(20); //
-					LED_MOUSE_ON();
+					//LED_MOUSE_ON();
 				}
 				else
 				{
 				    ultra_sound_off();
-					LED_MOUSE_OFF();
+					//LED_MOUSE_OFF();
 				}
 		}
    

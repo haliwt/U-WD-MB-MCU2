@@ -138,11 +138,11 @@ void LED_Strip_Ctrl(void)
 	  if(discharge_f){
         if((led_strip_open_f))
         {
-		        LED_TAPE_ON();
+		        //LED_TAPE_ON();
         }
         else
         {
-		        LED_TAPE_OFF();   
+		        //LED_TAPE_OFF();   
         }
 	  }
 		
@@ -156,34 +156,7 @@ void LED_Strip_Ctrl(void)
 
 
 
-/**
-*
-*@brief 
-*@notice
-*@param
-*
-**/
-void Relay_Ctrl(void)
-{
-   
-	if(discharge_f){
-		    if((PTC_heat_open_f==1)&& ptc_prohibit_off_f == 0 && works_interval_f ==0)
-				{
-                    LED_PTC_ON();
-					RELAY_ON();
-					
-				}
-				else if(PTC_heat_open_f ==0)
-				{
-					LED_PTC_OFF();
-					RELAY_OFF();
-					
-				}
-		}
-
 	
-		
-}	
 
 /**
 *
@@ -199,11 +172,11 @@ void workd_interval_time_peripheral_handle(void)
 
 		if((PTC_heat_open_f==1)&& ptc_prohibit_off_f == 0)
 		{
-			LED_PTC_ON();
+			//LED_PTC_ON();
         }
 		else if(PTC_heat_open_f ==0)
 		{
-			LED_PTC_OFF();
+			//LED_PTC_OFF();
 
 
 		}
@@ -211,23 +184,23 @@ void workd_interval_time_peripheral_handle(void)
 		if(Ultra_Sound_open_f)
 		{
 
-			LED_MOUSE_ON();
+			//LED_MOUSE_ON();
 		}
 		else
 		{
 
-			LED_MOUSE_OFF();
+			//LED_MOUSE_OFF();
 		}
 		
 		if(plasma_open_f)
 		{
 
-		LED_PLASMA_ON();
+		//LED_PLASMA_ON();
 		}
 			else
 		{
 
-		LED_PLASMA_OFF();
+		//LED_PLASMA_OFF();
 		}
 	}
  
@@ -325,14 +298,14 @@ void direct_compare_set_temp_value(void)
 	     ptc_prohibit_off_f = 0;
 	     PTC_heat_open_f = 0;   // 立即关闭
 	     RELAY_OFF();
-		 LED_PTC_OFF();
+		 //LED_PTC_OFF();
 		
 
     }
 	else{
 	    ptc_prohibit_off_f = 0;
 		PTC_heat_open_f = 1;   // 立即open
-		LED_PTC_ON();
+		//LED_PTC_ON();
 		if(works_interval_f == 0)RELAY_ON();
 		 
 	}
@@ -363,10 +336,10 @@ void peripheral_fun_handler(void)
 	 if(disp_set_hours_time_f == 1 || Is_time_setting_f ==1) return ;
 	  
       if(AI_led_open_f==1){
-	  	LED_AI_ON();
+	  	//LED_AI_ON();
 	  }
 	  else{
-	     LED_AI_OFF();
+	    // LED_AI_OFF();
 
 	  }
     break;
@@ -378,10 +351,10 @@ void peripheral_fun_handler(void)
 	   
 	   if(disp_set_hours_time_f == 1 || Is_time_setting_f ==1) return ;
 	   if(AI_led_open_f==1){
-	  	LED_AI_ON();
+	  	//LED_AI_ON();
 	   }
 	   else{
-	     LED_AI_OFF();
+	    // LED_AI_OFF();
        }
 
 	break;

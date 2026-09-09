@@ -86,8 +86,8 @@ void SMG_Display_Hour(void)
 void SMG_Display_Err(uint8_t idata)
 {
 
-    LED_TEMP_OFF();
-	LED_HUMI_OFF();
+    //LED_TEMP_OFF();
+	//LED_HUMI_OFF();
 
 	 TM1639_Write_Digit_Full(TM1639_ADDR_DIG1_H, TM1639_ADDR_DIG1_L, TM1639_Char_Err_Table[0]);
         
@@ -136,9 +136,9 @@ void display_digital_3_numbers(void)
       
 	    if(time_set_hours_counter < 4){
     	        
-    	 		   LED_AI_OFF();
-		           LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
-		           LED_TEMP_OFF();//TEMP_ICON_OFF();//WT.EDIT 2025.04.28
+    	 		  // LED_AI_OFF();
+		          // LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
+		          // LED_TEMP_OFF();//TEMP_ICON_OFF();//WT.EDIT 2025.04.28
 		           if(key_be_pressed_f == 1){
 						 TM1639_Display_setTimerHours_3_Digit(setting_timing_hour);
 						 if(setting_timing_hour > 0){
@@ -171,12 +171,12 @@ void display_digital_3_numbers(void)
             
 		     if(setting_timing_hour > 0 || timing_min_cnt> 0){ // && g_key.key_mode_long_flag != 1){
                   AI_led_open_f=0;
-    	 		  LED_AI_OFF(); 
+    	 		 // LED_AI_OFF(); 
 			  
 			 }
 			 else {
 			    AI_led_open_f=1;
-				LED_AI_ON(); 
+				//LED_AI_ON(); 
 			
 
             }
@@ -196,10 +196,10 @@ void display_digital_3_numbers(void)
 
 		  if(AI_led_open_f == 0){//if(g_pro.set_timing_or_timer_time_flag ==TIMER_TIME){
 			         
-		     LED_AI_OFF(); 
+		    // LED_AI_OFF(); 
 		  }
 		  else{
-		     LED_AI_ON(); 
+		    // LED_AI_ON(); 
 
 		  }
              // 检查是否需要切换显示模式
@@ -210,13 +210,13 @@ void display_digital_3_numbers(void)
 
             // 始终更新显示，无论是否切换模式
             if(disp_temp_hum == 1){
-				LED_TEMP_ON();
-				LED_HUMI_OFF();
+				//LED_TEMP_ON();
+				//LED_HUMI_OFF();
 				TM1639_Display_Humidity(humidity);
             }
 			else {
-               	LED_TEMP_OFF();
-				LED_HUMI_ON();
+               	//LED_TEMP_OFF();
+				//LED_HUMI_ON();
 				TM1639_Display_Temperature(temperature);
 			}
 
@@ -250,9 +250,9 @@ void disp_key_input_handler(void)
 		 
 		   if(time_set_hours_counter < 4){
 				   
-					  LED_AI_OFF();
-					  LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
-					  LED_TEMP_OFF();//TEMP_ICON_OFF();//WT.EDIT 2025.04.28
+					  //LED_AI_OFF();
+					 // LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
+					 // LED_TEMP_OFF();//TEMP_ICON_OFF();//WT.EDIT 2025.04.28
 					  if(key_be_pressed_f == 1){
 							TM1639_Display_setTimerHours_3_Digit(setting_timing_hour);
 							if(setting_timing_hour > 0){
@@ -285,12 +285,12 @@ void disp_key_input_handler(void)
 			   
 				if(setting_timing_hour > 0 || timing_min_cnt> 0){ // && g_key.key_mode_long_flag != 1){
 					 AI_led_open_f=0;
-					 LED_AI_OFF(); 
+					 //LED_AI_OFF(); 
 				 
 				}
 				else {
 				   AI_led_open_f=1;
-				   LED_AI_ON(); 
+				   //LED_AI_ON(); 
 			   
 	
 			   }
@@ -335,10 +335,10 @@ void display_temperature_humidigy_handler(void)
 
 		  if(AI_led_open_f == 0){//if(g_pro.set_timing_or_timer_time_flag ==TIMER_TIME){
 			         
-		     LED_AI_OFF(); 
+		     //LED_AI_OFF(); 
 		  }
 		  else{
-		     LED_AI_ON(); 
+		    // LED_AI_ON(); 
 
 		  }
              // 检查是否需要切换显示模式
@@ -349,13 +349,13 @@ void display_temperature_humidigy_handler(void)
 
             // 始终更新显示，无论是否切换模式
             if(disp_temp_hum == 1){
-				LED_TEMP_ON();
-				LED_HUMI_OFF();
+				//LED_TEMP_ON();
+				//LED_HUMI_OFF();
 				TM1639_Display_Humidity(humidity);
             }
 			else {
-               	LED_TEMP_OFF();
-				LED_HUMI_ON();
+               	//LED_TEMP_OFF();
+				//LED_HUMI_ON();
 				TM1639_Display_Temperature(temperature);
 			}
 

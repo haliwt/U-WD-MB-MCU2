@@ -209,7 +209,7 @@ void ultra_sound_on(uint16_t us_duty)
     
 	TIM_SetCompare3(TIM1,us_duty);
 	
-	  TIM_Cmd(TIM1, ENABLE);
+	TIM_Cmd(TIM1, ENABLE);
     TIM_CtrlPWMOutputs(TIM1, ENABLE);
 	
 }

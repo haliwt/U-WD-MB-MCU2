@@ -132,9 +132,9 @@ static void DHT11_GPIO_Input(void)
 static void DHT11_WritePin(uint8_t val)
 {
     if (val)
-        GPIO_SetBits(DHT11_GPIO_PORT, DHT11_GPIO_PIN);
+        LL_GPIO_SetOutputPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN);//GPIO_SetBits(DHT11_GPIO_PORT, DHT11_GPIO_PIN);
     else
-        GPIO_ResetBits(DHT11_GPIO_PORT, DHT11_GPIO_PIN);
+        LL_GPIO_ResetOutputPin(DHT11_GPIO_PORT, DHT11_GPIO_PIN);//GPIO_ResetBits(DHT11_GPIO_PORT, DHT11_GPIO_PIN);
 }
 
 static uint8_t DHT11_ReadPin(void)
@@ -151,7 +151,7 @@ static void TIM17_Init_1MHz(void)
     TIM_TimeBaseInitTypeDef tim;
     TIM_TimeBaseStructInit(&tim);
 
-    tim.TIM_Prescaler     = 48 - 1;   /* 48MHz / 48 = 1MHz */
+    tim.TIM_Prescaler     = 64-1 ; //48 - 1;   /* 48MHz / 48 = 1MHz */
     tim.TIM_Period        = 0xFFFF;
     tim.TIM_CounterMode   = TIM_CounterMode_Up;
     tim.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -186,38 +186,6 @@ void Delay_US_dht11(uint16_t us)
 	#endif 
 }
 
-/*---------------- DHT11 bit/byte ?? ----------------*/
-#if 0
-static uint8_t DHT11_ReadByte(void)
-{
-
-    #if 0
-     uint8_t i,dat=0;
-	 for(i=0;i<8;i++) 
-		  {
-				while(GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT,DHT11_DATA_PIN)==0);
-			
-				Delay_US_dht11(40);
-				
-				  if(GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT,DHT11_DATA_PIN)==1)
-					{
-						while(GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT,DHT11_DATA_PIN)==1);
-					 
-						
-						dat|=(uint8_t)(0x01 << (7 - i)); // ?�?
-					}
-					else
-					{
-						dat&=(uint8_t)~(0x01 << (7 - i)); // ?�?
-					}
-			}
-		  return dat;
-    #else 
-
-
-	#endif 
-}
-#endif 
 static uint8_t DHT11_ReadByte(void)
 {
     uint8_t i, dat = 0;
@@ -228,7 +196,8 @@ static uint8_t DHT11_ReadByte(void)
         // ------------------ 预防卡死点 1 ------------------
         // 等待引脚变为高电平（跳过起始的低电平阶段）
         timeout = 0;
-        while (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 0)
+        //while (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 0)
+        while ((DHT11_DATA_GPIO_PORT->IDR & DHT11_DATA_PIN) == 0)
         {
             timeout++;
             if (timeout > 10000) // 门槛值，防止硬件损坏时死循环
@@ -241,12 +210,13 @@ static uint8_t DHT11_ReadByte(void)
         Delay_US_dht11(40);
         
         // 如果 40us 后依然是高电平，说明这一位是数据 "1"
-        if (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 1)
+        //if (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 1)
+        if ((DHT11_DATA_GPIO_PORT->IDR & DHT11_DATA_PIN) != 0)
         {
             // ------------------ 预防卡死点 2 ------------------
             // 数据是 1，需要等待引脚变回低电平，才能开始下一位的接收
             timeout = 0;
-            while (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 1)
+            while(DHT11_DATA_GPIO_PORT->IDR & DHT11_DATA_PIN != 0)//while (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 1)
             {
                 timeout++;
                 if (timeout > 10000) 

@@ -19,9 +19,7 @@ void LED_Strip_Ctrl(void);
 //void Beep(Beep_TypeDef music);
 
 
-void Relay_Ctrl(void);
 
-void Heat_Process(void);
 
 
 

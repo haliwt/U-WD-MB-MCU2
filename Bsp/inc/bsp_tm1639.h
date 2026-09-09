@@ -3,10 +3,10 @@
 #include "main.h"
 
 // TM1639 引脚定义
-#define TM1639_STB_PIN                GPIO_Pin_14       
-#define TM1639_DIO_PIN                GPIO_Pin_13
-#define TM1639_CLK_PIN                GPIO_Pin_15
-#define TM1639_GPIO                   GPIOC
+//#define TM1639_STB_PIN                GPIO_Pin_9//GPIO_Pin_14       
+//#define TM1639_DIO_PIN                GPIO_Pin_7 //GPIO_Pin_13
+//#define TM1639_CLK_PIN                GPIO_Pin_8 //GPIO_Pin_15
+//#define TM1639_GPIO                   GPIOB
 
 // TM1639 引脚擝作宝定�?
 #define TM1639_CLK_SetHigh()          do{TM1639_GPIO_PORT-> BSRR =TM1639_CLK_PIN ; }while(0)//HAL_GPIO_WritePin(TM1639_GPIO, TM1639_CLK_PIN, GPIO_PIN_SET)
