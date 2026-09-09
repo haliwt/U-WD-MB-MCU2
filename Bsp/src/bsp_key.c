@@ -20,7 +20,7 @@ void Process_Long_Key(uint16_t key);
 
 void Handle_Value_Adjustment(uint8_t is_up);
 
-
+#if 0
 
 void Key_Scan(void)
 {
@@ -148,7 +148,7 @@ void Process_Short_Key(uint16_t key)
     }
 }
 
-
+#endif 
 /**
   * @brief  数值调节处理函数
   * @param  is_up: 1 为增加(UP), 0 为减少(DOWN)

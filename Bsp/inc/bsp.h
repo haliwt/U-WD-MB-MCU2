@@ -46,6 +46,7 @@
 #include "bsp_sensor.h"
 #include "bsp_threadx.h"
 #include "bsp_ntc.h"
+#include "bsp_buzzer.h"
 
 //wifi
 #include "bsp_usart_wifi.h"

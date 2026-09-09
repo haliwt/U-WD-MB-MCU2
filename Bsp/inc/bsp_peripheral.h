@@ -16,7 +16,7 @@ void LED_Strip_Ctrl(void);
 void Plasma_Ctrl(void);
 void Fan_Ctrl_Process(void);
 
-void Beep(Beep_TypeDef music);
+//void Beep(Beep_TypeDef music);
 
 void Ultra_Sound_Ctrl(void);
 void Relay_Ctrl(void);
@@ -41,13 +41,7 @@ void fan_stop(void);
 
 void compare_set_temp_value(void);
 
-void BEEP_OFF(void);
 
-void BEEP_ON(void);
-
-void beep_high_temperature_sound(void);
-
-void beep_fan_default_sound(void);
 
 void fan_start_power_on(void);
 

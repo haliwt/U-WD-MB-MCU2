@@ -4,17 +4,10 @@
   * @file    main.c  
   * @author  YSPRING Application Team
   * @version 1.0.0
-  * @date    2023.3.20
-  * @brief   Main program
-  *
-  * version: 02 .DATA.20260-05-08
-  *          add outside touch IC .
-  * version: 03. DATA.2026-05-14 Modify.
-  * version: 031. DATA.2026-025-26 ,the second freeze in only temperature or 
-  *          humidity of scree. is bug .
-  * version: 032  DATA.2026-05-29
-  *          be solved run one hour , touch IWDG,reset .
-  *
+
+  * @u-wd-mb-mcu32t031c8t6 
+  * @data   2026-09-09
+  * 
   ******************************************************************************
   * @attention
   ******************************************************************************
@@ -78,7 +71,6 @@ int main(void)
     IWDG_Configuration();          //独立看门狗配置
 
 	
-	//  TSC_Lib_Init();                //触摸初始化
 	    ADC_Channel_Init(3);
         ADC_Configuration();           //ADC配置
 		
