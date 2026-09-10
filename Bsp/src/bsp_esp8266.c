@@ -12,7 +12,7 @@
 static void auto_connect_wifi_handler(void);
 static void smartphone_timer_power_on_handler(void);
 
-static void Update_Dht11_Totencent_Value(void);
+
 
 
 /**********************************************************************
@@ -121,7 +121,7 @@ static void auto_connect_wifi_handler(void)
 	   
 	   
 	    wait_timeout = tx_time_get()+ 200;//tx_thread_sleep(200);//10ms *100 =1s.
-        gpro_t.time_1m_wifi_f=0;
+      
 	    time_autolink_counter=0; 
 		dc_connect_net_step =1;
 
@@ -133,7 +133,7 @@ static void auto_connect_wifi_handler(void)
 	    dc_connect_net_step=2;
 	   
 	  }
-	 gpro_t.time_1m_wifi_f=0;
+	
 	break;
 
 	case 2:
@@ -146,7 +146,7 @@ static void auto_connect_wifi_handler(void)
 
 		 dc_connect_net_step = 3;
      }
-      gpro_t.time_1m_wifi_f=0;
+
 	break;
 
 	case 3:
@@ -160,8 +160,7 @@ static void auto_connect_wifi_handler(void)
 		   	dc_connect_net_step=4;
 	        wifi_off_step = 0;
 	        time_autolink_counter=0;
-	        gpro_t.time_1m_wifi_f =0;
-
+	  
 	  
      break;
 
@@ -199,12 +198,12 @@ static void auto_connect_wifi_handler(void)
 
 			#endif 
 	    }
-	   gpro_t.time_1m_wifi_f =0;
+	   
 
 	break;
 
 	case 5:
-		 gpro_t.time_1m_wifi_f =0;
+		
          wifi_linking_tencent_f =0;
 	     dc_connect_net_step =6;
 		 
@@ -614,7 +613,7 @@ void wifi_power_off_handler(void)
 *@return:
 *
 */
-static void Update_Dht11_Totencent_Value(void)
+void Update_Dht11_Totencent_Value(void)
 {
 
   

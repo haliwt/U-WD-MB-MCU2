@@ -10,5 +10,8 @@ void wifi_power_off_handler(void);
 
 void wifi_power_on_handler(void);
 
+void Update_Dht11_Totencent_Value(void);
+
+
 #endif 
 

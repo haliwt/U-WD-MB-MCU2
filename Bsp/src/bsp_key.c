@@ -222,7 +222,7 @@ void System_Status_PowerOn(void)
 
     if(wifi_app_timer_power_on_f==0){ //手机定时开机
 	    gpro_t.g_power_flag = 1;            // 总输出使能
-	    ptc_heat_open_f= 1;        // 默认开启加热
+	    ptc_heat_open_f= true;        // 默认开启加热
 	    ultra_sound_open_f = 1;     // 默认开启超声波
 	    plasma_open_f = 1;          // 默认开启等离子
 	    power_on_peripheral_handler();

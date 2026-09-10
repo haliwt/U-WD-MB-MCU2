@@ -13,9 +13,9 @@ void power_on_led_open_handler(void)
 	if(wifi_app_timer_power_on_f==0){
 
 	     
-		ptc_heat_open_f= 1;        // 默认开启加热
-	    ultra_sound_open_f = 1;     // 默认开启超声波
-	    plasma_open_f = 1;          // 默认开启等离子
+		ptc_heat_open_f= true;        // 默认开启加热
+	    ultra_sound_open_f = true;     // 默认开启超声波
+	    plasma_open_f = true;          // 默认开启等离子
 	  
 
 

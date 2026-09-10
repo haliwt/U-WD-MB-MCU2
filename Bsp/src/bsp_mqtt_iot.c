@@ -634,7 +634,7 @@ void link_wifi_net_handler(void)
             
                tx_thread_sleep(20);//10ms * 100 = 1000s 
                wait_timeout = tx_time_get() + 300;
-  				gpro_t.time_1m_wifi_f=0;
+  			
 			  	link_net_step  = 1;
 			  
 			break;
@@ -648,7 +648,7 @@ void link_wifi_net_handler(void)
                 uid =Get_Unique_ID_32bit();
 			  
                  link_net_step  = 2;
-				  gpro_t.time_1m_wifi_f=0;
+			
                 
                 time_link_net_counter=0;
 
@@ -668,7 +668,7 @@ void link_wifi_net_handler(void)
                       
                         //tx_thread_sleep(300);//10ms * 100 
                         wait_timeout = tx_time_get() + 300;//10ms * 300 =3s
-                        gpro_t.time_1m_wifi_f=0;
+               
 						link_net_step  = 3;
 
                  }   
@@ -688,7 +688,7 @@ void link_wifi_net_handler(void)
 				 wait_timeout = tx_time_get() + 200;
 
 				 link_net_step  = 4;
-				  gpro_t.time_1m_wifi_f=0;
+		
                  time_link_net_counter  =0;
                 
             }
@@ -707,7 +707,7 @@ void link_wifi_net_handler(void)
 
 					link_net_step  = 5;
           
-                 gpro_t.time_1m_wifi_f=0;
+            
                  }
             
             break;
@@ -720,7 +720,7 @@ void link_wifi_net_handler(void)
 	            tx_thread_sleep(20);//10ms * 100 
 	            wait_timeout = tx_time_get() + 300;
 				link_net_step  = 20;
-			    gpro_t.time_1m_wifi_f=0;
+		
                 time_link_net_counter  = 0;
 
                     
@@ -731,7 +731,7 @@ void link_wifi_net_handler(void)
 
 			  if(time_link_net_counter  > 4){
 				   time_link_net_counter  = 0;
-				   gpro_t.time_1m_wifi_f=0;
+				 
 
 			       link_net_step  = 6;
 
@@ -752,10 +752,10 @@ void link_wifi_net_handler(void)
 
 			  link_net_step  = 7;
 			  time_link_net_counter  = 0;
-				  gpro_t.time_1m_wifi_f=0;
+				  
             }
             
-               gpro_t.time_1m_wifi_f=0; 
+    
             break;
 
             case 7:
@@ -775,7 +775,7 @@ void link_wifi_net_handler(void)
                 wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);
                	}
 			    link_net_step= 8;
-			     gpro_t.time_1m_wifi_f=0;
+			
                
 				
 		        }
@@ -788,7 +788,7 @@ void link_wifi_net_handler(void)
 				  	SendData_Set_Command(0x1F,0);//SendWifiData_To_Data(0x1F,0x00) ;	 //Link wifi net is fail .WT.EDTI .2024.08.31
                     
 				  }
-                      gpro_t.time_1m_wifi_f=0;
+                
                   	
                   
                 }
@@ -805,7 +805,7 @@ void link_wifi_net_handler(void)
 	        link_net_step = 0xfe;
 	        key_net_config_f =0;
 
-             gpro_t.time_1m_wifi_f=0;
+
 
             break;
 

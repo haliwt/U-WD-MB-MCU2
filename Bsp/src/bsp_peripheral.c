@@ -323,7 +323,7 @@ void direct_compare_set_temp_value(void)
 **/
 void peripheral_fun_handler(void)
 {
-   if(gpro_t.g_power_flag==1){
+   if(gpro_t.g_power_flag==true){
 
     switch(works_interval_f){
 

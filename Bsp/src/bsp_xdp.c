@@ -551,90 +551,117 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	break;
 
 
-	case 0x22: //PTC ON OR OFF by compare temperature value .
+	case 0x22: //PTC ON OR OFF by compare temperature value .don't buzzer sound.
 
 	    if(ptc_prohibit_off_f  == 1)return ;
 		
         if(pdata[3]== 0x01){ //ptc open 
 		   
 		   if(works_interval_f ==0 && ptc_prohibit_off_f==false){
-			  
-			     ptc_prohibit_off_f = 1;//gctl_t.gDry = 1;
+			     ptc_heat_open_f = true;
 			     ptc_onoff_default++;
                  RELAY_ON();
 
-				 if(ptc_set_wifi !=ptc_prohibit_off_f){
-				 	ptc_set_wifi =ptc_prohibit_off_f;
-					 if(wifi_connected_success_f==1){ 
-						  MqttData_Publish_SetPtc(0x01);
-						tx_thread_sleep(20);
+			     SendWifiData_Answer_Cmd(0x22,0x01); //WT.EDIT 2025.07.28
+			     tx_thread_sleep(2);
+				 gpro_t.app_open_ptc_flag = true;
+//					 if(wifi_connected_success_f==1){ 
+//						  MqttData_Publish_SetPtc(0x01);
+//						tx_thread_sleep(20);
 						
-					  }
-				 }
+//					  }
+				 
 		   	}   	
 	   }
        else if(pdata[3]== 0x0){
-	   	 if(works_interval_f >1 )works_interval_f=0; //This is be solved bug.
-		 if(ptc_prohibit_off_f  >1)ptc_prohibit_off_f=0;
-		 
-               ptc_prohibit_off_f =0 ;//gctl_t.gDry =0;
-               ptc_onoff_default++;
+	   
+		   ptc_prohibit_off_f =0 ;//gctl_t.gDry =0;
+            ptc_onoff_default++;
 	    
 	          RELAY_OFF();
-         if(soft_version == 0x02){
-//		   SendWifiData_Answer_Cmd(0x22,0x0); //WT.EDIT 2025.07.28
+			   gpro_t.app_open_ptc_flag = false;
+           
+		      SendWifiData_Answer_Cmd(0x22,0x0); //WT.EDIT 2025.07.28
+			  tx_thread_sleep(2);
 
-         	}
-		  if(ptc_set_wifi !=ptc_prohibit_off_f){
-				 	ptc_set_wifi =ptc_prohibit_off_f;
-		  if(wifi_connected_success_f==1){ 
-			MqttData_Publish_SetPtc(0x0);
-			tx_thread_sleep(20);
-		  }
-		  }
+  //		  if(wifi_connected_success_f==1){ 
+//			MqttData_Publish_SetPtc(0x0);
+//			tx_thread_sleep(20);
+//		  }
+		  
          
 	  }
 	
    
      break;
 
+	 case 0x23: // key adjust temperature open ptc and off. don't buzzer sound .
+
+	     if(pdata[3]==1){
+
+	        ptc_heat_open_f = true;
+			ptc_prohibit_off_f = false;
+		    RELAY_ON();
+
+	     }
+		 else if(pdata[3]==0){
+
+           ptc_heat_open_f = false ;
+		   ptc_prohibit_off_f = false;
+		   RELAY_OFF();
+
+		 }
+
+
+	 break;
+
 
 	 
-	 case 0x2A: //smart phone or display  board set temperature .receive.
+	 case 0x2A: // is data //phone or display  board set temperature .receive.
 	 
-		   if(pdata[4]==0x01 && gpro_t.g_power_flag == 1){
+		   if(pdata[4]==0x01 && gpro_t.g_power_flag == true){//pdata[4] :表示数据的长度。
 			  
 			   if(pdata[5] >19 && pdata[5] < 41){
 			   	ptc_prohibit_off_f  = 0;
-				//gpro_t.set_temp_value_success=1;
-			   	if(works_interval_f >1 )works_interval_f=0; //This is be solved bug.
-			   setting_temperature = pdata[5] ;
-			    ptc_prohibit_off_f =0;
-			   if(setting_temperature > temperature && works_interval_f ==0){
+			    setting_temperature = pdata[5] ;
+			  
+			   if(setting_temperature > temperature && works_interval_f ==false){
 			
 			         ptc_onoff_default++;
-          
+                      ptc_heat_open_f = true;
 				      RELAY_ON();
-					  
+					  gpro_t.app_open_ptc_flag = true;
 			   }
 			   else{
 			   	   ptc_onoff_default++;
+				   ptc_heat_open_f = false;
 				   ptc_prohibit_off_f =0 ;//gctl_t.gDry =0;
+				   gpro_t.app_open_ptc_flag = false;
 
 			       RELAY_OFF();
 		       }
 
 		
-				   if(wifi_connected_success_f==1){
-					   MqttData_Publis_SetTemp(setting_temperature);
-					   tx_thread_sleep(20);//tx_thread_sleep(200);//HAL_Delay(350);
-					}
+//				   if(wifi_connected_success_f==1){
+//					   MqttData_Publis_SetTemp(setting_temperature);
+//					   tx_thread_sleep(20);//tx_thread_sleep(200);//HAL_Delay(350);
+//					}
 			   	
 			  }
 		   
 			}
 		
 		
+	 break;
+
+	 case 0x2B: //display or phone set timer time value 
+	      if(pdata[4]==0x01 && gpro_t.g_power_flag == true){//pdata[4] :表示数据的长度。
+
+               
+
+
+	      }
+
 	 break;
 
 	 
@@ -645,12 +672,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 		     if(pdata[5] < 24 && pdata[6] < 61 && pdata[7] < 61){
          
-		      //gpro_t.disp_works_hours= pdata[5];
-			 
-			  //gpro_t.disp_works_minutes =pdata[6];
-			
-
-			  ///gpro_t.gTimer_works_time_seconds=pdata[7];
+		     
 			
 		     }
 		 }
@@ -703,14 +725,16 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
 	     if(pddata[4] == 0x01){ //open
 
-		    gon_t.on_step=0;
-	       gpro_t.g_power_flag = 1;
+		    //gon_t.on_step=0;
+	        //gpro_t.g_power_flag = true;
+	        gpro_t.g_answer_power_flag = true; //表示显示板，接收到开机信息。
 
 		 }
         else if(pddata[4] == 0x0){ //close 
 
-		   gon_t.off_step=1;
-          gpro_t.g_power_flag =0;
+		   //gon_t.off_step=0;
+          //gpro_t.g_power_flag = false;
+            gpro_t.g_answer_power_flag = false; //表示显示板，接收到关键信息
 			 
 		}
 	   

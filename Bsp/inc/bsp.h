@@ -53,6 +53,7 @@
 #include "bsp_fan.h"
 #include "bsp_ultrasonic.h"
 #include "bsp_relay.h"
+#include "bsp_adc.h"
 
 //wifi
 #include "bsp_usart_wifi.h"
@@ -79,6 +80,8 @@ typedef struct _main_ref{
 
  bool  g_power_flag ;
  bool  external_display_flag ;
+ bool  app_open_ptc_flag;
+ bool  g_answer_power_flag ;
 
 
  volatile uint8_t time_10ms_f;
@@ -104,7 +107,7 @@ typedef struct _main_ref{
  volatile uint8_t time_10s_f;
 
  volatile uint8_t time_1m_f;
- volatile uint8_t time_1m_wifi_f;
+
  volatile uint8_t time_2m_f;
 
 

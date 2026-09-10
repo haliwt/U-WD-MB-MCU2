@@ -870,13 +870,13 @@ void send_usart2_data(const uint8_t* pdata,uint8_t length)
 
 /********************************************************************************
 	*
-	*Functin Name:void Reconnection_Wifi_Order(void)
+	*Functin Name:void automatic_network_reconnection(void)
 	*Functin :
 	*Input Ref: NO
 	*Return Ref:NO
 	*
 ********************************************************************************/
-void Reconnection_Wifi_Order(void)
+void automatic_network_reconnection(void)
 {
     static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
 
