@@ -67,8 +67,8 @@ void TIM1_Configuration(void)
 
 
 
-// TIM3 FAN IS SET 25KHZ FREQUENCY 
-//sysClock 64MHZ
+// TIM3 FAN IS SET 4KHZ FREQUENCY 
+//sysClock  TM3_CH4 Buzzer 
 void TIM3_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -115,7 +115,7 @@ void TIM6_Configuration(void)
     // Òç³öÊ±¼ä = ((63 + 1) * (4999 + 1)) / 64000000 = 5 ms, Ê= 200 Hz
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
     TIM_TimeBaseStructure.TIM_Prescaler = 63;//95;
-    TIM_TimeBaseStructure.TIM_Period = 4999;//2499;
+    TIM_TimeBaseStructure.TIM_Period = 9999;//
     TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
 
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);                   // Çå³ý¼ÆÊýÆ÷ÖÐ¶Ï±êÖ¾Î»  
@@ -128,22 +128,23 @@ void TIM6_Configuration(void)
 /**
 *
 *@brief TIM14 FOR BUZZER IS 4 KHZ -TIM14-CH1
-*@notice  sysClock is 64MHZ
+*@notice  sysClock is 64MHZ GPIOB ,
 *@param
 *@retrval 
 *
 **/
 void TIM14_Configuration(void)
 {
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+   #if 1
+	 TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
     TIM_OCInitTypeDef TIM_OCInitStructure;
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM14, ENABLE);
 
     // Òç³öÊ±¼ä = (preio d999 + 1) * (Prescaler 15 + 1)) 648000000 = 250 ¦Ìs, ÆµÂÊ= 4 kHz
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-    TIM_TimeBaseStructure.TIM_Prescaler = 15;
-    TIM_TimeBaseStructure.TIM_Period = 999;//749;
+    TIM_TimeBaseStructure.TIM_Prescaler = 0; //15;
+    TIM_TimeBaseStructure.TIM_Period = 15999;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseInit(TIM14, &TIM_TimeBaseStructure);
 
@@ -156,7 +157,38 @@ void TIM14_Configuration(void)
     TIM_OC1Init(TIM14, &TIM_OCInitStructure);
 
     TIM_Cmd(TIM14, ENABLE);
-    TIM_CtrlPWMOutputs(TIM14, ENABLE);
+     TIM_CtrlPWMOutputs(TIM14, ENABLE);
+
+  #else 
+
+  LL_TIM_InitTypeDef TIM_InitStruct = {0};
+  LL_TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
+
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM14);
+
+  // Overflow time = ((Auto-reload 31999 + 1) * (Prescaler 0 + 1)) / 64000000 = 500 Î¼s, frequency= 2 kHz
+  // é¢‘çŽ‡è®¡ç®—ï¼š64,000,000 / ((Prescaler 15 + 1) * (Autoreload 999 + 1)) = 4000 Hz (4 kHz)
+  // è®¡æ•°å‘¨æœŸä¸º 250 Î¼sï¼ŒPWM åˆ†è¾¨çŽ‡ä¸º 1000 çº§
+  LL_TIM_StructInit(&TIM_InitStruct);
+  TIM_InitStruct.Prescaler = 0;
+  TIM_InitStruct.Autoreload = 15999; // TIM_ARR
+  TIM_InitStruct.ClockDivision = 0;
+  LL_TIM_Init(TIM14, &TIM_InitStruct);
+
+  LL_TIM_OC_StructInit(&TIM_OC_InitStruct);
+  TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
+  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
+  TIM_OC_InitStruct.CompareValue = 0; // TIM_CCR, Duty = TIM_CCR/(TIM_ARR+1)
+  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_LOW;
+  TIM_OC_InitStruct.OCIdleState = LL_TIM_OCIDLESTATE_LOW;
+  LL_TIM_OC_Init(TIM14,LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
+
+  LL_TIM_EnableCounter(TIM14);
+  LL_TIM_EnableAllOutputs(TIM14);
+
+
+
+  #endif 
 }
 
 

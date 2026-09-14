@@ -9,6 +9,7 @@
 */
 
 #include "system_init.h"
+#include "main.h"
 //#include "bsp.h"
 #include "delay.h"
 #include "ys32t031.h"
@@ -21,7 +22,7 @@ void RCC_Configuration(void);
 void GPIO_Configuration(void);
 void NVIC_Configuration(void);
 
-
+#if 0
 // RCC initialization configuration
 #if 0
 void RCC_Configuration(void)
@@ -80,7 +81,47 @@ void RCC_Configuration(void)
 
 #endif 
 
+#endif 
 
+#if 1
+void RCC_Configuration(void)
+{
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+  // Enable LSI
+  LL_RCC_LSI_Enable();
+
+  LL_RCC_HSI_Enable();
+  LL_RCC_HSI_SetDiv(LL_RCC_HSI_DIV_1);
+  LL_RCC_HSI_SetCalibFreq(LL_RCC_HSICALIBRATION_16MHz);
+  while (LL_RCC_HSI_IsReady() != 1);
+  LL_Init1msTick(16000000);
+
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLL_MUL_4);
+  LL_RCC_PLL_Enable();
+  // while( RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
+  LL_mDelay(1);
+
+  // HCLK = 64 MHz
+  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+
+  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
+  while (LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL);
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
+
+  // PCLK = 64 MHz
+  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
+
+  // SYSCLK = 64 MHz
+  SystemCoreClockUpdate();
+
+  LL_Init1msTick(64000000);
+}
+
+
+
+
+
+#endif 
 
 
 

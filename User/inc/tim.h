@@ -17,6 +17,7 @@
 #endif
 
 #include "ys32t031.h"
+#include "main.h"
 
 
 

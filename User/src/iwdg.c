@@ -16,15 +16,17 @@ void IWDG_Configuration(void);
 
 
 
+
 // IWDG ≥ı ºªØ≈‰÷√
 void IWDG_Configuration(void)
 {
   /*set up time is 5s */
+  // Timeout = 64x(3999+1)/32000 = 8s.
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_IWDG, ENABLE);
   IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); 
   while (IWDG_GetFlagStatus(IWDG_FLAG_PVU) != 0x00); 
   IWDG_SetPrescaler(IWDG_Prescaler_64);
-  IWDG_SetReload(3125);
+  IWDG_SetReload(3999);
   IWDG_SetWindowValue(4095);           
   IWDG_ReloadCounter();
   IWDG_Enable();

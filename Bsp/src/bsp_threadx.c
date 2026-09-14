@@ -210,6 +210,7 @@ void tx_application_define(void *first_unused_memory)
   * @param	 None
   * @retval  None
   */
+  uint16_t flag_counter;
  static void ui_thread_entry(ULONG thread_input)
  {
    (void)thread_input;  /* 消除未使用的参数警告 */
@@ -220,6 +221,8 @@ void tx_application_define(void *first_unused_memory)
     power_on_off_handler();
 
     IWDG_ReloadCounter();
+
+	flag_counter++;
     
 	
 #if DEBUG_ENABLE

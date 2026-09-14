@@ -22,6 +22,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN includes */
+#include "ys32t031_ll_utils.h"
 #include "ys32t031_ll_gpio.h"
 #include "ys32t031_ll_rcc.h"
 #include "ys32t031_ll_bus.h"
@@ -32,7 +33,9 @@ extern "C" {
 #include "ys32t031_ll_utils.h"
 #include "ys32t031_ll_pwr.h"
 #include "ys32t031_ll_dma.h"
-#include "ys32t031_ll_gpio.h"
+#include "ys32t031_ll_tim.h"
+#include "ys32t031_gpio.h"
+
 /* USER CODE END includes */
 
 /* Exported types ------------------------------------------------------------*/

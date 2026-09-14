@@ -140,7 +140,7 @@ void SysTick_Handler(void)
 
 /**
   * @brief  This function handles TIM6_LPTIM_IRQHandler.
-  * @param  timer 5ms 
+  * @param  timer 10ms 
   * @retval None
   */
 void TIM6_LPTIM_IRQHandler (void)

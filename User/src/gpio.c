@@ -51,15 +51,30 @@ void gpio_init(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(ULTR_PWM_GPIO_Port, &GPIO_InitStruct);
 
-  // TIM16_CH1
+
+  // TIM14_CH1 --GPIOB LL_PIN_1
+  #if 1
   LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_5;
-  GPIO_InitStruct.Pin = LL_FAN_PWM_Pin;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_1;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(FAN_PWM_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  #else
+
+   // TIM14_CH1
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource1, GPIO_AF_0);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_VeryHigh;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  #endif 
+
 
   // UART1_TX
   LL_GPIO_StructInit(&GPIO_InitStruct);
@@ -127,14 +142,14 @@ void gpio_init(void)
   LL_GPIO_Init(KEY_DEC_GPIO_Port, &GPIO_InitStruct);
 
   // TIM3_CH4
-  LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
-  GPIO_InitStruct.Pin = LL_BEEP_PWM_Pin;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(BEEP_PWM_GPIO_Port, &GPIO_InitStruct);
+//  LL_GPIO_StructInit(&GPIO_InitStruct);
+//  GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
+//  GPIO_InitStruct.Pin = LL_BEEP_PWM_Pin;
+//  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+//  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+//  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+//  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+//  LL_GPIO_Init(BEEP_PWM_GPIO_Port, &GPIO_InitStruct);
 
   // GPIO_Output
   LL_GPIO_ResetOutputPin(FAN_RUN_GPIO_Port, LL_FAN_RUN_Pin);

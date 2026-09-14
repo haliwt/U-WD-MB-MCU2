@@ -306,7 +306,7 @@ TimeSharingTask_t g_tasks[] = {
     {0, 280,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state},
     {0, 53,        handler_hardware_module_action},
-    {0, 230,       handler_link_wifi},
+    {0, 3,         handler_link_wifi},                  //3*10ms =30ms
     {0, 230,       handler_repeat_link_net},
     {0, 270,       handler_wifi_report}
    
@@ -416,10 +416,6 @@ void power_on_handler(void)
 		 }
 
 }
-	     
-
-
-
 /************************************************************************************
 *
 *Function Name: static void power_on_cycle_handler(void)
@@ -739,9 +735,11 @@ static void power_off_handler(void)
 
    static uint32_t wait_timeout = 0;
 
-   if(tx_time_get() < wait_timeout){
-       return ;
+   if(dc_on == 0){
+        dc_on++;
+		BEEP_ON();
    }
+
 	switch(gon_t.off_step){
 	
 		 case 0:
@@ -1201,28 +1199,7 @@ static void module_wifi_report_handler(void)
     static uint8_t ptc_default = 0xff;
     static uint8_t plasma_default = 0xff;
     static uint8_t ultrasonic_default = 0xff;
-#if 0
-    // ==========================================
-    // 业务 1：定时开机——本地 WiFi 模块串口命令下发
-    // ==========================================
-    if (gctl_t.app_timer_power_on_flag == 1) {
-        if (gpro_t.gPtc == 1 && gctl_t.ptc_prohibit_on_flag == 0) {
-            SendWifiData_To_Cmd(0x02, 0x01);
-        } else {
-            gctl_t.ptc_prohibit_on_flag = 1;
-            SendWifiData_To_Cmd(0x02, 0x00);
-        }
-        tx_thread_sleep(1); 
 
-        SendWifiData_To_Cmd(0x03, gctl_t.gPlasma ? 0x01 : 0x00);
-        tx_thread_sleep(1);
-
-        SendWifiData_To_Cmd(0x04, gctl_t.gUltrasonic ? 0x01 : 0x00);
-        tx_thread_sleep(1);
-
-        gctl_t.app_timer_power_on_flag = 0; // 发送完立即清零
-    }
-#endif 
     // ==========================================
     // 业务 2：云端状态同步——MQTT 属性上报
     // ==========================================

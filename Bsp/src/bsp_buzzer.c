@@ -21,31 +21,37 @@
 
 void BEEP_ON(void)
 {
-	    TIM_SetCompare1(TIM14, 374);
-		  TIM_Cmd(TIM14, ENABLE);
-		  TIM_CtrlPWMOutputs(TIM14, ENABLE);
-		  tx_thread_sleep(2);//open_beep_sound();
-		  TIM_SetCompare1(TIM14,0);
-	
-		  TIM_Cmd(TIM14, DISABLE);
+  #if 0
+	TIM_SetCompare1(TIM14, 374);
+	TIM_Cmd(TIM14, ENABLE);
+	TIM_CtrlPWMOutputs(TIM14, ENABLE);
+	tx_thread_sleep(2);//open_beep_sound();
+	TIM_SetCompare1(TIM14,0);
+
+	TIM_Cmd(TIM14, DISABLE);
+  #else 
+   TIM_SetCompare1(TIM14, 8000);
+   TIM_Cmd(TIM14, ENABLE);
+   TIM_CtrlPWMOutputs(TIM14, ENABLE);
+   tx_thread_sleep(2);//open_beep_sound();
+    TIM_SetCompare1(TIM14,0);
+
+
+  #endif 
 
 
 }
 
-void fan_err_beep_on(void)
+// Ëß¶ÂèëÂçïÊ¨°ËúÇÈ∏£ÔºàÂìç 2 ‰∏™ tick ÂêéËá™Âä®ÂÖ≥Èó≠Ôºâ
+void BEEP_Pulse(void)
 {
-    
-        TIM_SetCompare1(TIM14, 374);
-        TIM_Cmd(TIM14, ENABLE);
-        TIM_CtrlPWMOutputs(TIM14, ENABLE);
-		tx_thread_sleep(4);//open_beep_sound();
-        TIM_SetCompare1(TIM14,0);
-
-        TIM_Cmd(TIM14, DISABLE);
-   }
-
-
-
+    TIM_SetCompare1(TIM14, 8000);
+    TIM_Cmd(TIM14, ENABLE);
+	TIM_CtrlPWMOutputs(TIM14, ENABLE);
+    tx_thread_sleep(2);
+    TIM_SetCompare1(TIM14, 0);
+    TIM_Cmd(TIM14, DISABLE);
+}
 
 
 //∑‰√˘∆˜πÿ
@@ -54,8 +60,21 @@ void BEEP_OFF(void)
     TIM_SetCompare1(TIM14,0);
 	
 	TIM_Cmd(TIM14, DISABLE);
-    //TIM_CtrlPWMOutputs(TIM14, ENABLE);
+   
 }
+
+void fan_err_beep_on(void)
+{
+    
+        TIM_SetCompare1(TIM14, 8000);
+        TIM_Cmd(TIM14, ENABLE);
+        TIM_CtrlPWMOutputs(TIM14, ENABLE);
+		tx_thread_sleep(4);//open_beep_sound();
+        TIM_SetCompare1(TIM14,0);
+
+        TIM_Cmd(TIM14, DISABLE);
+   }
+
 
 void beep_high_temperature_sound(void)
 {
