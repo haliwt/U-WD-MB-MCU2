@@ -616,15 +616,8 @@ void wifi_power_off_handler(void)
 void Update_Dht11_Totencent_Value(void)
 {
 
+    MqttData_Publis_ReadTempHum(temperature,humidity);
   
-	//Dht11_Read_TempHumidity_Handler(&DHT11);
-	
-	// dht11_read_data(&gctl_t.gDht11_temperature, &gctl_t.gDht11_humidity);
-
-
-	MqttData_Publis_ReadTempHum(temperature,humidity);
-    tx_thread_sleep(20);//tx_thread_sleep(20);//delay_ms(200);//HAL_Delay(100);
-
 }
 
 

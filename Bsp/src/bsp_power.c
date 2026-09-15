@@ -287,6 +287,7 @@ static void handler_wifi_update_temp_humidity(void);
 static void handler_read_dht11(void);
 static void handler_fan_speed_state(void);
 static void handler_hardware_update(void);
+static void handler_read_dht11_to_outside_diplay(void);
 
 static void handler_link_wifi(void);
 static void handler_repeat_link_net(void);
@@ -308,7 +309,8 @@ TimeSharingTask_t g_tasks[] = {
     {0, 200,        handler_hardware_update},          //200*10ms = 2000ms =2s   
     {0, 3,         handler_link_wifi},                  //3*10ms =30ms
     {0, 230,       handler_repeat_link_net},
-    {0, 270,       handler_wifi_report}
+    {0, 270,       handler_wifi_report},
+    {0, 300,       handler_read_dht11_to_outside_diplay}
    
     
 	
@@ -342,16 +344,19 @@ static void power_on_initial(void)
       
       System_Status_PowerOn() ;
 	  dht11_read_temp_humidity_value();
-	  display_digital_3_numbers();
-	
+	  //display_digital_3_numbers();
+	  sendData_Real_TimeHum(humidity,temperature);
+	  tx_thread_sleep(2);
       gon_t.on_step =1;
 	
 
    break;
 
    case 1:
-    dht11_read_temp_humidity_value();
-    display_digital_3_numbers();
+   // dht11_read_temp_humidity_value();
+	sendData_Real_TimeHum(humidity,temperature);
+   // display_digital_3_numbers();
+    tx_thread_sleep(2);
     gon_t.on_step =2;
 
 
@@ -359,8 +364,8 @@ static void power_on_initial(void)
 
    case 2:
    	 
-       dht11_read_temp_humidity_value();
-	   display_digital_3_numbers();
+       //dht11_read_temp_humidity_value();
+	   //display_digital_3_numbers();
 	   gon_t.on_step =0xfe;
 
    break;
@@ -529,7 +534,6 @@ static void handler_works_hours(void)
 *
 **/
 
-uint8_t flag_id;
 static void handler_hardware_update(void)
 {
 
@@ -537,7 +541,26 @@ static void handler_hardware_update(void)
 	
 	     peripheral_fun_handler();
 	}
+}
+
+/**
+*
+*@brief dispatch module_hardware_control task 
+*@notice
+*@param
+*@retval
+*
+**/
+uint8_t flag_id;
+
+static void handler_read_dht11_to_outside_diplay(void)
+{
+
+	if(gpro_t.external_display_flag ==1){
      flag_id = DHT11_ReadData(&humidity,&temperature);
+     sendData_Real_TimeHum(humidity,temperature);
+     tx_thread_sleep(2);
+	}
   
 
 }
