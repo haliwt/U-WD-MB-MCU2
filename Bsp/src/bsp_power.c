@@ -71,7 +71,7 @@ uint8_t  key_pressed_set_temp_f;
 
 uint8_t key_net_config_f;
 uint16_t key_net_config_time;
-uint8_t led_strip_open_f;
+
 
 uint8_t flash_f;
 
@@ -238,7 +238,7 @@ void Clear_Ram(void)
 		first_temp_compare_f=0;
 		ultra_sound_open_f = 0;
 		plasma_open_f = 0;
-		led_strip_open_f = 0;
+	
 		
 		timing_is_reach_disptime = 0;
 		
@@ -286,7 +286,7 @@ static void handler_fan_adc(void);
 static void handler_wifi_update_temp_humidity(void);
 static void handler_read_dht11(void);
 static void handler_fan_speed_state(void);
-static void handler_hardware_module_action(void);
+static void handler_hardware_update(void);
 
 static void handler_link_wifi(void);
 static void handler_repeat_link_net(void);
@@ -300,12 +300,12 @@ volatile uint8_t time_slot ;
 TimeSharingTask_t g_tasks[] = {
     {0, 370,       handler_wifi_state},                 //370* 10ms = 3,7s
     {0, 140,       handler_wifi_update_data},         //140*10ms = 1.4s
-    {0, 430,       handler_works_hours},
+    {0, 430,       handler_works_hours},            //
     {0, 570,       handler_fan_adc},
     {0, 710,       handler_wifi_update_temp_humidity},
     {0, 280,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state},
-    {0, 53,        handler_hardware_module_action},
+    {0, 200,        handler_hardware_update},          //200*10ms = 2000ms =2s   
     {0, 3,         handler_link_wifi},                  //3*10ms =30ms
     {0, 230,       handler_repeat_link_net},
     {0, 270,       handler_wifi_report}
@@ -340,7 +340,7 @@ static void power_on_initial(void)
    	  gon_t.off_step = 0;
       wifi_off_step =0; //WT.EDT 2026.05.15
       
- 
+      System_Status_PowerOn() ;
 	  dht11_read_temp_humidity_value();
 	  display_digital_3_numbers();
 	
@@ -528,7 +528,7 @@ static void handler_works_hours(void)
 *@retval
 *
 **/
-static void handler_hardware_module_action(void)
+static void handler_hardware_update(void)
 {
 
 	if(ptc_high_temperature_f == 0 && fan_warning_f ==0){ //10ms * 100
@@ -763,13 +763,12 @@ static void power_off_handler(void)
              power_off_peripheral_handler();
 		  
              if(dc_on ==0){
-			 	beep_power_sound();
+			    BEEP_ON();
 			 	dc_on++;
 				fan_one_f =0;
-			    //FAN_RUN_OFF();
-				//fan_on(40);
+			
 				fan_on(0);
-				//FAN_PWM_GPIO_OFF();//WT.EDIT 2026-05-16
+				
 			  }
 
 			if(wifi_connected_success_f ==1 ){
@@ -1002,8 +1001,7 @@ void works_run_two_hours_state(void)
              interval_10m_f ++;
 		   fan_full_fun();
 		  if(ptc_prohibit_off_f == 0 &&  ptc_heat_open_f== 1){
-			 // 立即open
-		     // LED_PTC_ON();
+		
 		      RELAY_ON();
 		  
 		  	}
@@ -1022,14 +1020,7 @@ void works_run_two_hours_state(void)
   * @param: 
   *
 **/
-void beep_power_sound(void)
-{
-  
-	BEEP_ON();
-	tx_thread_sleep(20);//delay_ms_dht11(20);//tx_thread_sleep(2);//2*10ms //delay_ms_dht11(20);//DelayMS(20);
-    BEEP_OFF();
 
-}
 
 /**
 	*

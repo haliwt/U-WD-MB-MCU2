@@ -229,7 +229,7 @@ void System_Status_PowerOn(void)
     }
 	
     fan_open_f = 1;             // 默认开启风扇
-    led_strip_open_f = 1;       // 默认开启灯带
+    
     AI_led_open_f = 1;       // 默认AI 开启
     fan_speed_level =100;       // 默认风扇最大风速 
     set_temperature_value_f =0; 
@@ -284,7 +284,7 @@ void System_Status_PowerOff(void)
    
 	first_temp_compare_f=0;
     ultra_sound_open_f = 0;
-    led_strip_open_f = 0;
+
     plasma_open_f = 0;
     fan_open_f = 0;
 	key_net_config_f =0;
@@ -435,25 +435,6 @@ void key_down_short_handler(void)
 * @param   None
 * @retval  None
 */
-void key_down_long_handler(void)
-{
-	//key_long_f = 1;
-
-	if(led_strip_open_f==1){
-		led_strip_open_f=0;
-		//LED_TAPE_OFF();
-	}
-	else{
-		led_strip_open_f = 1;// 翻转灯带状态
-	 //	LED_TAPE_ON();
-	}
-
-	BEEP_ON() ;	//Beep(BEEP_ONCE);
-	
-
-
-}
-
 
 
 

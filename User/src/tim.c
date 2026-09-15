@@ -42,10 +42,10 @@ void TIM1_Configuration(void)
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
-   // 定时周期 = ((自动重装载值426 + 1) * (预分频系数 5 + 1)) / 64000000 = 40 us, 频率= 25 kH
+    // Overflow time = ((Auto-reload 2559 + 1) * (Prescaler 0 + 1)) / 64000000 = 40 μs, frequency= 25 kHz
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-    TIM_TimeBaseStructure.TIM_Prescaler =  5;
-    TIM_TimeBaseStructure.TIM_Period = 426;
+    TIM_TimeBaseStructure.TIM_Prescaler = 0;// 5;
+    TIM_TimeBaseStructure.TIM_Period = 2559;//319;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
@@ -57,7 +57,7 @@ void TIM1_Configuration(void)
     TIM_OCInitStructure.TIM_Pulse = 0;
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
     TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
-    TIM_OC3Init(TIM1, &TIM_OCInitStructure); //通道 3
+   // TIM_OC3Init(TIM1, &TIM_OCInitStructure); //通道 3
 
 	TIM_OC1Init(TIM1, &TIM_OCInitStructure);//通道 1 
 
@@ -67,8 +67,8 @@ void TIM1_Configuration(void)
 
 
 
-// TIM3 FAN IS SET 4KHZ FREQUENCY 
-//sysClock  TM3_CH4 Buzzer 
+// TIM3 FAN IS SET 25KHZ FREQUENCY 
+//sysClock  FAN PWM
 void TIM3_Configuration(void)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -206,19 +206,13 @@ void TIM14_Configuration(void)
 **/
 void fan_on(uint16_t fan_duty)
 {
-    #if 1
+ 
 	TIM_SetCompare1(TIM3,fan_duty);
 	
 	TIM_Cmd(TIM3, ENABLE);
     TIM_CtrlPWMOutputs(TIM3, ENABLE);
-	#else 
-
-	TIM_SetCompare1(TIM1,fan_duty);
 	
-	TIM_Cmd(TIM1, ENABLE);
-    TIM_CtrlPWMOutputs(TIM1, ENABLE);
 	
-	#endif 
 }
 
 
@@ -239,7 +233,7 @@ void fan_off(void)
 void ultra_sound_on(uint16_t us_duty)
 {
     
-	TIM_SetCompare3(TIM1,us_duty);
+	TIM_SetCompare1(TIM1,1280);
 	
 	TIM_Cmd(TIM1, ENABLE);
     TIM_CtrlPWMOutputs(TIM1, ENABLE);
@@ -250,10 +244,10 @@ void ultra_sound_on(uint16_t us_duty)
 //��������
 void ultra_sound_off(void)
 {
-    TIM_SetCompare3(TIM1,0);
+    TIM_SetCompare1(TIM1,0);
 	
-	  TIM_Cmd(TIM1, ENABLE);
-    TIM_CtrlPWMOutputs(TIM1, ENABLE);
+	//TIM_Cmd(TIM1, DISABLE);
+   // TIM_CtrlPWMOutputs(TIM1, ENABLE);
 }
 
 

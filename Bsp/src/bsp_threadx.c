@@ -371,7 +371,7 @@ void tx_application_define(void *first_unused_memory)
 		if(flags & KEY_DOWN_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
 			if(down_cnt_long_f ==1){
 				down_cnt_long_f=2;
-			 key_down_long_handler();
+			
 
 		   }
 		}   

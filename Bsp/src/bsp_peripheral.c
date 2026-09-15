@@ -133,20 +133,7 @@ void Beep(Beep_TypeDef music)
 *@param
 *
 **/
-void LED_Strip_Ctrl(void)
-{
-	  if(gpro_t.g_power_flag){
-        if((led_strip_open_f))
-        {
-		        //LED_TAPE_ON();
-        }
-        else
-        {
-		        //LED_TAPE_OFF();   
-        }
-	  }
-		
-}
+
 
 
 
@@ -328,7 +315,7 @@ void peripheral_fun_handler(void)
     switch(works_interval_f){
 
 	case 0:
-      LED_Strip_Ctrl();
+     
       Plasma_Ctrl();
       Ultra_Sound_Ctrl();
 	  Relay_Ctrl();
@@ -345,7 +332,7 @@ void peripheral_fun_handler(void)
     break;
 
 	case 1: //have a rest 10 minutes 
-	   LED_Strip_Ctrl();
+	
        workd_interval_time_peripheral_handle();
 	   workd_interval_turn_off_handle();
 	   

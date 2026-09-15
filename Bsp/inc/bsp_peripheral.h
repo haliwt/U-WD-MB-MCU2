@@ -12,7 +12,7 @@
 
 
 
-void LED_Strip_Ctrl(void);
+
 
 
 

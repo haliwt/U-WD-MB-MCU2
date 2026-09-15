@@ -115,7 +115,7 @@ extern uint8_t read_ntc_temperature_value;
 
 extern uint8_t key_net_config_f;
 extern uint16_t key_net_config_time;
-extern uint8_t led_strip_open_f;
+
 
 extern uint8_t flash_f;
 
@@ -220,7 +220,7 @@ void Clear_Ram(void);
 
 
 
-extern void LED_Strip_Ctrl(void);
+
 
 
 
@@ -233,7 +233,7 @@ void Task_Beep_Simple_10ms(void);
 
 void works_run_two_hours_state(void);
 
-void beep_power_sound(void);
+
 
 void power_on_off_handler(void);
 

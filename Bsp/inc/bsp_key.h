@@ -45,7 +45,7 @@ void key_up_short_handler(void);
 
 void key_down_short_handler(void);
 
-void key_down_long_handler(void);
+
 
 
 #endif 
