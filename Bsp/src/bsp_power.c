@@ -830,8 +830,7 @@ static void power_off_handler(void)
 			
 			   if(fan_one_f == 1  && fan_one_minute_cuonter>59){
 				     fan_one_f ++;
-	                // FAN_RUN_OFF();
-                     //fan_on(40); 
+	           
 					fan_on(0);
 					//#if DEBUG_ENABLE
                      // printf("power_off_fan_stop !!!\n\r");

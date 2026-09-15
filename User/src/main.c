@@ -60,11 +60,13 @@ int main(void)
 	
     TIM1_Configuration();          //TIM1-PWM输出配置
 	
-    TIM3_Configuration();          //TIM3-PWM输出配置
+   // TIM3_Configuration();          //TIM3-PWM输出配置
 	
     TIM6_Configuration();          //TIM6基本定时配置
 	
     TIM14_Configuration();         //TIM14-PWM输出配置
+
+	TIM16_Configuration();
 	
     IWDG_Configuration();          //独立看门狗配置
 

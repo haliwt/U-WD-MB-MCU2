@@ -66,7 +66,7 @@ void TIM1_Configuration(void)
 }
 
 
-
+#if 0
 // TIM3 FAN IS SET 25KHZ FREQUENCY 
 //sysClock  FAN PWM
 void TIM3_Configuration(void)
@@ -79,8 +79,8 @@ void TIM3_Configuration(void)
 	// 定时周期 = ((自动重装载值426 + 1) * (预分频系数 5 + 1)) / 64000000 = 40 us, 频率= 25 kH
 
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-    TIM_TimeBaseStructure.TIM_Prescaler = 5;//47;//5; SYSCLOCK IS 48MHZ .
-    TIM_TimeBaseStructure.TIM_Period = 426;//319;//39;//319; //F =1/(39+1)= 0.025MHZ 
+    TIM_TimeBaseStructure.TIM_Prescaler = 0;//47;//5; SYSCLOCK IS 48MHZ .
+    TIM_TimeBaseStructure.TIM_Period = 2559;//319;//39;//319; //F =1/(39+1)= 0.025MHZ 
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
@@ -98,7 +98,7 @@ void TIM3_Configuration(void)
 }
 
 
-
+#endif 
 /**
 *
 *@brief TIM6 as timer is 5ms 
@@ -135,7 +135,7 @@ void TIM6_Configuration(void)
 **/
 void TIM14_Configuration(void)
 {
-   #if 1
+   
 	 TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
     TIM_OCInitTypeDef TIM_OCInitStructure;
 
@@ -159,38 +159,40 @@ void TIM14_Configuration(void)
     TIM_Cmd(TIM14, ENABLE);
      TIM_CtrlPWMOutputs(TIM14, ENABLE);
 
-  #else 
-
-  LL_TIM_InitTypeDef TIM_InitStruct = {0};
-  LL_TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
-
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM14);
-
-  // Overflow time = ((Auto-reload 31999 + 1) * (Prescaler 0 + 1)) / 64000000 = 500 μs, frequency= 2 kHz
-  // 频率计算：64,000,000 / ((Prescaler 15 + 1) * (Autoreload 999 + 1)) = 4000 Hz (4 kHz)
-  // 计数周期为 250 μs，PWM 分辨率为 1000 级
-  LL_TIM_StructInit(&TIM_InitStruct);
-  TIM_InitStruct.Prescaler = 0;
-  TIM_InitStruct.Autoreload = 15999; // TIM_ARR
-  TIM_InitStruct.ClockDivision = 0;
-  LL_TIM_Init(TIM14, &TIM_InitStruct);
-
-  LL_TIM_OC_StructInit(&TIM_OC_InitStruct);
-  TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
-  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
-  TIM_OC_InitStruct.CompareValue = 0; // TIM_CCR, Duty = TIM_CCR/(TIM_ARR+1)
-  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_LOW;
-  TIM_OC_InitStruct.OCIdleState = LL_TIM_OCIDLESTATE_LOW;
-  LL_TIM_OC_Init(TIM14,LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
-
-  LL_TIM_EnableCounter(TIM14);
-  LL_TIM_EnableAllOutputs(TIM14);
-
-
-
-  #endif 
+ 
 }
 
+
+
+// TIM16 初始化配置
+//FAN PWM 
+void TIM16_Configuration(void)
+{
+  TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+  TIM_OCInitTypeDef TIM_OCInitStructure;
+
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM16, ENABLE);
+
+  // Overflow time = ((Auto-reload 2559 + 1) * (Prescaler 0 + 1)) / 64000000 = 40 μs, frequency= 25 kHz
+  TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_Period = 2559;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM16, &TIM_TimeBaseStructure);
+
+  TIM_OCStructInit(&TIM_OCInitStructure);
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  TIM_OCInitStructure.TIM_Pulse = 0;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
+  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
+  TIM_OC1Init(TIM16, &TIM_OCInitStructure);
+
+  TIM_Cmd(TIM16, ENABLE);
+
+  TIM_CtrlPWMOutputs(TIM16, ENABLE);
+}
 
 
 
@@ -207,10 +209,10 @@ void TIM14_Configuration(void)
 void fan_on(uint16_t fan_duty)
 {
  
-	TIM_SetCompare1(TIM3,fan_duty);
+	TIM_SetCompare1(TIM16,fan_duty);
 	
-	TIM_Cmd(TIM3, ENABLE);
-    TIM_CtrlPWMOutputs(TIM3, ENABLE);
+	TIM_Cmd(TIM16, ENABLE);
+    TIM_CtrlPWMOutputs(TIM16, ENABLE);
 	
 	
 }

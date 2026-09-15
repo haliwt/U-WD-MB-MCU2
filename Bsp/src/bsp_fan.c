@@ -59,26 +59,24 @@ void Fan_Ctrl_Process(void)
 		if((fan_open_f)){
 			if(fan_speed_level < 34)
 			{
-			fan_on(10);
+			fan_on(1280);
 			}
 			else if(fan_speed_level > 33 && fan_speed_level < 67)
 			{
-			fan_on(20);
+			fan_on(2048);
 			}
 			else if(fan_speed_level==100 || fan_speed_level > 66)
 			{
-			fan_on(40);
+			fan_on(2560);
 			}
 
-			//__NOP();__NOP();__NOP();__NOP();__NOP();
-
-			//FAN_RUN_ON();
+		
 		}
     }
 	else if(works_interval_f == 1){
        
 		if(fan_one_minute_cuonter < 61  && fan_stop_f ==0){
-		   fan_on(40);  // FAN_RUN_ON(); 
+		   fan_on(2560);  // FAN_RUN_ON(); 
 	     
 		}
 		else{
@@ -110,15 +108,15 @@ void wifiFan_Ctrl_Process(void)
 		if((fan_open_f)){
 			if(fan_speed_level < 34)
 			{
-			fan_on(10);
+			fan_on(1280);
 			}
 			else if(fan_speed_level > 33 && fan_speed_level < 67)
 			{
-			fan_on(20);
+			fan_on(2048);
 			}
 			else if(fan_speed_level==100 || fan_speed_level > 66)
 			{
-			fan_on(40);
+			fan_on(2560);
 			}
 
 			///__NOP();__NOP();__NOP();__NOP();__NOP();
@@ -135,17 +133,16 @@ void fan_full_fun(void)
 
 	
 	//FAN_RUN_ON();
-	fan_on(40);
+	fan_on(2560);
 
 }
 
 void fan_start_power_on(void)
 {
-	//FAN_RUN_OFF();
-	//fan_on(0);
+	
 
-	//FAN_RUN_ON();
-	fan_on(40);
+	
+	fan_on(2560);
 	
 }
 

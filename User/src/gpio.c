@@ -4,6 +4,13 @@
 void gpio_init(void)
 {
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  GPIO_InitTypeDef GPIO_InitStructure;
+  GPIO_StructInit(&GPIO_InitStructure);
+
+  GPIO_DeInit(GPIOA);
+
+  
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOF);
@@ -51,31 +58,19 @@ void gpio_init(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(ULTR_PWM_GPIO_Port, &GPIO_InitStruct);
 
-
-  // TIM14_CH1 --GPIOB LL_PIN_1
   #if 1
-  LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_1;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  // TIM16_CH1
+  GPIO_PinAFConfig(FAN_PWM_GPIO_Port, GPIO_PinSource6, GPIO_AF_5);
+  GPIO_InitStructure.GPIO_Pin = LL_FAN_PWM_Pin;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_VeryHigh;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(FAN_PWM_GPIO_Port, &GPIO_InitStructure);
+
   #else
 
-   // TIM14_CH1
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource1, GPIO_AF_0);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_VeryHigh;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-  #endif 
-
-  // TIM16_CH1
+   // TIM16_CH1
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Alternate = LL_GPIO_AF_5;
   GPIO_InitStruct.Pin = LL_FAN_PWM_Pin;
@@ -84,6 +79,24 @@ void gpio_init(void)
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(FAN_PWM_GPIO_Port, &GPIO_InitStruct);
+  
+  #endif 
+
+
+  // TIM14_CH1 --GPIOB LL_PIN_1,beep_pwm
+  LL_GPIO_StructInit(&GPIO_InitStruct);
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_1;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+
+
+
+ 
 
 
   // UART1_TX
