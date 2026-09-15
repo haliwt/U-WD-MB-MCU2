@@ -47,7 +47,8 @@
 *********************** ********************************/
 int main(void)
 {
-    RCC_Configuration();           //系统时钟配置   
+
+	RCC_Configuration();           //系统时钟配置   
 	
     gpio_init();//GPIO_Configuration();          //IO口配置
 	

@@ -41,6 +41,7 @@ void DHT11_Init(void)
  * @param  temp: ??????
  * @retval 0: ??,??: ??
  */
+ #if 1
 uint8_t DHT11_ReadData(uint8_t *humi, uint8_t *temp)
 {
     uint8_t data[5] = {0};
@@ -100,6 +101,71 @@ uint8_t DHT11_ReadData(uint8_t *humi, uint8_t *temp)
 
     return 0;
 }
+#else 
+
+uint8_t DHT11_ReadData(uint8_t *humi, uint8_t *temp)
+{
+    uint8_t data[5] = {0};
+    uint32_t timeout;
+
+    /* 1. 主机发送 18ms 低电平起始信号 */
+    DHT11_GPIO_Output();
+    DHT11_WritePin(0);
+    Delay_US_dht11(18000);
+
+    /* 2. 主机拉高 30us */
+    DHT11_WritePin(1);
+    Delay_US_dht11(30);
+
+    /* 3. 切换为输入，准备接收 DHT11 响应 */
+    DHT11_GPIO_Input();
+    Delay_US_dht11(5);
+
+    /* --- 握手阶段 1 --- 等待 DHT11 拉低 (80us响应低电平) */
+    timeout = 0;
+    while (DHT11_ReadPin())
+    {
+        if (++timeout > 1000) return 1; // 错误码 1：等不到 DHT11 的响应低电平（传感器没连好或未响应）
+        Delay_US_dht11(1);
+    }
+
+    /* --- 握手阶段 2 --- 等待 DHT11 释放并拉高 (80us响应高电平) */
+    timeout = 0;
+    while (!DHT11_ReadPin())
+    {
+        if (++timeout > 1000) return 2; // 错误码 2：等不到响应高电平结束
+        Delay_US_dht11(1);
+    }
+
+    /* --- 握手阶段 3 --- 等待高电平结束，准备进入数据接收 */
+    timeout = 0;
+    while (DHT11_ReadPin())
+    {
+        if (++timeout > 1000) return 3; // 错误码 3：等待数据传输前的引脚拉低超时
+        Delay_US_dht11(1);
+    }
+
+    /* 4. 读取 5 个字节(40bit) */
+    for (uint8_t i = 0; i < 5; i++)
+    {
+        data[i] = DHT11_ReadByte();
+        if (data[i] == 0xFF) return 4;   // 错误码 4：读字节过程中超时
+    }
+
+    /* 5. 校验和检查 */
+    if ((uint8_t)(data[0] + data[1] + data[2] + data[3]) != data[4])
+        return 5;                       // 错误码 5：校验和错误
+
+    *humi = data[0];
+    *temp = data[2];
+
+    return 0; // 成功
+}
+
+
+
+
+#endif 
 
 /*================= ?????? =================*/
 
@@ -146,7 +212,9 @@ static uint8_t DHT11_ReadPin(void)
 
 static void TIM17_Init_1MHz(void)
 {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM17, ENABLE);
+   #if 0
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM17, ENABLE);
 
     TIM_TimeBaseInitTypeDef tim;
     TIM_TimeBaseStructInit(&tim);
@@ -158,6 +226,24 @@ static void TIM17_Init_1MHz(void)
 
     TIM_TimeBaseInit(TIM17, &tim);
     TIM_Cmd(TIM17, ENABLE);
+  #else 
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM17, ENABLE);
+
+    TIM_TimeBaseInitTypeDef tim;
+    TIM_TimeBaseStructInit(&tim);
+
+    uint32_t sysclk = SystemCoreClock;   // 自动获取系统时钟
+
+    tim.TIM_Prescaler = sysclk / 1000000 - 1;   // 动态计算
+    tim.TIM_Period    = 0xFFFF;
+    tim.TIM_CounterMode   = TIM_CounterMode_Up;
+    tim.TIM_ClockDivision = TIM_CKD_DIV1;
+
+    TIM_TimeBaseInit(TIM17, &tim);
+    TIM_Cmd(TIM17, ENABLE);
+
+
+  #endif 
 }
 
 void Delay_US_dht11(uint16_t us)
@@ -188,7 +274,9 @@ void Delay_US_dht11(uint16_t us)
 
 static uint8_t DHT11_ReadByte(void)
 {
-    uint8_t i, dat = 0;
+
+   #if 0
+	uint8_t i, dat = 0;
     volatile uint32_t timeout; // 使用 volatile 防止被编译器优化
 
     for (i = 0; i < 8; i++) 
@@ -204,6 +292,7 @@ static uint8_t DHT11_ReadByte(void)
             {
                 return 0xFF; // 返回错误标志
             }
+			Delay_US_dht11(1); // 关键：加入 1us 延时，防止 64MHz 下计数瞬间超限
         }
         
         // 延时 40微秒 区分信号是 0 还是 1
@@ -236,6 +325,45 @@ static uint8_t DHT11_ReadByte(void)
     }
     
     return dat;
+	#else
+
+	uint8_t i, dat = 0;
+    volatile uint16_t timeout;
+
+    for (i = 0; i < 8; i++)
+    {
+        /* 1. 每个位开始前，DHT11 会拉低总线 50us，等待其变高 */
+        timeout = 0;
+        while (!DHT11_ReadPin())
+        {
+            if (++timeout > 1000) return 0xFF; // 超时错误
+            Delay_US_dht11(1);
+        }
+
+        /* 2. 总线变高后，延时 30~40us 之后判断引脚电平 */
+        Delay_US_dht11(40); 
+
+        /* 3. 如果此时还是高电平，说明这一位是 '1'（高电平持续 70us）*/
+        /*    如果变为了低电平，说明这一位是 '0'（高电平仅持续 26~28us）*/
+        dat <<= 1;
+        if (DHT11_ReadPin())
+        {
+            dat |= 1;
+        }
+
+        /* 4. 等待当前位的高电平结束（等待变回低电平，准备下一位） */
+        timeout = 0;
+        while (DHT11_ReadPin())
+        {
+            if (++timeout > 1000) return 0xFF; // 超时错误
+            Delay_US_dht11(1);
+        }
+    }
+    return dat;
+	#endif 
+
+
+	
 }
 
 

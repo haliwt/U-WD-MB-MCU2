@@ -528,6 +528,8 @@ static void handler_works_hours(void)
 *@retval
 *
 **/
+
+uint8_t flag_id;
 static void handler_hardware_update(void)
 {
 
@@ -535,7 +537,7 @@ static void handler_hardware_update(void)
 	
 	     peripheral_fun_handler();
 	}
-   
+     flag_id = DHT11_ReadData(&humidity,&temperature);
   
 
 }
