@@ -1,7 +1,30 @@
 #include "bsp.h"
 
 
+static void fan_set_pwm_value(uint16_t ipwm);
 
+
+void fan_wind_speed_low(void)
+{
+	fan_set_pwm_value(1280);
+	FAN_DRIVER_ON();
+}
+		 
+		 
+void fan_wind_speed_middle(void)
+{
+	fan_set_pwm_value(2048);
+	FAN_DRIVER_ON();
+
+}
+		  
+		
+void fan_wind_speed_full(void)
+{
+	fan_set_pwm_value(2048);
+	FAN_DRIVER_ON();
+
+}
 
 
 /**
@@ -59,15 +82,18 @@ void Fan_Ctrl_Process(void)
 		if((fan_open_f)){
 			if(fan_speed_level < 34)
 			{
-			fan_on(1280);
+			 
+			  fan_wind_speed_low();
 			}
 			else if(fan_speed_level > 33 && fan_speed_level < 67)
 			{
-			fan_on(2048);
+			
+			  fan_wind_speed_middle();
 			}
 			else if(fan_speed_level==100 || fan_speed_level > 66)
 			{
-			fan_on(2560);
+			
+			  fan_wind_speed_full();
 			}
 
 		
@@ -76,14 +102,12 @@ void Fan_Ctrl_Process(void)
 	else if(works_interval_f == 1){
        
 		if(fan_one_minute_cuonter < 61  && fan_stop_f ==0){
-		   fan_on(2560);  // FAN_RUN_ON(); 
+		   fan_set_pwm_value(2560);  // FAN_RUN_ON(); 
 	     
 		}
 		else{
 		  fan_stop_f =2;
-		  //FAN_RUN_OFF(); 
-		  //fan_on(40);
-		  fan_on(0); //fan_off();
+		  fan_stop();
 		#if DEBUG_ENABLE 
 
 		printf("fan_stop !!! \n\r");
@@ -105,56 +129,58 @@ void wifiFan_Ctrl_Process(void)
 	   if(works_interval_f == 0 && fan_rx_stop_flag ==0){
 	      	
 	     
-		if((fan_open_f)){
+		if(fan_open_f==true){
 			if(fan_speed_level < 34)
 			{
-			fan_on(1280);
+		        fan_wind_speed_low();
 			}
 			else if(fan_speed_level > 33 && fan_speed_level < 67)
 			{
-			fan_on(2048);
+			  fan_wind_speed_middle();
+				
 			}
 			else if(fan_speed_level==100 || fan_speed_level > 66)
 			{
-			fan_on(2560);
+			  fan_wind_speed_full();	
 			}
 
-			///__NOP();__NOP();__NOP();__NOP();__NOP();
-
-			//FAN_RUN_ON();
 		}
     }
 	}
 }
 
 
-void fan_full_fun(void)
-{
-
-	
-	//FAN_RUN_ON();
-	fan_on(2560);
-
-}
-
-void fan_start_power_on(void)
-{
-	
-
-	
-	fan_on(2560);
-	
-}
 
 
 
 
 void fan_stop(void)
 {
-    //FAN_RUN_OFF();
-	//fan_on(40);//
-    fan_on(0);//fan_off();
+
+    fan_set_pwm_value(0);
+	FAN_DRIVER_OFF();
 }
+
+
+/**
+*
+*@brief 
+*@notice
+*@param
+*@retrval 
+*
+**/
+static void fan_set_pwm_value(uint16_t fan_duty)
+{
+ 
+	TIM_SetCompare1(TIM16,fan_duty);
+	
+	TIM_Cmd(TIM16, ENABLE);
+    TIM_CtrlPWMOutputs(TIM16, ENABLE);
+	
+	
+}
+
 
 
 

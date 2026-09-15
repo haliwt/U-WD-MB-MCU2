@@ -13,15 +13,15 @@
 
 				if(fan_speed_level==1)
 				{
-				fan_on(287);
+				fan_set_pwm_value(287);
 				}   
 				else if(fan_speed_level==2)
 				{
-				fan_on(303);
+				fan_set_pwm_value(303);
 				}
 				else if(fan_speed_level==3)
 				{
-				fan_on(319);
+				fan_set_pwm_value(319);
 				}
 
 				__NOP();__NOP();__NOP();__NOP();__NOP();
@@ -46,15 +46,15 @@
 							
 						if(fan_speed_level==1)
 						{
-						    fan_on(287);
+						    fan_set_pwm_value(287);
 						}   
 						else if(fan_speed_level==2)
 						{
-						    fan_on(303);
+						    fan_set_pwm_value(303);
 						}
 						else if(fan_speed_level==3)
 						{
-						    fan_on(319);
+						    fan_set_pwm_value(319);
 						}
 						
 						__NOP();__NOP();__NOP();__NOP();__NOP();

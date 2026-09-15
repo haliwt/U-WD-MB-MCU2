@@ -63,8 +63,7 @@
 #define MUTE_GPIO_Port 							GPIOB
 #define LL_MUTE_Pin 							LL_GPIO_PIN_15
 
-#define FAN_RUN_GPIO_Port 						GPIOF
-#define LL_FAN_RUN_Pin 							LL_GPIO_PIN_4
+
 
 #define KEY_INC_GPIO_Port 						GPIOF
 #define LL_KEY_INC_Pin 							LL_GPIO_PIN_6
@@ -86,9 +85,14 @@
 
 #define BEEP_PWM_GPIO_Port 							GPIOB
 #define LL_BEEP_PWM_Pin 							LL_GPIO_PIN_1
-
+// FAN DRIVER GPIO
 #define FAN_PWM_GPIO_Port 							GPIOA
 #define LL_FAN_PWM_Pin 								LL_GPIO_PIN_6
+
+#define FAN_RUN_GPIO_Port 						GPIOF
+#define LL_FAN_RUN_Pin 							LL_GPIO_PIN_4
+
+//
 
 #define DSP1_TX_GPIO_Port GPIOA
 #define LL_DSP1_TX_Pin LL_GPIO_PIN_9

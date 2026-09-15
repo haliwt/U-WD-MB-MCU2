@@ -24,9 +24,9 @@
 #include "gpio.h"
 
 
-#include "ys32t031_tsc.h"
-#include "ys32t031_tsc_lib.h"
-#include "ys32t031_tsc_config.h"
+//#include "ys32t031_tsc.h"
+//#include "ys32t031_tsc_lib.h"
+//#include "ys32t031_tsc_config.h"
 
 #include "tx_api.h"
 
@@ -54,6 +54,7 @@
 #include "bsp_ultrasonic.h"
 #include "bsp_relay.h"
 #include "bsp_adc.h"
+#include "bsp_fan.h"
 
 //wifi
 #include "bsp_usart_wifi.h"

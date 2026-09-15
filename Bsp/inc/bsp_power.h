@@ -247,6 +247,12 @@ void ptc_switch_temperature(void);
 
 void Heat_Process(void);
 
+void System_Status_PowerOff(void) ;
+	
+void System_Status_PowerOn(void) ;
+
+
+
 
 
 #ifdef __cplusplus

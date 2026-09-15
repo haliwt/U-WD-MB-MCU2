@@ -29,8 +29,7 @@ void TIM16_Configuration(void);
 
 
 
-extern void fan_on(uint16_t fan_duty);
-extern void fan_off(void);
+
 extern void ultra_sound_on(uint16_t us_duty);
 extern void ultra_sound_off(void);
 

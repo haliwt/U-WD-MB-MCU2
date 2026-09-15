@@ -792,7 +792,7 @@ static void power_off_handler(void)
 			 	dc_on++;
 				fan_one_f =0;
 			
-				fan_on(0);
+				fan_stop();
 				
 			  }
 
@@ -830,12 +830,7 @@ static void power_off_handler(void)
 			
 			   if(fan_one_f == 1  && fan_one_minute_cuonter>59){
 				     fan_one_f ++;
-	           
-					fan_on(0);
-					//#if DEBUG_ENABLE
-                     // printf("power_off_fan_stop !!!\n\r");
-					//#endif 
-
+	                 fan_stop();
 				 }
 
 				 if(wifi_connected_success_f ==1 && gpro_t.time_2s_f > 5){
@@ -1023,7 +1018,7 @@ void works_run_two_hours_state(void)
 
 		if(interval_10m_f == 1 && works_interval_f==0){
              interval_10m_f ++;
-		   fan_full_fun();
+		     fan_wind_speed_full();
 		  if(ptc_prohibit_off_f == 0 &&  ptc_heat_open_f== 1){
 		
 		      RELAY_ON();
@@ -1248,6 +1243,120 @@ static void module_wifi_report_handler(void)
 //           // tx_thread_sleep(20);
 //        }
     }
+}
+
+
+/**
+* @brief	系统状态初始化（开机）
+* @note	设定系统启动时的默认工作参数
+*/
+void System_Status_PowerOn(void) 
+{
+	// 1. 开启核心工作标志位
+	gpro_t.g_power_flag = 1; 
+	fan_wind_speed_full();
+
+
+	if(wifi_app_timer_power_on_f==0){ //手机定时开机
+		gpro_t.g_power_flag = 1;			// 总输出使能
+		ptc_heat_open_f= true;		  // 默认开启加热
+		ultra_sound_open_f = 1; 	// 默认开启超声波
+		plasma_open_f = 1;			// 默认开启等离子
+		power_on_peripheral_handler();
+    }
+
+	fan_open_f = 1; 			// 默认开启风扇
+
+	AI_led_open_f = 1;		 // 默认AI 开启
+	fan_speed_level =100;		// 默认风扇最大风速 
+	set_temperature_value_f =0; 
+	ptc_high_temperature_f =0;	//高温报警标志位,清零
+	read_ntc_temperature_value =0;
+	heat_open_close_f=0; //WT.EIDT 2026-07-13
+	//wifi
+	wifi_run_step=0;
+	wifi_off_step=0;
+
+	// 2. 设定启动默认参数
+	setting_temperature = 40;	// 默认设定温度 40°C
+	setting_timing_hour = 0;	// 默认不设置定时（常开模式）
+	gpro_t.time_base_1s_counter=0;	// 重置工作时间累计
+	gpro_t.time_1m_f = 0;			// 重置工作时间累计
+	// 3. 状态显示切换
+	Is_time_setting_f = 0;
+	Is_countdown_timer_f = 0;
+	disp_set_hours_time_f = 0;
+
+	// 4. 重置计数器（确保从 0 开始计时）
+	timing_min_cnt = 0;
+
+	Cacl_time_sec = 0;
+
+	works_interval_f = 0 ; // device_rest_f = 0;		  // 退出休息模式
+	device_rest_time = 0;
+	key_net_config_f =0;
+
+	// 5. 清除异常标志
+	fan_warning_f = 0;			// 清除负载异常
+
+
+	// 6. 执行开机提示音
+
+}
+/**
+* @brief	系统状态复位（关机/重置）
+* @note	将所有业务逻辑标志位恢复至初始关闭状态
+*/
+void System_Status_PowerOff(void) 
+{
+	// 1. 关闭所有输出负载标志
+
+	gpro_t.g_power_flag = 0;
+	wifi_app_timer_power_on_f =0; //smart app power on by timer timing clear .
+
+	first_temp_compare_f=0;
+	ultra_sound_open_f = 0;
+
+	plasma_open_f = 0;
+	fan_open_f = 0;
+	key_net_config_f =0;
+
+
+	ptc_heat_open_f= 0;		// 默认--from smart phone define.
+	ultra_sound_open_f = 0;	 // 默
+	plasma_open_f = 0; 		 // 默
+	set_temperature_value_f =0; 
+	// 2. 重置所有功能模式标志
+	AI_led_open_f = 0;
+	Is_time_setting_f = 0;
+
+	Is_countdown_timer_f = 0;
+	works_interval_f =0;
+	gpro_t.time_base_1s_counter=0;// 重置工作时间累计
+	gpro_t.time_1m_f = 0;// 重置工作时间累计
+
+	//wifi
+	wifi_run_step=0;
+	wifi_off_step =0;
+	ptc_high_temperature_f =0;
+
+
+	// 3. 重置所有时间/计数器
+	timing_min_cnt = 0;
+
+	Cacl_time_sec = 0;
+
+	device_rest_time = 0;
+
+
+	// 4. 特殊逻辑处理
+	fan_warning_f = 0;
+	power_off_peripheral_handler();
+
+
+	// 5. 提示音
+	all_led_off();
+	TM1639_Display_ON_OFF(0);
 }
 
 

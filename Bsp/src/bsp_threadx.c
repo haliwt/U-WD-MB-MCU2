@@ -222,10 +222,7 @@ void tx_application_define(void *first_unused_memory)
 
     IWDG_ReloadCounter();
 
-	TIM_SetCompare1(TIM16,1280);
 	
-	   TIM_Cmd(TIM16, ENABLE);
-    TIM_CtrlPWMOutputs(TIM16, ENABLE);
 
 	flag_counter++;
     

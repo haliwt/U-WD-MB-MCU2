@@ -18,10 +18,7 @@ void TIM1_Configuration(void);
 void TIM3_Configuration(void);
 void TIM6_Configuration(void);
 void TIM14_Configuration(void);
-//void BEEP_ON(void);
-//void BEEP_OFF(void);
-void fan_on(uint16_t fan_duty);
-void fan_off(void);
+
 void ultra_sound_on(uint16_t us_duty);
 void ultra_sound_off(void);
 
@@ -198,36 +195,6 @@ void TIM16_Configuration(void)
 
 
 
-/**
-*
-*@brief 
-*@notice
-*@param
-*@retrval 
-*
-**/
-void fan_on(uint16_t fan_duty)
-{
- 
-	TIM_SetCompare1(TIM16,fan_duty);
-	
-	TIM_Cmd(TIM16, ENABLE);
-    TIM_CtrlPWMOutputs(TIM16, ENABLE);
-	
-	
-}
-
-
-//∑Á…»πÿ
-void fan_off(void)
-{
-//    TIM_SetCompare1(TIM3,0);
-	
-//	TIM_Cmd(TIM3, DISABLE);
-//    TIM_CtrlPWMOutputs(TIM3, DISABLE);
-	fan_on(0);
-
-}
 
 
 
