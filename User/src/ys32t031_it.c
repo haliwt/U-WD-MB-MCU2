@@ -157,7 +157,7 @@ void TIM6_LPTIM_IRQHandler (void)
 		time_5ms_f = 1;
 		cnt10++;  
 
-		if(cnt10 > 1){//5ms*2 =10ms
+		if(cnt10 > 0){//10ms*1 =10ms
 
 			cnt10 =0; 
 		   time_10ms_f = 1;

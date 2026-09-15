@@ -759,11 +759,7 @@ static void power_off_handler(void)
    static uint8_t dc_on=0,fan_one_f=0;
 
    static uint32_t wait_timeout = 0;
-
-   if(dc_on == 0){
-        dc_on++;
-		BEEP_ON();
-   }
+  
 
 	switch(gon_t.off_step){
 	

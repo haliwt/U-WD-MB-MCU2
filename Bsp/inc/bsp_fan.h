@@ -5,7 +5,7 @@
 
 
 #define FAN_DRIVER_ON()   		do{FAN_RUN_GPIO_Port ->BSRR = LL_FAN_RUN_Pin;}while(0)
-#define FAN_DRIVER_OFF()    	do{FAN_RUN_GPIO_Port ->BSRR = (uint32_t) LL_FAN_RUN_Pin;}while(0)
+#define FAN_DRIVER_OFF()    	do{FAN_RUN_GPIO_Port ->BSRR = (uint32_t) LL_FAN_RUN_Pin<<16;}while(0)
 
 
 
