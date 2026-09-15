@@ -5,10 +5,10 @@ void gpio_init(void)
 {
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  GPIO_InitTypeDef GPIO_InitStructure;
-  GPIO_StructInit(&GPIO_InitStructure);
+ // GPIO_InitTypeDef GPIO_InitStructure;
+  //GPIO_StructInit(&GPIO_InitStructure);
 
-  GPIO_DeInit(GPIOA);
+  //GPIO_DeInit(GPIOA);
 
   
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
@@ -58,7 +58,7 @@ void gpio_init(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(ULTR_PWM_GPIO_Port, &GPIO_InitStruct);
 
-  #if 1
+  #if 0
   // TIM16_CH1
   GPIO_PinAFConfig(FAN_PWM_GPIO_Port, GPIO_PinSource6, GPIO_AF_5);
   GPIO_InitStructure.GPIO_Pin = LL_FAN_PWM_Pin;
