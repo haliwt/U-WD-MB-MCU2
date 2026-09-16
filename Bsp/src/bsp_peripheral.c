@@ -214,51 +214,8 @@ void workd_interval_turn_off_handle(void)
 ************************************************************************/
 void compare_set_temp_value(void)
 {
-	//static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
-    
-//    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
-//   if (tx_time_get() < wait_timeout) {
-//       return; 
-//   }
 
-	#if 0
-
-	if(temperature >= setting_temperature){
-	     ptc_prohibit_off_f = 0;
-	     ptc_heat_open_f= 0;   // 立即关闭
-	     RELAY_OFF();
-		 LED_PTC_OFF();
-		 if(disp_second_f == 1){
-		 	SendWifiData_To_Cmd(0x02,0);
-		    wait_timeout = tx_time_get()+10; //delay_ms(20);//HAL_Delay(5);
-		 	}
-		 if(wifi_connected_success_f ==1){
-		 	MqttData_Publish_SetPtc(0);
-			wait_timeout = tx_time_get()+20;
-		 }
-
-    }
-	else{
-	    ptc_prohibit_off_f = 0;
-		ptc_heat_open_f= 1;   // 立即open
-		LED_PTC_ON();
-		if(works_interval_f == 0)RELAY_ON();
-		 
-	
-		if(disp_second_f == 1){
-			SendWifiData_To_Cmd(0x02,0x01);
-		    wait_timeout = tx_time_get()+10;//delay_ms(20);//HAL_Delay(5);
-		}
-		if(wifi_connected_success_f == 1){
-			MqttData_Publish_SetPtc(1);
-
-		   wait_timeout = tx_time_get()+20;
-		}
-        
-
-	}
-	#endif 
-	if(wifi_connected_success_f == 1 ){
+	if(wifi_connected_success_f == 1){
 		MqttData_Publis_SetTemp(setting_temperature);
 		//wait_timeout = tx_time_get()+20;
 	}
@@ -308,7 +265,7 @@ void direct_compare_set_temp_value(void)
 *@param
 *
 **/
-void peripheral_fun_handler(void)
+void peripheral_hardware_handler(void)
 {
    if(gpro_t.g_power_flag==true){
 

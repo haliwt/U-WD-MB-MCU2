@@ -11,7 +11,7 @@ volatile extern uint8_t uart1_rx_buf[UART1_RX_BUF_SIZE];
 volatile extern uint16_t uart1_rx_head ;
 volatile extern uint16_t uart1_rx_tail ;
 
-extern bool fan_rx_stop_flag;
+
 
 extern uint8_t rx1_data;
 

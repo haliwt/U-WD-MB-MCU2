@@ -162,7 +162,7 @@ uint16_t ptc_adc_numbers;
 
 
 
-uint8_t key_be_pressed_f;
+uint8_t key_be_pressed_inc_or_dec_f;
 uint8_t disp_set_hours_time_f;
 uint8_t key_input_temp_f;
 
@@ -398,9 +398,9 @@ void power_on_handler(void)
 	 // ✨【新增：紧急事件拦截响应】✨
         // 如果按键任务设置完温度，将 g_pro.g_immediate_heat_f 置为 1
        
-         if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
+         if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0 && (gpro_t.external_display_flag == false || gpro_t.key_inc_or_dec_f == true)){
 		    time_10ms_f=0;
-           
+            gpro_t.key_inc_or_dec_f = false;
 		    disp_key_input_handler();
 
 			if(heat_open_close_f == 1 && ptc_high_temperature_f == 0 && fan_warning_f ==0)
@@ -539,7 +539,7 @@ static void handler_hardware_update(void)
 
 	if(ptc_high_temperature_f == 0 && fan_warning_f ==0){ //10ms * 100
 	
-	     peripheral_fun_handler();
+	     peripheral_hardware_handler();
 	}
 }
 
@@ -575,7 +575,7 @@ static void handler_read_dht11_to_outside_diplay(void)
 static void handler_wifi_report(void)
 {
 
-  module_wifi_report_handler();
+  	module_wifi_report_handler();
 
 }
 /**
@@ -969,14 +969,16 @@ void Countdown_timer_Handler(void)
     }
 }
 /**
-  * @brief  
+  * @brief  outside connect display board control two hours times
   * @note  
   * @param: 
   *
 **/
 void works_run_two_hours_state(void)
 {
-     static uint8_t interval_10m_f = 0;
+     static uint8_t interval_10m_f = 0 ,interval_state=0;
+
+	 if(gpro_t.external_display_flag == false){
 	 
 		#if  0 //DEBUG_ENABLE 
 			if(gpro_t.time_1m_f >11 && works_interval_f==0){
@@ -1025,18 +1027,28 @@ void works_run_two_hours_state(void)
 		if(Is_countdown_timer_f ==1 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
             Countdown_timer_Handler();
 	   	 }
+
+	}
+	else{
+
+         if(works_interval_f== true && interval_state==0){
+              
+			gpro_t.time_1m_f = 0;
+		    gpro_t.time_base_1s_counter=0;
+			fan_one_minute_cuonter =0;
+			interval_state++;
+		
+         }
+		 else if(works_interval_f == false){
+		   interval_state=0;
+
+          }
+
+
+	}
 		
  }
   
-
-/**
-  * @brief  // 按键按下时调用
-  * @note  
-  * @param: 
-  *
-**/
-
-
 /**
 	*
 	*@brief environment temperature value compare set temperater value
@@ -1048,7 +1060,7 @@ void Heat_Process(void)
 {
      static uint8_t default_init = 0xff;   // 第一次比较标志
      
-     if(gpro_t.g_power_flag == 1){
+     if(gpro_t.g_power_flag == 1 && gpro_t.external_display_flag == false){
 	   if(ptc_prohibit_off_f == 1 || set_temperature_value_f ==1 ) return ;
 
 	  uint8_t target_temp;
@@ -1356,301 +1368,5 @@ void System_Status_PowerOff(void)
 }
 
 
-
-#if 0
-		switch(time_slot){
-
-		case 0://1* 20ms
-		     per_counter++;
-		     if(per_counter > 40 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){ //10ms * 100
-			 	per_counter =0;
-		       peripheral_fun_handler();
-		     }
-
-			
-		break;
-
-
-
-		case 1:
-			 disp_counter ++;
-			 if(disp_counter > 30 && ptc_high_temperature_f == 0 && fan_warning_f ==0 ){
-			 disp_counter=0;	
-			  display_temperature_humidigy_handler();
-
-			 }
-			  
-
-		break;
-
-		case 2://2*20m = 40
-		  if(gpro_t.time_3s_f > 3 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
-		    gpro_t.time_3s_f =0;	
-		    Fan_Ctrl_Process();	  // 风扇控制
-
-           }
-
-		break;
-		
-		case 3:
-		 if(wifi_connected_success_f==1 && gpro_t.time_4s_f > 0 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
-	  	   gpro_t.time_4s_f=0;
-		   wifi_power_on_handler();
-         }
-		
-		break;
-
-		
-		case 4:
-			if(ptc_high_temperature_f == 0 && fan_warning_f ==0){
-				if(key_net_config_f)
-				 {
-					
-					if(key_net_config_time>=130)
-					{
-						key_net_config_time = 0;
-
-						key_net_config_f = 0;
-						
-					}
-					else{ //conneting to wifi net 
-				        
-						link_wifi_net_handler();
-					}
-				 } 
-		  }
-				
-		break;
-
-		
-		case 5:
-		if(gpro_t.time_5s_f > 1){
-	   	  gpro_t.time_5s_f=0;
-           Heat_Process(); //
-	      }
-				
-		break;
-
-
-		case 6:
-
-		 if(gpro_t.time_6s_f > 2 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
-		   gpro_t.time_6s_f =0;
-      	   dht11_read_temp_humidity_value();
-   	      }
-
-		break;
-
-
-		case 7:
-
-		   if(Is_countdown_timer_f ==1 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
-             Countdown_timer_Handler();
-	   	    }
-
-		break;
-
-
-		case 8:
-			 if( ptc_high_temperature_f == 0 && fan_warning_f ==0){
-			      works_run_two_hours_state();
-			 }
-
-		break;
-
-
-		case 9:
-	       if(gpro_t.time_7s_f > 4 && ptc_high_temperature_f == 0 && fan_warning_f ==0 && works_interval_f==0){
-
-		    gpro_t.time_7s_f =0 ;
-			fan_counter =1;
-		
-		    adc_fan_channel_get_value();
-		    AD_Filter();
-		 
-	       }
-
-		break;
-
-		case 10:
-			if(ptc_high_temperature_f == 0 && fan_warning_f ==0){
-			 if(key_net_config_f==0 &&  wifi_linking_tencent_f ==0 && gpro_t.time_1m_wifi_f > 1){
-	   	   gpro_t.time_1m_wifi_f =0;
-		   #if DEBUG_ENABLE
-		     printf("reconnection wifi ! \n\r");
-		   #endif 
-		   automatic_network_reconnection();
-
-	 		}
-			}
-
-		break;
-
-		case 11:
-           
-			wifi_check_counter++; //20ms * 100
-		    if(wifi_check_counter > 300 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
-			  wifi_check_counter =0;
-                wifi_check_ifnot_link_net_handler();
-		    }
-
-		break;
-
-		case 12:
-
-		   ptc_counter++ ;
-		   if(ptc_counter > 50 && ptc_high_temperature_f == 0){
-		   	   ptc_counter =0;
-			   switch_done=1;
-		    
-		      ptc_adc_detected_voltage();
-             #if 0
-			  printf_ptc_adc_numbers();
-			 #endif 
-			 
-            }
-		   
-
-		break;
-
-		 case 13:
-		    if(switch_done==1){
-				switch_done ++;
-			
-				ptc_switch_temperature();
-				Get_Ntc_Resistance_Temperature_Handler(ptc_current);
-				 #if 0
-						  printf("ntc_temp_v = %d \n\r",ptc_current);
-						  printf("temperature = %d \n\r",read_ntc_temperature_value);
-				 #endif 
-						
-			}
-
-		break;
-
-	    case 14:
-
-		   
-			
-           if(switch_done==2){
-		       switch_done++;
-
-			if(read_ntc_temperature_value >120 && ptc_high_temperature_f == 0){
-
-		       high_tmep_counter++;
-
-		      if(high_tmep_counter > 2){
-
-               //   LED_PTC_OFF();
-			      RELAY_OFF();  
-		           ptc_high_temperature_f = 1;
-		           SMG_Display_Err(01);
-			       beep_high_temperature_sound();
-                   if(wifi_connected_success_f ==1){
-				   	 Publish_Data_Ptc_Temp_Warning(0x01);
-                     
-				     }
-		       }
-           }
-		   else if(ptc_high_temperature_f == 0){
-              high_tmep_counter =0;
-		       read_ntc_temperature_value =0;
-
-		   }
-
-		   }
-		   
-               
-		break;
-
-		case 15:
-
-		  has_warning_counter++;
-
-         
-		 if(has_warning_counter > 100){
-
-		   has_warning_counter=0;
-			
-		  if(ptc_high_temperature_f == 1){
-		  	 // LED_PTC_OFF();
-			  RELAY_OFF(); 
-			  SMG_Display_Err(01);
-			  beep_high_temperature_sound();
-			  if(wifi_connected_success_f ==1){
-			  	 Publish_Data_Ptc_Temp_Warning(0x01);
-                    
-			  }
-
-		  }
-
-		   if(fan_warning_f == 1){
-			       fan_counter=0;
-				   fan_error=0;
-			      //  LED_PTC_OFF();
-				    RELAY_OFF(); 
-					SMG_Display_Err(02);
-					if(wifi_connected_success_f ==1){
-                        Publish_Data_fan_Warning(0x01);//fan warning
-					}
-					beep_fan_default_sound();
-					
-            }
-
-		 }
-		  
-		   if(fan_counter ==1){
-		   	  fan_counter ++; 
-			  #if 0
-				  printf("fan_current  = %d \n\r",fan_current );
-				  printf("temperature = %d \n\r",read_ntc_temperature_value);
-			  #endif 
-           if(fan_current < 20  &&  fan_warning_f == 0 && works_interval_f==0){
-		  	    
-                 fan_error ++ ;
-				 #if 0
-				 
-				  printf("fan_error= %d \n\r",fan_error);
-			    #endif 
-			     if(fan_error > 6){
-				  fan_warning_f = 1;
-				    //   LED_PTC_OFF();
-					    RELAY_OFF(); 
-						SMG_Display_Err(02);
-						if(wifi_connected_success_f ==1){
-                            Publish_Data_fan_Warning(0x01);//fan warning
-						}
-						beep_high_temperature_sound();
-						
-	            }
-				 
-			}
-		    else if(fan_current  >19   &&  fan_warning_f == 0 && works_interval_f==0){
-
-			   fan_error  =0;
-
-
-			}
-
-		 	}
-		   
-		 
-		break;
-
-		default:
-
-		break;
-
-
-		
-       }
-
-	 // ==================== 4. 时间片轮转维护 ====================
-           time_slot++;
-           if (time_slot >15 ) time_slot = 0;  //10ms* 16 = 160ms 
-
-        
-}
-#endif 
 
 

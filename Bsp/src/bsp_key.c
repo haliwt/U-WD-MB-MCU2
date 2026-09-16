@@ -162,7 +162,8 @@ void Handle_Value_Adjustment(uint8_t is_up)
     {
         if (is_up) {
             if (setting_timing_hour < 24) setting_timing_hour++;
-        } else {
+        } 
+		else {
             setting_timing_hour--;
 			if(setting_timing_hour < 0 )  setting_timing_hour=0;
         }
@@ -174,9 +175,10 @@ void Handle_Value_Adjustment(uint8_t is_up)
         timing_min_cnt = 0;
       
         Cacl_time_sec = 0;
-		key_be_pressed_f =1;
+		key_be_pressed_inc_or_dec_f =1;
 		
 		time_set_hours_counter =0;
+	
     } 
     else{  // 情况 B: 正在设置温度
 		
@@ -190,7 +192,7 @@ void Handle_Value_Adjustment(uint8_t is_up)
 		first_temp_compare_f = 0; 
 		time_1s_counter =0;
 	    time_set_hours_counter =0;
-		key_be_pressed_f =0;
+		key_be_pressed_inc_or_dec_f =0;
 		key_input_temp_f= 1;
 		heat_open_close_f= 1;//WT.EDIT 2026.05-15
 		key_pressed_set_temp_f =1;
@@ -202,6 +204,7 @@ void Handle_Value_Adjustment(uint8_t is_up)
 		     //LED_AI_ON(); 
 
 		}
+	   gpro_t.key_inc_or_dec_f = true;
        TM1639_Display_Temperature(setting_temperature);
 	   direct_compare_set_temp_value();
     }
@@ -293,7 +296,7 @@ void key_up_short_handler(void)
 {
      BEEP_ON(); 
 	 Handle_Value_Adjustment(1);
-    //Beep(BEEP_ONCE);  
+    
 
 }
 

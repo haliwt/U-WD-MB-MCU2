@@ -154,7 +154,7 @@ extern uint16_t fan_current_det_time;
 
 extern uint8_t disp_switch_temp_humi;
 //peripheral 
-extern uint8_t key_be_pressed_f;
+extern uint8_t key_be_pressed_inc_or_dec_f;
 extern uint8_t disp_set_hours_time_f;
 extern uint8_t  key_input_temp_f;
 extern uint8_t  time_10ms_f;

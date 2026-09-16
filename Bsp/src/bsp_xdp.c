@@ -20,7 +20,7 @@ volatile uint8_t uart1_rx_buf[UART1_RX_BUF_SIZE];
 volatile uint16_t uart1_rx_head ;
 volatile uint16_t uart1_rx_tail ;
 
-bool fan_rx_stop_flag;
+
 
 
 
@@ -514,7 +514,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		}
 		else if(pdata[3]==0){
 			  works_interval_f=0;//WT.EDIT 2026.01.26
-			  fan_rx_stop_flag =0 ;
+			
 		      if( ptc_prohibit_off_f==false && ultra_sound_open_f == true){
 			  	RELAY_ON();
 				
@@ -565,16 +565,11 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			     SendWifiData_Answer_Cmd(0x22,0x01); //WT.EDIT 2025.07.28
 			     tx_thread_sleep(2);
 				 gpro_t.app_open_ptc_flag = true;
-//					 if(wifi_connected_success_f==1){ 
-//						  MqttData_Publish_SetPtc(0x01);
-//						tx_thread_sleep(20);
-						
-//					  }
-				 
-		   	}   	
+		   	}
+  	
 	   }
        else if(pdata[3]== 0x0){
-	   
+	         ptc_heat_open_f =false;
 		   ptc_prohibit_off_f =0 ;//gctl_t.gDry =0;
             ptc_onoff_default++;
 	    
@@ -584,10 +579,6 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		      SendWifiData_Answer_Cmd(0x22,0x0); //WT.EDIT 2025.07.28
 			  tx_thread_sleep(2);
 
-  //		  if(wifi_connected_success_f==1){ 
-//			MqttData_Publish_SetPtc(0x0);
-//			tx_thread_sleep(20);
-//		  }
 		  
          
 	  }
@@ -701,8 +692,8 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	break;
 
 	}
+  }
 
-}
 /**********************************************************************
 	*
 	*Function Name:static void parse_recieve_copy_data_handler(void)

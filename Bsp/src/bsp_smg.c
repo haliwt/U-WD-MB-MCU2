@@ -139,7 +139,7 @@ void display_digital_3_numbers(void)
     	 		  // LED_AI_OFF();
 		          // LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
 		          // LED_TEMP_OFF();//TEMP_ICON_OFF();//WT.EDIT 2025.04.28
-		           if(key_be_pressed_f == 1){
+		           if(key_be_pressed_inc_or_dec_f == 1){
 						 TM1639_Display_setTimerHours_3_Digit(setting_timing_hour);
 						 if(setting_timing_hour > 0){
                             temporary_timer_hours = setting_timing_hour;
@@ -167,7 +167,7 @@ void display_digital_3_numbers(void)
 		 else{
              disp_set_hours_time_f = 0;
 			 Is_time_setting_f=0;// g_pro.g_disp_smg_timer_or_temp_hours_item = temperature_mode; //WT.EDIT 2025.010.06
-             key_be_pressed_f =0;
+             key_be_pressed_inc_or_dec_f =0;
             
 		     if(setting_timing_hour > 0 || timing_min_cnt> 0){ // && g_key.key_mode_long_flag != 1){
                   AI_led_open_f=0;
@@ -253,7 +253,7 @@ void disp_key_input_handler(void)
 					  //LED_AI_OFF();
 					 // LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
 					 // LED_TEMP_OFF();//TEMP_ICON_OFF();//WT.EDIT 2025.04.28
-					  if(key_be_pressed_f == 1){
+					  if(key_be_pressed_inc_or_dec_f == 1){
 							TM1639_Display_setTimerHours_3_Digit(setting_timing_hour);
 							if(setting_timing_hour > 0){
 							   temporary_timer_hours = setting_timing_hour;
@@ -281,7 +281,7 @@ void disp_key_input_handler(void)
 			else{
 				disp_set_hours_time_f = 0;
 				Is_time_setting_f=0;// g_pro.g_disp_smg_timer_or_temp_hours_item = temperature_mode; //WT.EDIT 2025.010.06
-				key_be_pressed_f =0;
+				key_be_pressed_inc_or_dec_f =0;
 			   
 				if(setting_timing_hour > 0 || timing_min_cnt> 0){ // && g_key.key_mode_long_flag != 1){
 					 AI_led_open_f=0;
@@ -313,7 +313,7 @@ void disp_key_input_handler(void)
 		if((Is_time_setting_f ==1 || disp_set_hours_time_f ==1) && time_set_hours_counter > 6 ){//display set timer timing hours.
 	          disp_set_hours_time_f = 0;
 	          Is_time_setting_f=0;// g_pro.g_disp_smg_timer_or_temp_hours_item = temperature_mode; //WT.EDIT 2025.010.06
-			   key_be_pressed_f =0;  
+			   key_be_pressed_inc_or_dec_f =0;  
 		}
 		   
 }

@@ -70,14 +70,16 @@ void Fan_Current_Det(void)
 *@brief : in 100ms processing .
 
 **/
+uint8_t  fan_stop_interval_f;
+
 void Fan_Ctrl_Process(void)
 {
-   static uint8_t  fan_stop_f;
+   
 	if(gpro_t.g_power_flag){
-	   if(works_interval_f == 0 && fan_rx_stop_flag ==0){
+	   if(works_interval_f == 0){
 	      	
-			fan_stop_f = 0;
-			fan_one_minute_cuonter=0;;
+			fan_stop_interval_f = 0;
+			fan_one_minute_cuonter=0;
 	     
 		if((fan_open_f)){
 			if(fan_speed_level < 34)
@@ -101,12 +103,12 @@ void Fan_Ctrl_Process(void)
     }
 	else if(works_interval_f == 1){
        
-		if(fan_one_minute_cuonter < 61  && fan_stop_f ==0){
-		   fan_set_pwm_value(2560);  // FAN_RUN_ON(); 
+		if(fan_one_minute_cuonter < 61  && fan_stop_interval_f ==0){
+		    fan_wind_speed_full();
 	     
 		}
 		else{
-		  fan_stop_f =2;
+		  fan_stop_interval_f =2;
 		  fan_stop();
 		#if DEBUG_ENABLE 
 
@@ -126,7 +128,7 @@ void wifiFan_Ctrl_Process(void)
 {
    
 	if(gpro_t.g_power_flag){
-	   if(works_interval_f == 0 && fan_rx_stop_flag ==0){
+	   if(works_interval_f == 0 ){
 	      	
 	     
 		if(fan_open_f==true){
@@ -151,9 +153,12 @@ void wifiFan_Ctrl_Process(void)
 
 
 
-
-
-
+/**
+  * @brief  // 按键按下时调用
+  * @note  
+  * @param: 
+  *
+**/
 void fan_stop(void)
 {
 

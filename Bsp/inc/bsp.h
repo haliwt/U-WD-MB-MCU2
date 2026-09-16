@@ -83,6 +83,7 @@ typedef struct _main_ref{
  bool  external_display_flag ;
  bool  app_open_ptc_flag;
  bool  g_answer_power_flag ;
+ bool  key_inc_or_dec_f;
 
 
  volatile uint8_t time_10ms_f;
