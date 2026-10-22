@@ -97,30 +97,11 @@ void wifi_auto_detected_link_state(void)
 
 
    }
+   check_wifi_connect_net_state();
 }
-   #if 0
-   if(time_link_net_counter > 4 && link_wifi_the_first_f==1){
-	  time_link_net_counter =0;
-
-      link_wifi_the_first_f=5;
-      if(wifi_connected_success_f==0){
-          if(disp_second_f== 1){
-		  	SendData_Set_Command(0x1F,0);//SendWifiData_To_Data(0x1F,0x0); //WT.EDIT 2025.04.02 0x1F: wifi link net is succes 
-            tx_thread_sleep(2);//wait_timeout = tx_time_get()+10; // tx_thread_sleep(10);//delay_ms(100);
-          	}
-
-	  }
-	  else{
-	      if(disp_second_f== 1){
-		  	SendData_Set_Command(0x1F,1);//SendWifiData_To_Data(0x1F,0x0); //WT.EDIT 2025.04.02 0x1F: wifi link net is succes 
-		    tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);// delay_ms(100);
-	      	}
 
 
-	  }
 
-   }
-   #endif 
    
 
 /**********************************************************************

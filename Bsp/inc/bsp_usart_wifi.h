@@ -23,6 +23,8 @@ void automatic_network_reconnection(void);
 void Parse_Tencent_Data(void) ;
 
 
+void check_wifi_connect_net_state(void);
+
 
 #endif 
 

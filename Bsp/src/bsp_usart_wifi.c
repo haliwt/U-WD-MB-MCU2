@@ -883,46 +883,7 @@ void automatic_network_reconnection(void)
 {
     static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
 
-	 if(wifi_check_net_f ==2){
-	    wifi_check_net_f++;
-
-	 char *p = strstr((const  char *)wifi_t.rx_check_wifi, "+TCMQTTSTATE:");
-	  if (p != NULL) {
-	
-		// 跳过前缀
-		p += strlen("+TCMQTTSTATE:");
-	
-		// 跳过可能的空格
-		while (*p == ' ' || *p == '\t') p++;
-	
-		// 解析数字
-		if (*p == '0' || *p == '1') {
-			mqtt_status = *p - '0';
-		}
-	}
-	rx_wifi_data_counter=0;
-	memset(wifi_t.rx_check_wifi, 0, 50);
-
-	if(mqtt_status==1){
-		wifi_connected_success_f =1;
-		test_wifi_counter++ ;
-	}
-	else if(mqtt_status==0){
-		 dc_connect_net_step = 0;
-		 wifi_off_step=0;
-	     wifi_run_step = 0;
-	     wifi_connected_success_f =0;
-		 wifi_app_timer_power_on_f = 0;
-		
-    }
-//    #if DEBUG_ENABLE
-
-//		printf("mqtt_status = %d\n\r",mqtt_status);
-
-//	#endif 
-
-    }
-    else if(wifi_check_net_f != 1){
+ if(wifi_check_net_f != 1){
 
 	    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
 	   // if (tx_time_get() < wait_timeout) {
@@ -938,8 +899,7 @@ void automatic_network_reconnection(void)
 }
 
 
-#if 0
-void wifi_check_ifnot_link_net_handler(void)
+void check_wifi_connect_net_state(void)
 {
  
    if(wifi_check_net_f ==2){
@@ -964,6 +924,7 @@ void wifi_check_ifnot_link_net_handler(void)
 
 	if(mqtt_status==1){
 		wifi_connected_success_f =1;
+		test_wifi_counter++;
 	}
 	else if(mqtt_status==0){
 		 dc_connect_net_step = 0;
@@ -984,4 +945,4 @@ void wifi_check_ifnot_link_net_handler(void)
 	
 
 }
-#endif 
+
