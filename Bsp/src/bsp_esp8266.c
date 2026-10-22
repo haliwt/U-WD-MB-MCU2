@@ -26,12 +26,15 @@ static void smartphone_timer_power_on_handler(void);
 void wifi_auto_detected_link_state(void)
 {
 
-   if(ptc_high_temperature_f == true || fan_warning_f ==true) return ;
+   if(ptc_high_temperature_f == true || fan_warning_f ==true || is_doing_connet_wifi_f == true) return ;
    
 
+	if(is_doing_connet_wifi_f==0  && wifi_connected_success_f==0){
+		  auto_connect_wifi_handler();
+	
+	}
 
-
-	if(wifi_connected_success_f==1 && link_wifi_the_first_f==0){
+    if(wifi_connected_success_f==1 && link_wifi_the_first_f==0){
               
            link_wifi_the_first_f++ ;
 		
@@ -197,7 +200,7 @@ void auto_connect_wifi_handler(void)
 
 	 case 4:
    
-	   if(wifi_connected_success_f==1 && time_autolink_counter > 2){
+	   if(wifi_connected_success_f==1 && time_autolink_counter > 10){
 				//wifi_t.linking_tencent_cloud_doing =0;
 
 				time_autolink_counter=0;
@@ -206,7 +209,7 @@ void auto_connect_wifi_handler(void)
 	            if(disp_second_f==1){
 					SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
 	                  tx_thread_sleep(2);
-	                wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);//10*100ms = 
+	                //wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);//10*100ms = 
 	            }
 	            #if DEBUG_ENABLE 
 
@@ -214,14 +217,14 @@ void auto_connect_wifi_handler(void)
 
 				#endif 
 		}
-	    else if(wifi_connected_success_f==0 && time_autolink_counter > 2){
+	    else if(wifi_connected_success_f==0 && time_autolink_counter > 10){
 			time_autolink_counter=0;
 			wifi_linking_tencent_f =0;
 	       dc_connect_net_step=5;
 	       if(disp_second_f==1){
 		   	SendWifiData_To_Cmd(0x1F,0x00);
 			  tx_thread_sleep(2);
-		    wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);//delay_ms(100);
+		   // wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);//delay_ms(100);
 	       	}
 		    
 		     #if DEBUG_ENABLE 

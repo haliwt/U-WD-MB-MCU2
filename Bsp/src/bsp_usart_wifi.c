@@ -130,7 +130,7 @@ void usart2_rx_callback_invoke(uint8_t data)
 		  if(wifi_check_net_f ==1){
 
 		       wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
-		     rx_wifi_data_counter++;
+		       rx_wifi_data_counter++;
                   
 				if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A && wifi_check_net_f ==1){
                     
@@ -881,17 +881,60 @@ void automatic_network_reconnection(void)
 {
     static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
 
-    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
-    if (tx_time_get() < wait_timeout) {
-        return; 
+	 if(wifi_check_net_f ==2){
+	    wifi_check_net_f++;
+
+	 char *p = strstr((const  char *)wifi_t.rx_check_wifi, "+TCMQTTSTATE:");
+	  if (p != NULL) {
+	
+		// 跳过前缀
+		p += strlen("+TCMQTTSTATE:");
+	
+		// 跳过可能的空格
+		while (*p == ' ' || *p == '\t') p++;
+	
+		// 解析数字
+		if (*p == '0' || *p == '1') {
+			mqtt_status = *p - '0';
+		}
+	}
+	rx_wifi_data_counter=0;
+	memset(wifi_t.rx_check_wifi, 0, 50);
+
+	if(mqtt_status==1){
+		wifi_connected_success_f =1;
+	}
+	else if(mqtt_status==0){
+		 dc_connect_net_step = 0;
+		 wifi_off_step=0;
+	     wifi_run_step = 0;
+	     wifi_connected_success_f =0;
+		 wifi_app_timer_power_on_f = 0;
+		
     }
-    wifi_check_net_f = 1;
-	rx_wifi_data_counter =0;
-	send_usart2_data((const uint8_t*)"AT+TCMQTTSTATE?\r\n", strlen("AT+TCMQTTSTATE?\r\n"));
-    wait_timeout = tx_time_get() + 20; //10ms*20 = 200ms
+//    #if DEBUG_ENABLE
+
+//		printf("mqtt_status = %d\n\r",mqtt_status);
+
+//	#endif 
+
+    }
+	else{
+
+	    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
+	    if (tx_time_get() < wait_timeout) {
+	        return; 
+	    }
+	    wifi_check_net_f = 1;
+		rx_wifi_data_counter =0;
+		send_usart2_data((const uint8_t*)"AT+TCMQTTSTATE?\r\n", strlen("AT+TCMQTTSTATE?\r\n"));
+	    wait_timeout = tx_time_get() + 20; //10ms*20 = 200ms
+
+	}
   
 }
 
+#if 0
 void wifi_check_ifnot_link_net_handler(void)
 {
  
@@ -937,3 +980,4 @@ void wifi_check_ifnot_link_net_handler(void)
 	
 
 }
+#endif 

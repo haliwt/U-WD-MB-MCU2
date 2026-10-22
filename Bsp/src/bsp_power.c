@@ -710,9 +710,11 @@ static void handler_repeat_link_net(void)
 		printf("reconnection wifi ! \n\r");
 #endif 
 		automatic_network_reconnection();
+       
        if(wifi_connected_success_f ==0 && is_doing_connet_wifi_f ==0){
 		
-          auto_connect_wifi_handler();//InitWifiModule();
+          //auto_connect_wifi_handler();//InitWifiModule();
+          dc_connect_net_step=0;
 	
 	 
         }
@@ -1225,10 +1227,9 @@ void power_on_off_handler(void)
 
 	wifi_parse_tencennt_hadler();//
     
-	if(is_doing_connet_wifi_f==0 ){
-      wifi_auto_detected_link_state();
+	wifi_auto_detected_link_state();
 
-   	}
+   	
 
 	
 }
