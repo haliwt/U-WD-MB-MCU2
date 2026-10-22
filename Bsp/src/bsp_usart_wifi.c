@@ -877,6 +877,8 @@ void send_usart2_data(const uint8_t* pdata,uint8_t length)
 	*Return Ref:NO
 	*
 ********************************************************************************/
+uint8_t test_wifi_counter;
+
 void automatic_network_reconnection(void)
 {
     static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
@@ -903,6 +905,7 @@ void automatic_network_reconnection(void)
 
 	if(mqtt_status==1){
 		wifi_connected_success_f =1;
+		test_wifi_counter++ ;
 	}
 	else if(mqtt_status==0){
 		 dc_connect_net_step = 0;
@@ -919,24 +922,21 @@ void automatic_network_reconnection(void)
 //	#endif 
 
     }
-}
-
-#if 0
-	else{
+    else if(wifi_check_net_f != 1){
 
 	    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
-	    if (tx_time_get() < wait_timeout) {
-	        return; 
-	    }
+	   // if (tx_time_get() < wait_timeout) {
+	    //    return; 
+	   // }
 	    wifi_check_net_f = 1;
 		rx_wifi_data_counter =0;
 		send_usart2_data((const uint8_t*)"AT+TCMQTTSTATE?\r\n", strlen("AT+TCMQTTSTATE?\r\n"));
-	    wait_timeout = tx_time_get() + 20; //10ms*20 = 200ms
+	    tx_thread_sleep(20);//wait_timeout = tx_time_get() + 20; //10ms*20 = 200ms
 
 	}
   
 }
-#endif 
+
 
 #if 0
 void wifi_check_ifnot_link_net_handler(void)

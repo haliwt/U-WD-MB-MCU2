@@ -279,7 +279,7 @@ typedef struct{
 }TimeSharingTask_t;
 
 
-static void handler_wifi_state(void);
+
 static void handler_wifi_update_data(void);
 static void handler_works_hours(void);
 static void handler_fan_adc(void);
@@ -300,16 +300,16 @@ volatile uint8_t time_slot ;
 
 // --- 4. 初始化分时任务表 ---
 TimeSharingTask_t g_tasks[] = {
-    {0, 370,       handler_wifi_state},                 //370* 10ms = 3,7s
+ 
     {0, 140,       handler_wifi_update_data},         //140*10ms = 1.4s
     {0, 630,       handler_works_hours},            //
     {0, 570,       handler_fan_adc},
     {0, 710,       handler_wifi_update_temp_humidity},
-    {0, 280,       handler_read_dht11},
+    {0, 980,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state},
     {0, 200,       handler_hardware_update},          //200*10ms = 2000ms =2s   
     {0, 14,        handler_link_wifi},                  //10*10ms =100ms
-    {0, 13000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
+    {0, 8000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
     {0, 3000,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
@@ -463,37 +463,7 @@ static void power_on_cycle_handler(void)
 	  
 
 }
-/************************************************************************************
-*
-*Function Name: static void power_on_cycle_handler(void)
-*Fucntion :
-*Input Ref:NO
-*Return Ref:NO
-*
-************************************************************************************/
-static void handler_wifi_state(void)
-{
-    // 如果这些变量之前是全局的，保持原样；如果是局部的，必须加 static 保持状态
-   #if 0
-    static uint8_t sw_flag = 0;
-	
-   if( soft_version  == 0){ //WT.EDIT 2026.02.27
-		
-		sw_flag = sw_flag ^ 0x01;
-	    // 关键优化：用三元运算符直接提取状态值，消灭大面积重复的 if-else 块
-        uint8_t wifi_status = (wifi_connected_success_f == true) ? true : false;
-		if(sw_flag == 1){
-			SendWifiData_olderCmd(0x1F,wifi_status);//SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
-			tx_thread_sleep(2);
-		}
-		else{
-			SendWifiData_To_Data(0x1F,wifi_status);
-			tx_thread_sleep(2);
-		}
 
-	}
-   #endif 
-}
 /**
 *
 *@brief 

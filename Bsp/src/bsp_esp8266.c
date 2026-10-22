@@ -435,9 +435,9 @@ void wifi_power_on_handler(void)
 	 break;
 		
       case 9:
-	  	  send_times ++ ;
-	  	  if(wifi_connected_success_f ==1 &&  send_times > 4){
-		  	    send_times=0;
+	  
+	  	  if(wifi_connected_success_f ==1 &&  send_times < 4){
+		  	    	 send_times ++ ;
 			
 				Update_Dht11_Totencent_Value();
               //   wait_timeout=tx_time_get()+10;//tx_thread_sleep(20);// delay_ms(200);
