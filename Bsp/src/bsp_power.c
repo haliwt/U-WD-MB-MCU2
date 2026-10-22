@@ -1076,10 +1076,11 @@ void Heat_Process(void)
 					key_input_temp_f++;
 				if(disp_second_f == 1){
 					SendWifiData_To_Cmd(0x02,0);
-		        //delay_ms(100);//HAL_Delay(5);
+		            tx_thread_sleep(2);
 					}
 		        if(wifi_connected_success_f == 1){
 					MqttData_Publish_SetPtc(0);
+					 
 		        }
 
 				}
@@ -1099,8 +1100,10 @@ void Heat_Process(void)
 		       if(default_init != ptc_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
 					default_init = ptc_heat_open_f;
 					key_input_temp_f ++;
-				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
-		        //delay_ms(100);//HAL_Delay(5);
+				if(disp_second_f == 1){
+					SendWifiData_To_Cmd(0x02,0);
+					tx_thread_sleep(2);
+				}
 		        if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(0);
 
 				}
@@ -1111,8 +1114,10 @@ void Heat_Process(void)
             if(default_init!= ptc_heat_open_f|| key_input_temp_f ==1 || key_input_temp_f==2 ){
 					default_init = ptc_heat_open_f;
 					key_input_temp_f++;
-				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
-		        //delay_ms(100);//HAL_Delay(5);
+				if(disp_second_f == 1){
+					SendWifiData_To_Cmd(0x02,0x01);
+					  tx_thread_sleep(2);
+				}
 		        if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(0x01);
 
 			}
@@ -1133,8 +1138,10 @@ void Heat_Process(void)
 				if(default_init != ptc_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
 					default_init = ptc_heat_open_f;
 					key_input_temp_f++;
-				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
-		       // delay_ms(100);//HAL_Delay(5);
+				if(disp_second_f == 1){
+					SendWifiData_To_Cmd(0x02,0);
+					tx_thread_sleep(2);
+				}
 		        if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(0);
 
 				}
@@ -1148,8 +1155,10 @@ void Heat_Process(void)
 				if(default_init!= ptc_heat_open_f|| key_input_temp_f ==1 || key_input_temp_f==2 ){
 					default_init = ptc_heat_open_f;
 					key_input_temp_f++;
-				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
-		       // delay_ms(100);//HAL_Delay(5);
+				if(disp_second_f == 1){
+					SendWifiData_To_Cmd(0x02,0x01);
+					 tx_thread_sleep(2);
+				}
 		        if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(0x01);
 
 				}

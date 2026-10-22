@@ -747,7 +747,7 @@ void link_wifi_net_handler(void)
 
              send_usart2_data((const uint8_t *)"AT+TCMQTTCONN=1,5000,240,0,1\r\n", strlen("AT+TCMQTTCONN=1,5000,240,0,1\r\n"));
 	
-			  tx_thread_sleep(20);//10ms * 100 
+			 tx_thread_sleep(20);//10ms * 20=200ms
 
 
 			  link_net_step  = 7;
@@ -772,7 +772,8 @@ void link_wifi_net_handler(void)
 			   
                if(disp_second_f ==1){
 			   	SendData_Set_Command(0x1F,0x01);//SendWifiData_To_Data(0x1F,0x01); //link wifi order 1 --link wifi net is success.
-                wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);
+                tx_thread_sleep(2);
+			     wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);
                	}
 			    link_net_step= 8;
 			
@@ -786,7 +787,7 @@ void link_wifi_net_handler(void)
 				  link_net_step = 0xfe;
                   if(disp_second_f == 1){
 				  	SendData_Set_Command(0x1F,0);//SendWifiData_To_Data(0x1F,0x00) ;	 //Link wifi net is fail .WT.EDTI .2024.08.31
-                    
+                    tx_thread_sleep(2);
 				  }
                 
                   	

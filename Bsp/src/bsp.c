@@ -25,7 +25,7 @@ main_ref gpro_t;
  void bsp_init(void)
  {
   //LED_POWER_ON(); 
-
+   disp_second_f=1;
 
 	
 #if(Enable_EventRecorder == 1)  

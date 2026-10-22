@@ -240,81 +240,74 @@ void disp_key_input_handler(void)
 {
 	
 	
-	   // If any warning is active, do nothing
-	   if (fan_warning_f ==1 || ptc_high_temperature_f ==1) return;
-	
-	   
-	   
-		if(Is_time_setting_f ==1 || disp_set_hours_time_f ==1){//display set timer timing hours.
-	
-		 
-		   if(time_set_hours_counter < 4){
-				   
-					  //LED_AI_OFF();
-					 // LED_HUMI_OFF();//HUMIDITY_ICON_OFF();
-					 // LED_TEMP_OFF();//TEMP_ICON_OFF();//WT.EDIT 2025.04.28
-					  if(key_be_pressed_inc_or_dec_f == 1){
-							TM1639_Display_setTimerHours_3_Digit(setting_timing_hour);
-							if(setting_timing_hour > 0){
-							   temporary_timer_hours = setting_timing_hour;
-							   Is_countdown_timer_f = 1;
-							   real_hours_counter=0;
-							   setting_timing_second = 0;
-							   AI_led_open_f=0;  //WT.EDIT 2026.05.19
-							  
-							}
-							else if(setting_timing_hour ==0){
-							   Is_countdown_timer_f = 0;
-							   AI_led_open_f=1;  //WT.EDIT 2026.05.19
-							}
-	
-					  }
-					  else{
-						  if(setting_timing_hour > 0)
-							  TM1639_Display_setTimerHours_3_Digit(setting_timing_hour);
-						  else
-							  TM1639_Display_setTimerMinutes_3_Digit(timing_min_cnt);
-					  }
-					 
-					 
+	// If any warning is active, do nothing
+	if (fan_warning_f ==1 || ptc_high_temperature_f ==1) return;
+
+
+
+	if(Is_time_setting_f ==1 || disp_set_hours_time_f ==1){//display set timer timing hours.
+
+
+		if(time_set_hours_counter < 4){
+
+
+			if(key_be_pressed_inc_or_dec_f == 1){
+				TM1639_Display_setTimerHours_3_Digit(setting_timing_hour);
+				if(setting_timing_hour > 0){
+				temporary_timer_hours = setting_timing_hour;
+				Is_countdown_timer_f = 1;
+				real_hours_counter=0;
+				setting_timing_second = 0;
+				AI_led_open_f=0;  //WT.EDIT 2026.05.19
+
+				}
+				else if(setting_timing_hour ==0){
+				Is_countdown_timer_f = 0;
+				AI_led_open_f=1;  //WT.EDIT 2026.05.19
+				}
+
 			}
 			else{
-				disp_set_hours_time_f = 0;
-				Is_time_setting_f=0;// g_pro.g_disp_smg_timer_or_temp_hours_item = temperature_mode; //WT.EDIT 2025.010.06
-				key_be_pressed_inc_or_dec_f =0;
-			   
-				if(setting_timing_hour > 0 || timing_min_cnt> 0){ // && g_key.key_mode_long_flag != 1){
-					 AI_led_open_f=0;
-					 //LED_AI_OFF(); 
-				 
-				}
-				else {
-				   AI_led_open_f=1;
-				   //LED_AI_ON(); 
-			   
-	
-			   }
-		   
-		   }
-		 
-		}
-		#if 0
-		else if((set_temperature_value_f == 1 && time_set_hours_counter < 2  && key_input_temp_f != 4) || (set_temperature_value_f == 1 && key_input_temp_f == 4 && time_1s_counter  < 2)){//set up temperature value 
-	
-		   
-			  TM1639_Display_Temperature(setting_temperature);
-			  
-		}
-        #endif 
-		
-		if((set_temperature_value_f ==1 || set_temperature_value_f > 1)  && time_1s_counter > 1 )set_temperature_value_f =0;
+				if(setting_timing_hour > 0)
+				TM1639_Display_setTimerHours_3_Digit(setting_timing_hour);
+				else
+				TM1639_Display_setTimerMinutes_3_Digit(timing_min_cnt);
+			}
 
-        
-		if((Is_time_setting_f ==1 || disp_set_hours_time_f ==1) && time_set_hours_counter > 6 ){//display set timer timing hours.
-	          disp_set_hours_time_f = 0;
-	          Is_time_setting_f=0;// g_pro.g_disp_smg_timer_or_temp_hours_item = temperature_mode; //WT.EDIT 2025.010.06
-			   key_be_pressed_inc_or_dec_f =0;  
+
 		}
+		else{
+			disp_set_hours_time_f = 0;
+			Is_time_setting_f=0;// g_pro.g_disp_smg_timer_or_temp_hours_item = temperature_mode; //WT.EDIT 2025.010.06
+			key_be_pressed_inc_or_dec_f =0;
+
+			if(setting_timing_hour > 0 || timing_min_cnt> 0){ // && g_key.key_mode_long_flag != 1){
+				AI_led_open_f=0;
+			}
+			else {
+				AI_led_open_f=1;
+	        }
+
+		}
+
+	}
+#if 0
+	else if((set_temperature_value_f == 1 && time_set_hours_counter < 2  && key_input_temp_f != 4) || (set_temperature_value_f == 1 && key_input_temp_f == 4 && time_1s_counter  < 2)){//set up temperature value 
+
+
+	TM1639_Display_Temperature(setting_temperature);
+
+	}
+#endif 
+
+	if((set_temperature_value_f ==1 || set_temperature_value_f > 1)  && time_1s_counter > 1 )set_temperature_value_f =0;
+
+
+	if((Is_time_setting_f ==1 || disp_set_hours_time_f ==1) && time_set_hours_counter > 6 ){//display set timer timing hours.
+	disp_set_hours_time_f = 0;
+	Is_time_setting_f=0;// g_pro.g_disp_smg_timer_or_temp_hours_item = temperature_mode; //WT.EDIT 2025.010.06
+	key_be_pressed_inc_or_dec_f =0;  
+	}
 		   
 }
 
