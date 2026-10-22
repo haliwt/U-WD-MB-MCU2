@@ -620,9 +620,9 @@ void link_wifi_net_handler(void)
 	message[0] = '\0'; // 只需将第一个字符设为结束符，逻辑上就成了空字符串
 
 	// 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
-    if (tx_time_get() < wait_timeout) {
-        return; 
-    }
+//    if (tx_time_get() < wait_timeout) {
+//        return; 
+//    }
 
 	
     switch(link_net_step){
@@ -699,7 +699,7 @@ void link_wifi_net_handler(void)
 
             case 4:
 		
-                 if(time_link_net_counter   > 9){//5
+                 if(time_link_net_counter   > 10){//5
                    time_link_net_counter  = 0;
 
                    wifi_linking_tencent_f =1;
@@ -729,7 +729,7 @@ void link_wifi_net_handler(void)
 
 			case 20 : //WT.EDIT 2026-07-03 add item
 
-			  if(time_link_net_counter  > 4){
+			  if(time_link_net_counter  > 4){//4
 				   time_link_net_counter  = 0;
 				 
 
@@ -764,12 +764,9 @@ void link_wifi_net_handler(void)
             if( time_link_net_counter   > 7){
 
              if(wifi_connected_success_f==1){
-			
-	           
-               // LED_WIFI_ON();
 
 			   MqttData_Publish_SetOpen(0x01);
-			   
+			    tx_thread_sleep(20);
                if(disp_second_f ==1){
 			   	SendData_Set_Command(0x1F,0x01);//SendWifiData_To_Data(0x1F,0x01); //link wifi order 1 --link wifi net is success.
                 tx_thread_sleep(2);
@@ -780,9 +777,9 @@ void link_wifi_net_handler(void)
                
 				
 		        }
-		         else{
+		        else{
                 
-                  key_net_config_f =0;
+                  is_doing_connet_wifi_f =0;
                   link_net_step = 11;
 				  link_net_step = 0xfe;
                   if(disp_second_f == 1){
@@ -804,7 +801,7 @@ void link_wifi_net_handler(void)
             Subscriber_Data_FromCloud_Handler();//MqttData_Publish_SetOpen(0x01);
 	        wifi_run_step=0; //WT.EDIT 2026-05-15
 	        link_net_step = 0xfe;
-	        key_net_config_f =0;
+	        is_doing_connet_wifi_f =0;
 
 
 

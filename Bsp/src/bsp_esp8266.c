@@ -2,14 +2,14 @@
 
 
  
- uint8_t link_counter_times;
+ uint8_t link_wifi_the_first_f;
  /**
  *
  *@brief 
  *@param  
  *
  **/
-static void auto_connect_wifi_handler(void);
+
 static void smartphone_timer_power_on_handler(void);
 
 
@@ -26,38 +26,36 @@ static void smartphone_timer_power_on_handler(void);
 void wifi_auto_detected_link_state(void)
 {
 
+   if(ptc_high_temperature_f == true || fan_warning_f ==true) return ;
+   
 
-	if(wifi_connected_success_f ==0 && key_net_config_f ==0){
-		
-       auto_connect_wifi_handler();//InitWifiModule();
-	
-	 
-    }
-	else if(wifi_connected_success_f==1 && link_counter_times ==0){
+
+
+	if(wifi_connected_success_f==1 && link_wifi_the_first_f==0){
               
-           link_counter_times ++ ;
-		   link_counter_times =10;
+           link_wifi_the_first_f++ ;
+		
            wifi_linking_tencent_f =0;//wifi_t.linking_tencent_cloud_doing = 0;
            time_link_net_counter =0;
         
           if(gpro_t.g_power_flag==1){
 		  	 MqttData_Publish_SetOpen(0);
 			 tx_thread_sleep(20);//wait_timeout = tx_time_get()+30;
-		     MqttData_Publish_Update_Data();//MqttData_Publish_PowerOn_Ref();
-             tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;//tx_thread_sleep(20);// delay_ms(200);//HAL_Delay(200);
+		     //MqttData_Publish_Update_Data();//MqttData_Publish_PowerOn_Ref();
+             //tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;//tx_thread_sleep(20);// delay_ms(200);//HAL_Delay(200);
              
 
           }
 		  else if(gpro_t.g_power_flag==0){
 		  	  MqttData_Publish_SetOpen(0);
-			  tx_thread_sleep(20);//wait_timeout = tx_time_get()+30;
+			  tx_thread_sleep(10);//wait_timeout = tx_time_get()+30;
               MqttData_Publish_PowerOff_Ref(); //
-              tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;
+              //tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;
 
 		  }
           
           Subscriber_Data_FromCloud_Handler();
-           tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;//tx_thread_sleep(20); //delay_ms(200);//HAL_Delay(200);
+          tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;//tx_thread_sleep(20); //delay_ms(200);//HAL_Delay(200);
          
 
           if(disp_second_f== 1){
@@ -66,11 +64,42 @@ void wifi_auto_detected_link_state(void)
           }
 		  time_link_net_counter =0;
    }
-   
-   if(time_link_net_counter > 4 && link_counter_times ==1){
+   else if(wifi_connected_success_f==1 && link_wifi_the_first_f==1){
+		link_wifi_the_first_f++ ;
+
+		if(gpro_t.g_power_flag==1){
+		
+		   MqttData_Publish_Update_Data();//MqttData_Publish_PowerOn_Ref();
+		    tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;//tx_thread_sleep(20);// delay_ms(200);//HAL_Delay(200);
+
+
+		}
+		else if(gpro_t.g_power_flag==0){
+		   MqttData_Publish_PowerOff_Ref(); //
+		    tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;
+
+		}
+
+		Subscriber_Data_FromCloud_Handler();
+		tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;//tx_thread_sleep(20); //delay_ms(200);//HAL_Delay(200);
+
+
+		if(disp_second_f== 1){
+			SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
+			tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
+		}
+		time_link_net_counter =0;
+
+
+
+
+   }
+}
+   #if 0
+   if(time_link_net_counter > 4 && link_wifi_the_first_f==1){
 	  time_link_net_counter =0;
 
-      link_counter_times =5;
+      link_wifi_the_first_f=5;
       if(wifi_connected_success_f==0){
           if(disp_second_f== 1){
 		  	SendData_Set_Command(0x1F,0);//SendWifiData_To_Data(0x1F,0x0); //WT.EDIT 2025.04.02 0x1F: wifi link net is succes 
@@ -88,9 +117,9 @@ void wifi_auto_detected_link_state(void)
 	  }
 
    }
+   #endif 
    
-   
-}
+
 /**********************************************************************
 	**
 	*Function Name
@@ -99,7 +128,7 @@ void wifi_auto_detected_link_state(void)
 	*Return Ref:NO
 	*
 ************************************************************************/
-static void auto_connect_wifi_handler(void)
+void auto_connect_wifi_handler(void)
 {
   //static uint8_t link_wifi_f=0;
   static uint32_t wait_timeout = 0 ;
@@ -241,7 +270,7 @@ void wifi_power_on_handler(void)
 //        return; 
 //    }
 
-	if(key_net_config_f == 1 || gpro_t.g_power_flag == 0 || wifi_connected_success_f==0) return ;
+	if(is_doing_connet_wifi_f == 1 || gpro_t.g_power_flag == 0 || wifi_connected_success_f==0) return ;
 		
      switch(wifi_run_step){
 
@@ -256,7 +285,7 @@ void wifi_power_on_handler(void)
 	   }
 	   else if(wifi_connected_success_f ==1 && wifi_app_timer_power_on_f ==0){
     
-		     if(gpro_t.g_power_flag){
+		   if(gpro_t.g_power_flag){
 		         MqttData_Publish_SetOpen(1);  
 				// wait_timeout=tx_time_get()+20;// tx_thread_sleep(20);
 				 //delay_ms(100);
@@ -423,7 +452,7 @@ void wifi_power_on_handler(void)
 	 break;
 
 	 case 8://3mm run once 
-       if(key_net_config_f ==0 && wifi_connected_success_f ==1 && wifi_app_timer_power_on_f ==0 && wifi_first_connectoed_cloud_f ==1){
+       if(is_doing_connet_wifi_f ==0 && wifi_connected_success_f ==1 && wifi_app_timer_power_on_f ==0 && wifi_first_connectoed_cloud_f ==1){
     
             wifi_first_connectoed_cloud_f++;
 		   if(disp_second_f == 1){

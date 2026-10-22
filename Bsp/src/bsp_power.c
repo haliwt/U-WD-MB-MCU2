@@ -69,7 +69,7 @@ uint8_t  key_pressed_set_temp_f;
 
 
 
-uint8_t key_net_config_f;
+bool is_doing_connet_wifi_f;
 uint16_t key_net_config_time;
 
 
@@ -302,14 +302,14 @@ volatile uint8_t time_slot ;
 TimeSharingTask_t g_tasks[] = {
     {0, 370,       handler_wifi_state},                 //370* 10ms = 3,7s
     {0, 140,       handler_wifi_update_data},         //140*10ms = 1.4s
-    {0, 430,       handler_works_hours},            //
+    {0, 630,       handler_works_hours},            //
     {0, 570,       handler_fan_adc},
     {0, 710,       handler_wifi_update_temp_humidity},
     {0, 280,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state},
-    {0, 200,        handler_hardware_update},          //200*10ms = 2000ms =2s   
-    {0, 3,         handler_link_wifi},                  //3*10ms =30ms
-    {0, 230,       handler_repeat_link_net},
+    {0, 200,       handler_hardware_update},          //200*10ms = 2000ms =2s   
+    {0, 14,        handler_link_wifi},                  //10*10ms =100ms
+    {0, 13000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
     {0, 3000,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
@@ -474,7 +474,7 @@ static void power_on_cycle_handler(void)
 static void handler_wifi_state(void)
 {
     // 如果这些变量之前是全局的，保持原样；如果是局部的，必须加 static 保持状态
-   
+   #if 0
     static uint8_t sw_flag = 0;
 	
    if( soft_version  == 0){ //WT.EDIT 2026.02.27
@@ -492,6 +492,7 @@ static void handler_wifi_state(void)
 		}
 
 	}
+   #endif 
 }
 /**
 *
@@ -538,10 +539,10 @@ static void handler_works_hours(void)
 static void handler_hardware_update(void)
 {
 
-	if(ptc_high_temperature_f == 0 && fan_warning_f ==0){ //10ms * 100
+	if(ptc_high_temperature_f == 1 ||  fan_warning_f ==1) return ;
 	
 	     peripheral_hardware_handler();
-	}
+	
 }
 
 /**
@@ -701,16 +702,24 @@ static void handler_fan_speed_state(void)
 static void handler_repeat_link_net(void)
 {
 
-	if(ptc_high_temperature_f == 0 && fan_warning_f ==0){
-		if(key_net_config_f==0 &&	wifi_linking_tencent_f ==0){
+	if(ptc_high_temperature_f == 1 || fan_warning_f ==1 ||is_doing_connet_wifi_f==true)  return ;
+		
+	if(is_doing_connet_wifi_f==0 &&	wifi_linking_tencent_f ==0){
 		
 #if DEBUG_ENABLE
 		printf("reconnection wifi ! \n\r");
 #endif 
 		automatic_network_reconnection();
+       if(wifi_connected_success_f ==0 && is_doing_connet_wifi_f ==0){
+		
+          auto_connect_wifi_handler();//InitWifiModule();
+	
+	 
+        }
+	
 
 	}
-	}
+	
 
 
 
@@ -728,19 +737,19 @@ static void handler_link_wifi(void)
 
    if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
 	
-    if(key_net_config_f)
+    if(is_doing_connet_wifi_f)
 	{
 
 		if(key_net_config_time>=130)
 		{
 		key_net_config_time = 0;
 
-		key_net_config_f = 0;
+		is_doing_connet_wifi_f = 0;
 
 		}
 		else{ //conneting to wifi net 
 
-		link_wifi_net_handler();
+			link_wifi_net_handler();
 		}
 	} 
 		  
@@ -1216,7 +1225,7 @@ void power_on_off_handler(void)
 
 	wifi_parse_tencennt_hadler();//
     
-	if(key_net_config_f==0 ){
+	if(is_doing_connet_wifi_f==0 ){
       wifi_auto_detected_link_state();
 
    	}
@@ -1327,7 +1336,7 @@ void System_Status_PowerOn(void)
 
 	works_interval_f = 0 ; // device_rest_f = 0;		  // 退出休息模式
 	device_rest_time = 0;
-	key_net_config_f =0;
+	is_doing_connet_wifi_f =0;
 
 	// 5. 清除异常标志
 	fan_warning_f = 0;			// 清除负载异常
@@ -1352,7 +1361,7 @@ void System_Status_PowerOff(void)
 
 	plasma_open_f = 0;
 	fan_open_f = 0;
-	key_net_config_f =0;
+	is_doing_connet_wifi_f =0;
 
 
 	ptc_heat_open_f= 0;		// 默认--from smart phone define.

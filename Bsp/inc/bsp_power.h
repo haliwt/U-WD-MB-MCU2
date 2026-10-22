@@ -113,7 +113,7 @@ extern uint8_t read_ntc_temperature_value;
 
 
 
-extern uint8_t key_net_config_f;
+extern bool is_doing_connet_wifi_f;
 extern uint16_t key_net_config_time;
 
 

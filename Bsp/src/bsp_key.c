@@ -64,8 +64,8 @@ void Process_Long_Key(uint16_t key) {
         case _POWER_KEY_DOWN:
             if (key_time >= KEY_TICKS_LONG_P) {
                 //key_long_f = 1;
-                if (gpro_t.g_power_flag && !key_net_config_f) {
-                    key_net_config_f = 1;
+                if (gpro_t.g_power_flag && !is_doing_connet_wifi_f) {
+                    is_doing_connet_wifi_f = 1;
 					link_net_step=0;
 				    wifi_connected_success_f =0;
 					wifi_first_connectoed_cloud_f =0;
@@ -235,8 +235,8 @@ void key_power_short_handler(void)
 void key_power_long_handler(void)
 {
 	//key_long_f = 1;
-    if (!key_net_config_f) {
-        key_net_config_f = 1;
+    if (!is_doing_connet_wifi_f) {
+        is_doing_connet_wifi_f = 1;
 		link_net_step=0;
 	    wifi_connected_success_f =0;
 		wifi_first_connectoed_cloud_f =0;

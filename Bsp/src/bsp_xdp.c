@@ -436,7 +436,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
           BEEP_ON();
           link_net_step =0;
 	      wifi_connected_success_f=0;
-          key_net_config_f =1;
+          is_doing_connet_wifi_f =1;
 		  key_net_config_time =0;
          
 		  SendWifiData_Answer_Cmd(0x05,0x01); //WT.EDIT 2024.12.28

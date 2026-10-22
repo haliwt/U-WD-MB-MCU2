@@ -12,6 +12,7 @@ void wifi_power_on_handler(void);
 
 void Update_Dht11_Totencent_Value(void);
 
+void auto_connect_wifi_handler(void);
 
 #endif 
 

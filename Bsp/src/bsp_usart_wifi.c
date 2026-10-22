@@ -686,7 +686,7 @@ static void evt_temperature(void)
             SendWifiData_To_Data(0x2A, setting_temperature);
 			tx_thread_sleep(2);
         }
-        TM1639_Display_Temperature(setting_temperature);
+        //TM1639_Display_Temperature(setting_temperature);
 		direct_compare_set_temp_value();
 
         MqttData_Publis_SetTemp(setting_temperature);
@@ -803,7 +803,7 @@ void Wifi_Rx_InputInfo_Handler(void)
 
     //  wifi_t.esp8266_login_cloud_success =0;
     wifi_connected_success_f=0;
-    key_net_config_f =0;//key_net_config_f=0;   //WT.EDIT .2024.07.31
+    is_doing_connet_wifi_f =0;//is_doing_connet_wifi_f=0;   //WT.EDIT .2024.07.31
 
     //wifi_t.linking_tencent_cloud_doing=1; //release this flag. usart
     wifi_linking_tencent_f = 0;//wifi_t.linking_tencent_cloud_doing=0;
@@ -826,7 +826,7 @@ void Wifi_Rx_InputInfo_Handler(void)
   else if(strstr((char*)wifi_t.rx_data_array,"+TCMQTTCONN:FAIL,202")){
 
     wifi_connected_success_f=0;//wifi_connected_success_f=0; //wifi_t.esp8266_login_cloud_success =0;
-    key_net_config_f =0;//key_net_config_f=0;   //WT.EDIT .2024.07.31
+    is_doing_connet_wifi_f =0;//is_doing_connet_wifi_f=0;   //WT.EDIT .2024.07.31
 
     wifi_linking_tencent_f = 1 ;//wifi_t.linking_tencent_cloud_doing=1;//wifi_t.linking_tencent_cloud_doing=1; //release this flag. usart
 
