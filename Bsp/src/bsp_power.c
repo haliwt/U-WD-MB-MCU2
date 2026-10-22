@@ -293,6 +293,7 @@ static void handler_link_wifi(void);
 static void handler_repeat_link_net(void);
 
 static void handler_wifi_report(void);
+static void handler_wifi_get_beijing_time(void);
 
 volatile uint8_t time_slot ;
 
@@ -310,7 +311,8 @@ TimeSharingTask_t g_tasks[] = {
     {0, 3,         handler_link_wifi},                  //3*10ms =30ms
     {0, 230,       handler_repeat_link_net},
     {0, 270,       handler_wifi_report},
-    {0, 300,       handler_read_dht11_to_outside_diplay}
+    {0, 300,       handler_read_dht11_to_outside_diplay},
+    {0, 3000,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
    
     
 	
@@ -355,7 +357,6 @@ static void power_on_initial(void)
    case 1:
    // dht11_read_temp_humidity_value();
 	sendData_Real_TimeHum(humidity,temperature);
-   // display_digital_3_numbers();
     tx_thread_sleep(2);
     gon_t.on_step =2;
 
@@ -724,24 +725,39 @@ static void handler_repeat_link_net(void)
 **/
 static void handler_link_wifi(void)
 {
-	
- if(ptc_high_temperature_f == 0 && fan_warning_f ==0){
-				if(key_net_config_f)
-				 {
-					
-					if(key_net_config_time>=130)
-					{
-						key_net_config_time = 0;
 
-						key_net_config_f = 0;
-						
-					}
-					else{ //conneting to wifi net 
-				        
-						link_wifi_net_handler();
-					}
-				 } 
-		  }
+   if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+	
+    if(key_net_config_f)
+	{
+
+		if(key_net_config_time>=130)
+		{
+		key_net_config_time = 0;
+
+		key_net_config_f = 0;
+
+		}
+		else{ //conneting to wifi net 
+
+		link_wifi_net_handler();
+		}
+	} 
+		  
+
+}
+/**
+	*
+	*@brief 
+	*@notice
+	*@param
+	*@retval
+	*
+**/
+static void handler_wifi_get_beijing_time(void)
+{
+  if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+
 
 }
 
@@ -1236,21 +1252,21 @@ static void module_wifi_report_handler(void)
         if (ptc_default != ptc_heat_open_f) {
             ptc_default = ptc_heat_open_f;
             MqttData_Publish_SetPtc(ptc_heat_open_f ?  true : false);
-            //tx_thread_sleep(20); 
+             
         }
 
         // 等离子状态有变动则上报
         if (plasma_default != plasma_open_f) {
             plasma_default = plasma_open_f;
             MqttData_Publish_SetPlasma(plasma_open_f ?  true : false);
-            //tx_thread_sleep(20);
+            
         }
 
         // 超声波状态有变动则上报
         if (ultrasonic_default != ultra_sound_open_f) {
             ultrasonic_default = ultra_sound_open_f;
             MqttData_Publish_SetUltrasonic(ultra_sound_open_f ?  true : false);
-           // tx_thread_sleep(20);
+           
         }
 
 //        // 温度定时上报

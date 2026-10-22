@@ -107,6 +107,8 @@ static void auto_connect_wifi_handler(void)
   if(tx_time_get()< wait_timeout){
 	  return ;
   }
+
+  
   switch(dc_connect_net_step){
 
 	case 0:
@@ -231,7 +233,7 @@ void wifi_power_on_handler(void)
 {
     static uint8_t sw_flag=0;
 	static uint8_t counter_1=0,counter=0,send_times=0;
-	static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
+//	static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
     
     
     // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
@@ -256,7 +258,7 @@ void wifi_power_on_handler(void)
     
 		     if(gpro_t.g_power_flag){
 		         MqttData_Publish_SetOpen(1);  
-				 wait_timeout=tx_time_get()+20;// tx_thread_sleep(20);
+				// wait_timeout=tx_time_get()+20;// tx_thread_sleep(20);
 				 //delay_ms(100);
 				 wifi_run_step =1;
 		  }
@@ -279,7 +281,7 @@ void wifi_power_on_handler(void)
 	   }
 	   else if(wifi_connected_success_f ==1 && wifi_app_timer_power_on_f ==0){
 		    MqttData_Publish_Update_Data();  
-		    wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
+		    //wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 	        wifi_run_step =2;
 		}
 		else{
@@ -292,7 +294,7 @@ void wifi_power_on_handler(void)
 			
 		if(wifi_app_timer_power_on_f ==1 && gpro_t.g_power_flag == 1){
 		     	//smartphone_timer_power_on_handler();
-				 wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//Publish_Data_fan_Warning(2);//fan warning 
+				// wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//Publish_Data_fan_Warning(2);//fan warning 
 			
 			 	 wifi_run_step = 3;
 		 }
@@ -308,7 +310,7 @@ void wifi_power_on_handler(void)
 
            	fan_speed_level = 100;//gctl_t.set_wind_speed_value=100;
             MqttData_Publis_SetFan(fan_speed_level);//WT.EDIT 2025.12.19
-            wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
+            //wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 			wifi_run_step = 4;
 
 	 		}
@@ -349,7 +351,7 @@ void wifi_power_on_handler(void)
       
 	     counter_1 =0;
 		   Subscriber_Data_FromCloud_Handler();
-    	   wait_timeout=tx_time_get()+20; //tx_thread_sleep(20);//delay_ms(100);
+    	   //wait_timeout=tx_time_get()+20; //tx_thread_sleep(20);//delay_ms(100);
 	         wifi_run_step = 6;
 		}
 		else{
@@ -366,7 +368,7 @@ void wifi_power_on_handler(void)
 	      if(gpro_t.g_power_flag){
 		        fan_warning_f = 0;
 			 	Publish_Data_fan_Warning(0); //fan warning .
-			    wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
+			    //wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 			 }
 			 wifi_first_connectoed_cloud_f++;
 			  wifi_run_step = 7;
@@ -444,7 +446,7 @@ void wifi_power_on_handler(void)
 		  	    send_times=0;
 			
 				Update_Dht11_Totencent_Value();
-                 wait_timeout=tx_time_get()+10;//tx_thread_sleep(20);// delay_ms(200);
+              //   wait_timeout=tx_time_get()+10;//tx_thread_sleep(20);// delay_ms(200);
         }
 
 	    wifi_run_step =7;
@@ -635,13 +637,14 @@ static void smartphone_timer_power_on_handler(void)
 {
 
 	//Parse_Json_Statement();
+#if 0
 	static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
     
     // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
     if (tx_time_get() < wait_timeout) {
         return; 
     }
-
+   #endif 
    
 	if(plasma_open_f==1){ //Anion
 
