@@ -199,50 +199,12 @@ void auto_connect_wifi_handler(void)
      break;
 
 	 case 4:
-   
-	   if(wifi_connected_success_f==1 && time_autolink_counter > 10){
-				//wifi_t.linking_tencent_cloud_doing =0;
 
-				time_autolink_counter=0;
-				wifi_linking_tencent_f =0;
-	            dc_connect_net_step =5;
-	            if(disp_second_f==1){
-					SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
-	                  tx_thread_sleep(2);
-	                //wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);//10*100ms = 
-	            }
-	            #if DEBUG_ENABLE 
-
-				  printf("wifi_connected success is normal  !!!\r\n");
-
-				#endif 
-		}
-	    else if(wifi_connected_success_f==0 && time_autolink_counter > 10){
-			time_autolink_counter=0;
-			wifi_linking_tencent_f =0;
-	       dc_connect_net_step=5;
-	       if(disp_second_f==1){
-		   	SendWifiData_To_Cmd(0x1F,0x00);
-			  tx_thread_sleep(2);
-		   // wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);//delay_ms(100);
-	       	}
-		    
-		     #if DEBUG_ENABLE 
-
-				 printf("wifi_connected fail is normal !!!\r\n");
-
-			#endif 
+	    dc_connect_net_step =8;//wifi connect net is success .
+	    if(wifi_cofig_success_f ==0){
+			dc_connect_net_step =6;
 	    }
-	   
-
-	break;
-
-	case 5:
-		
-         wifi_linking_tencent_f =0;
-	     dc_connect_net_step =6;
-		 
-
+   
 	break;
 
 

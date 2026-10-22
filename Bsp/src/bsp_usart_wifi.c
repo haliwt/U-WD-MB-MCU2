@@ -919,6 +919,9 @@ void automatic_network_reconnection(void)
 //	#endif 
 
     }
+}
+
+#if 0
 	else{
 
 	    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
@@ -933,6 +936,7 @@ void automatic_network_reconnection(void)
 	}
   
 }
+#endif 
 
 #if 0
 void wifi_check_ifnot_link_net_handler(void)
