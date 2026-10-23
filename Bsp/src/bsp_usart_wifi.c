@@ -142,6 +142,22 @@ void usart2_rx_callback_invoke(uint8_t data)
 
 				
           }
+		  else if(gpro_t.get_rx_beijing_time_enable==1){
+
+		        wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
+		       rx_wifi_data_counter++;
+                  
+				if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A && wifi_check_net_f ==1){
+                    
+             
+				    wifi_check_net_f =2;
+				    rx_wifi_data_counter =0;
+
+				}		
+
+
+
+		  }
 		  else if(rx_wifi_data_success==0){
 			  wifi_t.rx_data_array[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
 		      rx_wifi_data_counter++;

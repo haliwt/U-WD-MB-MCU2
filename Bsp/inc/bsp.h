@@ -84,6 +84,8 @@ typedef struct _main_ref{
  bool  app_open_ptc_flag;
  bool  g_answer_power_flag ;
  bool  key_inc_or_dec_f;
+ uint8_t beijing_step;
+ uint8_t get_rx_beijing_time_enable;
 
 
  volatile uint8_t time_10ms_f;

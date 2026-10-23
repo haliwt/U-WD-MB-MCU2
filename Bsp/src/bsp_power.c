@@ -323,6 +323,8 @@ static void module_wifi_report_handler(void);
 static void power_on_handler(void);
 static void power_off_handler(void);
 static void power_on_initial(void);
+static void Get_BeiJing_Time_Cmd(void);
+static void Get_Beijing_Time(void);
 
 
 
@@ -737,10 +739,66 @@ static void handler_link_wifi(void)
 **/
 static void handler_wifi_get_beijing_time(void)
 {
-  if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+  if(ptc_high_temperature_f == 1 || fan_warning_f ==1 || wifi_connected_success_f == false ) return ;
+
+   switch(gpro_t.beijing_step){
+
+         case 0:
+            //disable publish data to tencent cloud.
+            gpro_t.gTimer_get_data_from_tencent_data=0;
+
+    		
+    		Get_BeiJing_Time_Cmd();
+    	    tx_thread_sleep(100);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
+    	    gpro_t.beijing_step =1;
+         
+         break;
+
+         case 1:
+                //disable publish data to tencent cloud.
+                gpro_t.gTimer_get_data_from_tencent_data=0;
+                gpro_t.get_rx_beijing_time_enable=1;
+        		gpro_t.wifi_rx_data_counter =0;
+        		Get_Beijing_Time();
+              
+        	    tx_thread_sleep(200);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
+                
+        	
+                gpro_t.beijing_step =2;
+          
+        
+
+          break; 
+
+
+          case 2:
+
+          
+            break;
+         }
+
+		 
+    
+}
+static void Get_BeiJing_Time_Cmd(void)
+{
+
+ // HAL_UART_Transmit(&huart2, "AT+CIPSNTPCFG=1,8,\"cn.ntp.org.cn\",\"ntp.sjtu.edu.cn\"\r\n", strlen("AT+CIPSNTPCFG=1,800,\"cn.ntp.org.cn\",\"ntp.sjtu.edu.cn\"\r\n"), 5000);//�?始连�?
+ // at_send_data("AT+CIPSNTPCFG=1,8,\"cn.ntp.org.cn\",\"ntp.sjtu.edu.cn\"\r\n", strlen("AT+CIPSNTPCFG=1,800,\"cn.ntp.org.cn\",\"ntp.sjtu.edu.cn\"\r\n"));
+//   HAL_UART_Transmit(&huart2, "AT+CIPSNTPCFG=1,8\r\n", strlen("AT+CIPSNTPCFG=1,8\r\n"), 0xffff);//�?
+	send_usart2_data((const uint8_t *)"AT+CIPSNTPCFG=1,8\r\n", strlen("AT+CIPSNTPCFG=1,8\r\n"));
+
+}
+
+static void Get_Beijing_Time(void)
+{
+
+//   HAL_UART_Transmit(&huart2, "AT+CIPSNTPTIME?\r\n", strlen("AT+CIPSNTPTIME?\r\n"), 0xffff);//�?始连�?
+     send_usart2_data((const uint8_t *)"AT+CIPSNTPTIME?\r\n", strlen("AT+CIPSNTPTIME?\r\n"));
 
 
 }
+
 
 
 /************************************************************************
