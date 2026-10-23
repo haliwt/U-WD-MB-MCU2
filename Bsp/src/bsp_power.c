@@ -309,10 +309,10 @@ TimeSharingTask_t g_tasks[] = {
     {0, 220,       handler_fan_speed_state},
     {0, 200,       handler_hardware_update},          //200*10ms = 2000ms =2s   
     {0, 14,        handler_link_wifi},                  //10*10ms =100ms
-    {0, 8000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
+    {0, 8000,      handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
-    {0, 3000,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
+    {0, 4600,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
    
     
 	
@@ -741,52 +741,24 @@ static void handler_wifi_get_beijing_time(void)
 {
   if(ptc_high_temperature_f == 1 || fan_warning_f ==1 || wifi_connected_success_f == false ) return ;
 
-   switch(gpro_t.beijing_step){
-
-         case 0:
+   if(gpro_t.get_rx_beijing_time_enable !=1 || gpro_t.get_rx_beijing_time_enable !=2){
             //disable publish data to tencent cloud.
-            gpro_t.gTimer_get_data_from_tencent_data=0;
-
-    		
-    		Get_BeiJing_Time_Cmd();
-    	    tx_thread_sleep(100);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
-    	    gpro_t.beijing_step =1;
-         
-         break;
-
-         case 1:
-                //disable publish data to tencent cloud.
-                gpro_t.gTimer_get_data_from_tencent_data=0;
-                gpro_t.get_rx_beijing_time_enable=1;
-        		gpro_t.wifi_rx_data_counter =0;
-        		Get_Beijing_Time();
-              
-        	    tx_thread_sleep(200);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
-                
+            Get_BeiJing_Time_Cmd();
+    	    tx_thread_sleep(30);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
+    	   
+             gpro_t.get_rx_beijing_time_enable=1;
+        	 rx_wifi_data_counter=0;
+        	 Get_Beijing_Time();
+			
+             tx_thread_sleep(200);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
+              gpro_t.beijing_step =1;
+   	}             
         	
-                gpro_t.beijing_step =2;
-          
-        
-
-          break; 
-
-
-          case 2:
-
-          
-            break;
-         }
-
-		 
-    
 }
 static void Get_BeiJing_Time_Cmd(void)
 {
 
- // HAL_UART_Transmit(&huart2, "AT+CIPSNTPCFG=1,8,\"cn.ntp.org.cn\",\"ntp.sjtu.edu.cn\"\r\n", strlen("AT+CIPSNTPCFG=1,800,\"cn.ntp.org.cn\",\"ntp.sjtu.edu.cn\"\r\n"), 5000);//�?始连�?
- // at_send_data("AT+CIPSNTPCFG=1,8,\"cn.ntp.org.cn\",\"ntp.sjtu.edu.cn\"\r\n", strlen("AT+CIPSNTPCFG=1,800,\"cn.ntp.org.cn\",\"ntp.sjtu.edu.cn\"\r\n"));
-//   HAL_UART_Transmit(&huart2, "AT+CIPSNTPCFG=1,8\r\n", strlen("AT+CIPSNTPCFG=1,8\r\n"), 0xffff);//�?
-	send_usart2_data((const uint8_t *)"AT+CIPSNTPCFG=1,8\r\n", strlen("AT+CIPSNTPCFG=1,8\r\n"));
+  send_usart2_data((const uint8_t *)"AT+CIPSNTPCFG=1,8\r\n", strlen("AT+CIPSNTPCFG=1,8\r\n"));
 
 }
 
@@ -1347,6 +1319,8 @@ void System_Status_PowerOn(void)
 	//wifi
 	wifi_run_step=0;
 	wifi_off_step=0;
+	gpro_t.get_rx_beijing_time_enable=0;
+	wifi_check_net_f = 0;
 
 	// 2. 设定启动默认参数
 	setting_temperature = 40;	// 默认设定温度 40°C

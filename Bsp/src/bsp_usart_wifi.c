@@ -1,5 +1,8 @@
 #include "bsp.h"
 
+DateTime_t time_t;
+
+
 uint8_t TCMQTTRCVPUB[40];
 
 uint8_t rx_app_timer_power_on_flag;
@@ -145,19 +148,16 @@ void usart2_rx_callback_invoke(uint8_t data)
 		  else if(gpro_t.get_rx_beijing_time_enable==1){
 
 		        wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
-		       rx_wifi_data_counter++;
+		        rx_wifi_data_counter++;
                   
-				if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A && wifi_check_net_f ==1){
-                    
+				//if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A && wifi_check_net_f ==1){
+                if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A){  
              
-				    wifi_check_net_f =2;
+				    gpro_t.get_rx_beijing_time_enable=2;
 				    rx_wifi_data_counter =0;
 
 				}		
-
-
-
-		  }
+          }
 		  else if(rx_wifi_data_success==0){
 			  wifi_t.rx_data_array[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
 		      rx_wifi_data_counter++;
@@ -899,6 +899,8 @@ void automatic_network_reconnection(void)
 {
     static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
 
+  if(gpro_t.get_rx_beijing_time_enable==1 || gpro_t.get_rx_beijing_time_enable==2) return;
+
  if(wifi_check_net_f != 1){
 
 	    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
@@ -914,10 +916,18 @@ void automatic_network_reconnection(void)
   
 }
 
-
+/********************************************************************************
+	*
+	*Functin Name:void automatic_network_reconnection(void)
+	*Functin :
+	*Input Ref: NO
+	*Return Ref:NO
+	*
+********************************************************************************/
 void check_wifi_connect_net_state(void)
 {
- 
+   if(gpro_t.get_rx_beijing_time_enable==1 || gpro_t.get_rx_beijing_time_enable==2) return;
+	
    if(wifi_check_net_f ==2){
 	    wifi_check_net_f++;
 
@@ -961,4 +971,77 @@ void check_wifi_connect_net_state(void)
 	
 
 }
+/********************************************************************************
+	*
+	*Functin Name:void automatic_network_reconnection(void)
+	*Functin :
+	*Input Ref: NO
+	*Return Ref:NO
+	*
+********************************************************************************/
+
+
+// 英文月份转数字
+int parse_month(const char *mon_str) {
+    if (strcasecmp(mon_str, "Jan") == 0) return 1;
+    if (strcasecmp(mon_str, "Feb") == 0) return 2;
+    if (strcasecmp(mon_str, "Mar") == 0) return 3;
+    if (strcasecmp(mon_str, "Apr") == 0) return 4;
+    if (strcasecmp(mon_str, "May") == 0) return 5;
+    if (strcasecmp(mon_str, "Jun") == 0) return 6;
+    if (strcasecmp(mon_str, "Jul") == 0) return 7;
+    if (strcasecmp(mon_str, "Aug") == 0) return 8;
+    if (strcasecmp(mon_str, "Sep") == 0) return 9;
+    if (strcasecmp(mon_str, "Oct") == 0) return 10;
+    if (strcasecmp(mon_str, "Nov") == 0) return 11;
+    if (strcasecmp(mon_str, "Dec") == 0) return 12;
+    return 0;
+}
+
+/**
+ * 通用解析函数
+ * @param rx_str 串口接收到的完整字符串（例如包含 +CIPSNPTIME: ...）
+ * @param dt     输出的时间结构体指针
+ * @return 1 表示成功，0 表示失败
+ */
+uint16_t matched;
+int8_t parse_wifi_time(void) //, DateTime_t *dt) 
+{
+    char week[8], mon[8];
+    uint16_t d, h, m, s, y;
+
+	if(gpro_t.get_rx_beijing_time_enable==2){
+
+    // 1. 先用 strstr 找到关键标志位，防止前面有其他乱码或前缀
+   // char *p = strstr(rx_str, "+CIPSNPTIME:");
+   
+
+     char *p = strstr((const  char *)wifi_t.rx_check_wifi,  "+CIPSNTPTIME:");
+	
+    if (p == NULL) {
+		gpro_t.get_rx_beijing_time_enable=4;
+        return 0; // 没找到时间指令头
+    }
+
+    // 2. 从标志位后开始匹配
+    // 格式如：+CIPSNPTIME:Thu Jan 1 08:00:44 1970
+      matched = sscanf(p, "+CIPSNTPTIME:%7s %7s %d %d:%d:%d %d", 
+                         week, mon, &d, &h, &m, &s, &y);
+
+    if (matched == 7) {
+        time_t.year = y;
+        time_t.month = parse_month(mon);
+        time_t.day = d;
+        time_t.hour = h;
+        time_t.minute = m;
+        time_t.second = s;
+		gpro_t.get_rx_beijing_time_enable=5;
+        return 1;
+    }
+	
+  	 gpro_t.get_rx_beijing_time_enable++;
+    return 0;
+  }
+}
+
 

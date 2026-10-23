@@ -93,11 +93,14 @@ void wifi_auto_detected_link_state(void)
 		}
 		time_link_net_counter =0;
 
+     }
+    if(gpro_t.get_rx_beijing_time_enable ==2){
+	   parse_wifi_time();
 
-
-
-   }
-   check_wifi_connect_net_state();
+	}
+	else
+       check_wifi_connect_net_state();
+   
 }
 
 
