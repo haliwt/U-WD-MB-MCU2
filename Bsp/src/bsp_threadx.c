@@ -197,10 +197,7 @@ void tx_application_define(void *first_unused_memory)
           decoder_handler() ;
 		    
        }
-	   else{
-
-         tx_thread_sleep(10);
-	   }
+	 
 	}
       
  }
@@ -230,7 +227,7 @@ void tx_application_define(void *first_unused_memory)
 #if DEBUG_ENABLE
 	 debug_stack_ui_check();
 #endif 
-	tx_thread_sleep(2);//10ms * 2 = 20ms  
+	tx_thread_sleep(1);//10ms * 2 = 20ms  
 	
     } 
 }

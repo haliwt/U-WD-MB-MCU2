@@ -77,7 +77,7 @@ int main(void)
 		NVIC_Configuration();          //中断嵌套向量配置
 		
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-		
+		IWDG_ReloadCounter();
 		//TSC_StartCmd(ENABLE);          //开始扫描
 		
 		bsp_init();

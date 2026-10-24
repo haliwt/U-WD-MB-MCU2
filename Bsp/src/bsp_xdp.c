@@ -504,18 +504,20 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 	  case 0x19: //works 2 hours ,then have a rest 10 minutes ->notice 
 
-	    if(pdata[3]==1){ // recach 2 hours 
+	    if(pdata[3]==1){ // arrive  2 hours ,then have a rest 10 minutes.
 
-            works_interval_f=1;//works 2 hours .
+             works_interval_f=1;//works 2 hours .
 	         RELAY_OFF(); //ptc off;
 			 PLASMA_OFF() ; //plasma turn off.
              ultra_sound_off();
+			 SendWifiData_Answer_Cmd(0x19,0x01); //WT.EDIT 2024.12.28
+             tx_thread_sleep(2);
 			
 		}
 		else if(pdata[3]==0){
 			  works_interval_f=0;//WT.EDIT 2026.01.26
 			
-		      if( ptc_prohibit_off_f==false && ultra_sound_open_f == true){
+		      if(ptc_prohibit_off_f==false &&  heat_open_close_f== true){
 			  	RELAY_ON();
 				
               }
@@ -528,6 +530,8 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 				fan_wind_speed_full();
          
 			  }
+			  SendWifiData_Answer_Cmd(0x19,0); //WT.EDIT 2024.12.28
+              tx_thread_sleep(2);
 		
 			  
 		}

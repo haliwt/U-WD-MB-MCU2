@@ -664,7 +664,7 @@ void link_wifi_net_handler(void)
             			
                        message_len = sprintf((char *)message, "AT+TCPRDINFOSET=1,\"%s\",\"%s\",\"UYIJIA01-%d\"\r\n", PRODUCT_ID, DEVICE_SECRET,uid);
             		   send_usart2_data((const uint8_t *)message,message_len);
-            	  	   tx_thread_sleep(20);
+            	  	   tx_thread_sleep(1000);
                       
                         //tx_thread_sleep(300);//10ms * 100 
                         wait_timeout = tx_time_get() + 300;//10ms * 300 =3s
@@ -683,7 +683,7 @@ void link_wifi_net_handler(void)
                   
                 send_usart2_data((const uint8_t *)"AT+TCDEVREG\r\n", strlen("AT+TCDEVREG\r\n"));
               
-			     tx_thread_sleep(20);//10ms * 100 
+			     tx_thread_sleep(200);//10ms * 100 
 
 				 wait_timeout = tx_time_get() + 200;
 
@@ -717,7 +717,7 @@ void link_wifi_net_handler(void)
             //  uid =Get_Unique_ID_32bit();
 	          message_len =  sprintf((char *)message, "AT+TCSAP=\"UYIJIA01-%d\"\r\n",uid);
               send_usart2_data((const uint8_t *)message,message_len);
-	            tx_thread_sleep(20);//10ms * 100 
+	            tx_thread_sleep(200);//10ms * 100 
 	            wait_timeout = tx_time_get() + 300;
 				link_net_step  = 20;
 		
@@ -747,7 +747,7 @@ void link_wifi_net_handler(void)
 
              send_usart2_data((const uint8_t *)"AT+TCMQTTCONN=1,5000,240,0,1\r\n", strlen("AT+TCMQTTCONN=1,5000,240,0,1\r\n"));
 	
-			 tx_thread_sleep(20);//10ms * 20=200ms
+			 tx_thread_sleep(200);//10ms * 20=200ms
 
 
 			  link_net_step  = 7;

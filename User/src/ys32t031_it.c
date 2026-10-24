@@ -190,8 +190,6 @@ void TIM6_LPTIM_IRQHandler (void)
 					gpro_t.time_2s_f++;
 					gpro_t.time_3s_f++;
 					gpro_t.time_4s_f++;
-					gpro_t.time_5s_f++;
-					gpro_t.time_6s_f++;
 				    gpro_t.time_7s_f++;
 					
 				     if(++gpro_t.time_base_1s_counter > 59){//1s *60 =60s 

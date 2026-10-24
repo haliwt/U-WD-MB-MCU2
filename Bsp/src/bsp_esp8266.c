@@ -138,7 +138,7 @@ void auto_connect_wifi_handler(void)
 	   //HAL_Delay(1000);
 	   
 	   
-	    wait_timeout = tx_time_get()+ 200;//tx_thread_sleep(200);//10ms *100 =1s.
+	   // wait_timeout = tx_time_get()+ 200;//tx_thread_sleep(200);//10ms *100 =1s.
       
 	    time_autolink_counter=0; 
 		dc_connect_net_step =1;
@@ -146,20 +146,9 @@ void auto_connect_wifi_handler(void)
 	break;
 
 	case 1:
-	 if(time_autolink_counter > 4 ){
+	 if(time_autolink_counter > 6 ){
 	   time_autolink_counter=0; 
-	    dc_connect_net_step=2;
-	   
-	  }
-	
-	break;
-
-	case 2:
-
-     if(time_autolink_counter >4){
-	   
-        time_autolink_counter=0;
-		 wifi_linking_tencent_f = 1;//net_t.linking_tencent_cloud_doing  = 1;
+		wifi_linking_tencent_f = 1;//net_t.linking_tencent_cloud_doing  = 1;
 	     wifi_rx_numbers = 0; 
 
 		 dc_connect_net_step = 3;
@@ -173,8 +162,8 @@ void auto_connect_wifi_handler(void)
       
 	 // HAL_UART_Transmit(&huart2, "AT+TCMQTTCONN=1,5000,240,0,1\r\n", strlen("AT+TCMQTTCONN=1,5000,240,0,1\r\n"), 0xffff);//??
 	       send_usart2_data((const uint8_t *)"AT+TCMQTTCONN=1,5000,240,0,1\r\n", strlen("AT+TCMQTTCONN=1,5000,240,0,1\r\n"));
-		
-	        wait_timeout = tx_time_get()+ 200;//tx_thread_sleep(200);//10*100ms = 
+		    
+	        wait_timeout = tx_time_get()+ 2000;//tx_thread_sleep(200);//10*100ms = 
 		   	dc_connect_net_step=4;
 	        wifi_off_step = 0;
 	        time_autolink_counter=0;
@@ -183,11 +172,12 @@ void auto_connect_wifi_handler(void)
      break;
 
 	 case 4:
-
-	    dc_connect_net_step =8;//wifi connect net is success .
-	    if(wifi_cofig_success_f ==0){
-			dc_connect_net_step =6;
-	    }
+       
+		    dc_connect_net_step =8;//wifi connect net is success .
+		    if(wifi_cofig_success_f ==0){
+				dc_connect_net_step =6;
+		    }
+        
    
 	break;
 

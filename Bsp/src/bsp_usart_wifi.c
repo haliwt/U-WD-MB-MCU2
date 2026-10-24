@@ -694,7 +694,7 @@ static void evt_temperature(void)
         BEEP_ON();
 
         ptc_prohibit_off_f = 0;
-        set_temperature_value_f = 1;
+        //set_temperature_value_f = 1;
         key_input_temp_f = 4;
         time_1s_counter = 0;
 
@@ -1008,7 +1008,7 @@ uint16_t matched;
 int8_t parse_wifi_time(void) //, DateTime_t *dt) 
 {
     char week[8], mon[8];
-    uint16_t d, h, m, s, y;
+    int d, h, m, s, y;
 
 	if(gpro_t.get_rx_beijing_time_enable==2){
 
@@ -1035,6 +1035,10 @@ int8_t parse_wifi_time(void) //, DateTime_t *dt)
         time_t.hour = h;
         time_t.minute = m;
         time_t.second = s;
+		if(time_t.year > 2000){
+	       SendWifiData_To_PanelTime(time_t.hour,time_t.minute,time_t.second);
+		   tx_thread_sleep(3);
+        }
 		gpro_t.get_rx_beijing_time_enable=5;
         return 1;
     }
@@ -1042,6 +1046,7 @@ int8_t parse_wifi_time(void) //, DateTime_t *dt)
   	 gpro_t.get_rx_beijing_time_enable++;
     return 0;
   }
+  return 0; // 防止外层 if 不满足时没有返回值
 }
 
 

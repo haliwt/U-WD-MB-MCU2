@@ -286,7 +286,7 @@ static void handler_fan_adc(void);
 static void handler_wifi_update_temp_humidity(void);
 static void handler_read_dht11(void);
 static void handler_fan_speed_state(void);
-static void handler_hardware_update(void);
+
 static void handler_read_dht11_to_outside_diplay(void);
 
 static void handler_link_wifi(void);
@@ -302,12 +302,11 @@ volatile uint8_t time_slot ;
 TimeSharingTask_t g_tasks[] = {
  
     {0, 140,       handler_wifi_update_data},         //140*10ms = 1.4s
-    {0, 630,       handler_works_hours},            //
+    {0, 10000,       handler_works_hours},            //
     {0, 570,       handler_fan_adc},
-    {0, 710,       handler_wifi_update_temp_humidity},
+    {0, 80000,     handler_wifi_update_temp_humidity},
     {0, 980,       handler_read_dht11},
-    {0, 220,       handler_fan_speed_state},
-    {0, 200,       handler_hardware_update},          //200*10ms = 2000ms =2s   
+    {0, 220,       handler_fan_speed_state}, 
     {0, 14,        handler_link_wifi},                  //10*10ms =100ms
     {0, 8000,      handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
@@ -493,30 +492,11 @@ static void handler_wifi_update_data(void)
 static void handler_works_hours(void)
 {
 
-	if( ptc_high_temperature_f == 0 && fan_warning_f ==0){
+	if( ptc_high_temperature_f == 1 ||  fan_warning_f ==1) return ;
+	
 	  works_run_two_hours_state();
-	}
-
 	
 }
-/**
-*
-*@brief 
-*@notice
-*@param
-*@retval
-*
-**/
-
-static void handler_hardware_update(void)
-{
-
-	if(ptc_high_temperature_f == 1 ||  fan_warning_f ==1) return ;
-	
-	     peripheral_hardware_handler();
-	
-}
-
 /**
 *
 *@brief dispatch module_hardware_control task 
@@ -751,7 +731,7 @@ static void handler_wifi_get_beijing_time(void)
         	 Get_Beijing_Time();
 			
              tx_thread_sleep(200);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
-              gpro_t.beijing_step =1;
+             
    	}             
         	
 }
@@ -1003,9 +983,92 @@ void Countdown_timer_Handler(void)
 **/
 void works_run_two_hours_state(void)
 {
-     static uint8_t interval_10m_f = 0 ,interval_state=0;
+    static uint8_t interval_10m_f = 0 ,interval_state=0; 
 
-	 if(gpro_t.external_display_flag == false){
+    switch(works_interval_f){
+
+	case 0:
+     
+      Plasma_Ctrl();
+      Ultra_Sound_Ctrl();
+	  Relay_Ctrl();
+	  fan_wind_speed_full();
+
+	  fan_one_minute_cuonter = 0;
+	  
+	  interval_state=0; 
+
+    break;
+
+	case 1: //have a rest 10 minutes 
+	
+	   workd_interval_turn_off_handle();
+	
+	   if(interval_state==0 && fan_one_minute_cuonter < 61){
+             fan_wind_speed_full();
+		
+	   }
+	   else if(fan_one_minute_cuonter > 61){
+	       interval_state++;
+           fan_stop();
+       }
+	 
+
+	break;
+	  
+    }
+
+}
+
+
+
+#if 0
+
+	
+
+	switch(works_interval_f){
+
+	case 0:
+
+
+	break;
+
+	case 1:
+	if(works_interval_f== true){
+
+		gpro_t.time_1m_f = 0;
+		gpro_t.time_base_1s_counter=0;
+		fan_one_minute_cuonter =0;
+		interval_state++;
+
+	}
+	else if(works_interval_f == false){
+		interval_state=0;
+
+	}
+
+	if(interval_10m_f == 1 && works_interval_f==0){
+             interval_10m_f ++;
+		     fan_wind_speed_full();
+		  if(ptc_prohibit_off_f == 0 &&  ptc_heat_open_f== 1){
+		
+		      RELAY_ON();
+		  
+		  	}
+		 
+	}
+	break;
+	}
+
+
+	 peripheral_hardware_handler();
+
+}
+
+
+	
+
+	if(gpro_t.external_display_flag == false){
 	 
 		#if  0 //DEBUG_ENABLE 
 			if(gpro_t.time_1m_f >11 && works_interval_f==0){
@@ -1071,11 +1134,11 @@ void works_run_two_hours_state(void)
 
           }
 
-
+		}
 	}
-		
+   }	
  }
-  
+#endif 
 /**
 	*
 	*@brief environment temperature value compare set temperater value
