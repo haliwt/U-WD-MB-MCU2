@@ -138,7 +138,7 @@ void auto_connect_wifi_handler(void)
 	   //HAL_Delay(1000);
 	   
 	   
-	   // wait_timeout = tx_time_get()+ 200;//tx_thread_sleep(200);//10ms *100 =1s.
+	    wait_timeout = tx_time_get()+ 2000;//tx_thread_sleep(200);//10ms *100 =1s.
       
 	    time_autolink_counter=0; 
 		dc_connect_net_step =1;
@@ -146,7 +146,7 @@ void auto_connect_wifi_handler(void)
 	break;
 
 	case 1:
-	 if(time_autolink_counter > 6 ){
+	 if(time_autolink_counter > 10 ){
 	   time_autolink_counter=0; 
 		wifi_linking_tencent_f = 1;//net_t.linking_tencent_cloud_doing  = 1;
 	     wifi_rx_numbers = 0; 
@@ -165,20 +165,61 @@ void auto_connect_wifi_handler(void)
 		    
 	        wait_timeout = tx_time_get()+ 2000;//tx_thread_sleep(200);//10*100ms = 
 		   	dc_connect_net_step=4;
-	        wifi_off_step = 0;
+	        //wifi_off_step = 0;
 	        time_autolink_counter=0;
 	  
 	  
      break;
 
+
 	 case 4:
+
+	     if(time_autolink_counter > 10){
+		 	
+		        dc_connect_net_step=5;
+				wifi_off_step = 0;
+				time_autolink_counter=0;
+			  
+
+
+	 	}
+
+
+	 break;
+
+	 case 5:
        
 		    dc_connect_net_step =8;//wifi connect net is success .
 		    if(wifi_cofig_success_f ==0){
+				wifi_linking_tencent_f=0;
+				time_autolink_counter=0;
+			     SendWifiData_To_Cmd(0x1F,0); //link wifi order 1 --link wifi net is success.
+			    tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 				dc_connect_net_step =6;
+				
 		    }
+			else{
+				 wifi_linking_tencent_f =0;
+                SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
+			    tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
+
+			}
         
    
+	break;
+
+	case 6:
+
+	   if(time_autolink_counter > 30){
+
+	       time_autolink_counter=0;
+	       dc_connect_net_step =0;
+
+
+	   }
+		
+
+
 	break;
 
 

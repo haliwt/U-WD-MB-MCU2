@@ -387,8 +387,9 @@ void Parse_Tencent_Data(void)
 
 		   fan_speed_level =  atoi(p + 7);
 		   wifi_t.rx_data_array[0]='\0';
-	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+	        
 		   wifi_t.wifi_rx_signal_f= FAN_ITEM;
+		  memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 
 		
 		    return ;

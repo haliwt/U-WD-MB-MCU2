@@ -14,7 +14,7 @@ void Plasma_Ctrl(void)
 		        PLASMA_ON();
 				//LED_PLASMA_ON();
 		    }
-		    else 
+		    else if(plasma_open_f==false)
 		    {
 		        PLASMA_OFF();
 				//LED_PLASMA_OFF();

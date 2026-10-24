@@ -1363,7 +1363,7 @@ void System_Status_PowerOn(void)
 	fan_wind_speed_full();
 
 
-	if(wifi_app_timer_power_on_f==0){ //手机定时开机
+	if(wifi_app_timer_power_on_f !=1){ //手机定时开机
 		gpro_t.g_power_flag = true;			// 总输出使能
 		ptc_heat_open_f= true;		  // 默认开启加热
 		ultra_sound_open_f = true; 	// 默认开启超声波
