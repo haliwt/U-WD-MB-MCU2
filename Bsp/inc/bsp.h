@@ -86,6 +86,7 @@ typedef struct _main_ref{
  bool  key_inc_or_dec_f;
 
  uint8_t get_rx_beijing_time_enable;
+ bool temp_value_to_wifi_flag;
 
 
  volatile uint8_t time_10ms_f;

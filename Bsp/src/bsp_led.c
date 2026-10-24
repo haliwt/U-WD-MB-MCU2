@@ -17,15 +17,8 @@ void power_on_led_open_handler(void)
 	    ultra_sound_open_f = true;     // 默认开启超声波
 	    plasma_open_f = true;          // 默认开启等离子
 	  
-
-
-	  }
-	  else{
-		
-	    
-
-
-	  }
+     }
+	 
 
 }
 //300ms

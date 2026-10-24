@@ -7,24 +7,7 @@ uint8_t TCMQTTRCVPUB[40];
 
 uint8_t rx_app_timer_power_on_flag;
 
-#if 0
-typedef enum _CLOUD_STATE{
-   OPEN_OFF_ITEM=0x01,
-   OPEN_ON_ITEM=2,
-   PTC_OFF_ITEM=3,
-   PTC_ON_ITEM=4,
-   ANION_OFF_ITEM=5,
-   ANION_ON_ITEM=6,
-   SONIC_OFF_ITEM=7,
-   SONIC_ON_ITEM=8,
-   STATE_AI_MODEL_ITEM=9,
-   STATE_TIMER_MODEL_ITEM=10,
-   TEMPERATURE_ITEM=11,
-   FAN_ITEM=12,
-   APP_TIMER_POWER_ON_REF=13,
-   APP_TIMER_POWER_ON_REF_TWO,
-}cloud_state;
-#else
+
 
 typedef enum
 {
@@ -37,14 +20,14 @@ typedef enum
     ANION_OFF_ITEM,
     SONIC_ON_ITEM,
     SONIC_OFF_ITEM,
-    STATE_TIMER_MODEL_ITEM,
+    STATE_TIMER_MODEL_ITEM,//9
     STATE_AI_MODEL_ITEM,
-    TEMPERATURE_ITEM=11,
-    FAN_ITEM=12,
+    TEMPERATURE_ITEM,
+    FAN_ITEM,
     WIFI_EVT_MAX
 } wifi_event_t;
 
-#endif 
+
 
 
 
@@ -204,7 +187,7 @@ void Parse_Tencent_Data(void)
 		
 	    //wifi_app_timer_power_on_f= 1;
 	    // 寻找 "open": 之后的值
-	    if(gpro_t.g_power_flag == 0){
+	    if(gpro_t.g_power_flag == false){
 		     // 寻找 "ptc": 之后的值
 		
 
@@ -280,30 +263,27 @@ void Parse_Tencent_Data(void)
 	
 	 if(strstr((const char *)wifi_t.rx_data_array,"\"open\":0")){
 	 	
-		   wifi_t.rx_data_array[0]='\0';
-		   memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+		
+	
 		   wifi_t.wifi_rx_signal_f= OPEN_OFF_ITEM;
-	       wifi_app_timer_power_on_f= 0;
+	       memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 
 		   return ;
 	 }
 	 else if(strstr((const char *)wifi_t.rx_data_array,"\"open\":1")){
 		
         
-
-		 memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 		wifi_t.wifi_rx_signal_f= OPEN_ON_ITEM;
-	
-
-
-	     return ;
+		memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+	    return ;
 	   
 	 }
      else if(strstr((const char *)wifi_t.rx_data_array,"\"ptc\":0") && gpro_t.g_power_flag == 1){
                 
 			
+			 
+	         wifi_t.wifi_rx_signal_f= PTC_OFF_ITEM;
 			 memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
-	            wifi_t.wifi_rx_signal_f= PTC_OFF_ITEM;
 			   
                
 				return;
@@ -311,9 +291,9 @@ void Parse_Tencent_Data(void)
     else if(strstr((const char *)wifi_t.rx_data_array,"\"ptc\":1") && gpro_t.g_power_flag == 1){
         
 		
-	    memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);    
+	   
 		wifi_t.wifi_rx_signal_f= PTC_ON_ITEM;
-		
+		memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);    
 	 
 
 		return ;
@@ -322,10 +302,10 @@ void Parse_Tencent_Data(void)
         
 	        plasma_open_f =0; //  esp_t.gPlasma=0;
 	        
-			wifi_t.rx_data_array[0]='\0';
-	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+			
+	       
 			wifi_t.wifi_rx_signal_f= ANION_OFF_ITEM;
-	
+	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 			
 
 		     return ;
@@ -335,10 +315,10 @@ void Parse_Tencent_Data(void)
      
             plasma_open_f =1;//esp_t.gPlasma=1;
             
-			wifi_t.rx_data_array[0]='\0';
-	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
-			wifi_t.wifi_rx_signal_f= ANION_ON_ITEM;
 			
+	       
+			wifi_t.wifi_rx_signal_f= ANION_ON_ITEM;
+			 memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 	
 		     return ;
             
@@ -347,11 +327,11 @@ void Parse_Tencent_Data(void)
        
             ultra_sound_open_f =0;// esp_t.gUlransonic=0;
             
-			wifi_t.rx_data_array[0]='\0';
+		
 
-			 memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+			 
 			wifi_t.wifi_rx_signal_f= SONIC_OFF_ITEM;
-			
+			memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 
         return ;
                 
@@ -362,10 +342,10 @@ void Parse_Tencent_Data(void)
        
             ultra_sound_open_f = 1;//esp_t.gUlransonic=1;
             
-			wifi_t.rx_data_array[0]='\0';
-	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+			
+	        
 			wifi_t.wifi_rx_signal_f= SONIC_ON_ITEM;
-	
+	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
          
 
 		return ;
@@ -377,9 +357,10 @@ void Parse_Tencent_Data(void)
           
             AI_led_open_f = 1;//esp_t.gModel=1;
             
-			wifi_t.rx_data_array[0]='\0';
-	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+		
+	       
 			wifi_t.wifi_rx_signal_f= STATE_AI_MODEL_ITEM;
+			memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 
 		
 			return ;
@@ -391,10 +372,10 @@ void Parse_Tencent_Data(void)
         
             AI_led_open_f = 0; //esp_t.gModel=2;
             
-			wifi_t.rx_data_array[0]='\0';
-	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+			
+	        
 			wifi_t.wifi_rx_signal_f= STATE_TIMER_MODEL_ITEM;
-		   
+		    memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 			 return ;
             
 			
@@ -418,9 +399,10 @@ void Parse_Tencent_Data(void)
 
        setting_temperature =  atoi(p1 + 14);
 	
-	   memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+	 
 
 	   wifi_t.wifi_rx_signal_f= TEMPERATURE_ITEM;
+		  memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 
         return ;
 		}
@@ -472,16 +454,17 @@ static void evt_open_on(void)
 {
     if (wifi_connected_success_f == 1)
     {
-        gpro_t.g_power_flag = 1;
+        BEEP_ON();
+		gpro_t.g_power_flag = 1;
         System_Status_PowerOn();
-        MqttData_Publish_SetOpen(1);
-		tx_thread_sleep(20);
+  
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x20, 0x01);
-			tx_thread_sleep(2);
+			tx_thread_sleep(3);
         }
-
+		MqttData_Publish_SetOpen(1);
+		tx_thread_sleep(20);
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
 }
@@ -490,13 +473,13 @@ static void evt_open_off(void)
 {
     if (wifi_connected_success_f == 1)
     {
-  
+        BEEP_ON();
         gpro_t.g_power_flag = 0;
         System_Status_PowerOff();
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x20, 0x00);
-            tx_thread_sleep(2);
+            tx_thread_sleep(3);
         }
 
         MqttData_Publish_PowerOff_Ref();
@@ -639,7 +622,12 @@ static void evt_sonic_off(void)
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
 }
+/**
+	*@ brief smart phone of app timer turn on 
+	*@ notice 
+	*@ param 
 
+**/
 static void evt_timer_mode(void)
 {
     if (gpro_t.g_power_flag == 1)
@@ -653,12 +641,12 @@ static void evt_timer_mode(void)
 
         if (disp_second_f == 1){
 			
-            SendWifiData_To_Cmd(0x27, 0x02);
+            SendWifiData_To_Cmd(0x21, 0x01);
 			tx_thread_sleep(2);
 
         }
 
-        MqttData_Publish_AitState(2);
+       // MqttData_Publish_AitState(2);
 	
 
         wifi_t.wifi_rx_signal_f = 0xfe;
@@ -694,7 +682,6 @@ static void evt_temperature(void)
         BEEP_ON();
 
         ptc_prohibit_off_f = 0;
-        //set_temperature_value_f = 1;
         key_input_temp_f = 4;
         time_1s_counter = 0;
 
@@ -760,7 +747,7 @@ static const wifi_evt_handler_t wifi_evt_table[WIFI_EVT_MAX] =
     evt_anion_off,      // ANION_OFF_ITEM
     evt_sonic_on,       // SONIC_ON_ITEM
     evt_sonic_off,      // SONIC_OFF_ITEM
-    evt_timer_mode,     // STATE_TIMER_MODEL_ITEM
+    evt_timer_mode,     // STATE_TIMER_MODEL_ITEM 9
     evt_ai_mode,        // STATE_AI_MODEL_ITEM
     evt_temperature,    // TEMPERATURE_ITEM
     evt_fan             // FAN_ITEM

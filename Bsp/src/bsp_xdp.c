@@ -615,7 +615,14 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	 case 0x2A: // is data //phone or display  board set temperature .receive.
 	 
 		   if(pdata[4]==0x01 && gpro_t.g_power_flag == true){//pdata[4] :表示数据的长度。
-			  
+
+		      if(wifi_connected_success_f==1){
+			       setting_temperature = pdata[5] ;
+			   	   gpro_t.temp_value_to_wifi_flag = true;
+				  //MqttData_Publis_SetTemp(setting_temperature);
+					   
+			  }
+			  #if 0
 			   if(pdata[5] >19 && pdata[5] < 41){
 			   	ptc_prohibit_off_f  = 0;
 			    setting_temperature = pdata[5] ;
@@ -635,16 +642,13 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 			       RELAY_OFF();
 		       }
-
+              #endif 
 		
-//				   if(wifi_connected_success_f==1){
-//					   MqttData_Publis_SetTemp(setting_temperature);
-//					   tx_thread_sleep(20);//tx_thread_sleep(200);//HAL_Delay(350);
-//					}
+			
 			   	
 			  }
 		   
-			}
+			
 		
 		
 	 break;

@@ -301,8 +301,8 @@ volatile uint8_t time_slot ;
 // --- 4. 初始化分时任务表 ---
 TimeSharingTask_t g_tasks[] = {
  
-    {0, 140,       handler_wifi_update_data},         //140*10ms = 1.4s
-    {0, 10000,       handler_works_hours},            //
+    {0, 100,       handler_wifi_update_data},         //140*10ms = 1.4s
+    {0, 10000,     handler_works_hours},            //
     {0, 570,       handler_fan_adc},
     {0, 80000,     handler_wifi_update_temp_humidity},
     {0, 980,       handler_read_dht11},
@@ -311,7 +311,7 @@ TimeSharingTask_t g_tasks[] = {
     {0, 8000,      handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
-    {0, 4600,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
+    {0, 32000,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
    
     
 	
@@ -416,11 +416,11 @@ void power_on_handler(void)
 			    
 
          }
-		 else{
-			power_on_cycle_handler();
+		
+		  power_on_cycle_handler();
 
 
-		 }
+		 
 
 }
 /************************************************************************************
@@ -476,7 +476,11 @@ static void power_on_cycle_handler(void)
 static void handler_wifi_update_data(void)
 {
    if(wifi_connected_success_f==1 && ptc_high_temperature_f == false && fan_warning_f ==false){
-   	
+   	      if(gpro_t.temp_value_to_wifi_flag == true){
+			   	gpro_t.temp_value_to_wifi_flag = false;
+				MqttData_Publis_SetTemp(setting_temperature);
+					   
+		    }
 		   wifi_power_on_handler();
       }
     
@@ -763,7 +767,7 @@ static void Get_Beijing_Time(void)
  ************************************************************************/
 static void power_off_handler(void)
 {
-   static uint8_t dc_on=0,fan_one_f=0;
+   static uint8_t dc_on=0,fan_one_f=0, times_counter;
 
    static uint32_t wait_timeout = 0;
   
@@ -782,7 +786,7 @@ static void power_off_handler(void)
 			all_led_off();
 	        TM1639_Display_ON_OFF(0);
 			
-			
+			times_counter =0;
 			gon_t.off_step = 1;
 	
 		 break;
@@ -836,15 +840,11 @@ static void power_off_handler(void)
 	                 fan_stop();
 				 }
 
-				 if(wifi_connected_success_f ==1 && gpro_t.time_2s_f > 5){
-                     gpro_t.time_2s_f=0;
+				 if(wifi_connected_success_f ==1 && times_counter < 3){
+                     times_counter++ ;
 				     MqttData_Publish_SetOpen(0);  
 				   	
-					
-		
-		    	   wait_timeout = tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
-	    
-			      }
+				}
 			
 		
 	       gon_t.off_step = 4;
@@ -854,7 +854,7 @@ static void power_off_handler(void)
 		 case 4 :
 
 		    
-		   if(time_1s_counter > 1){
+		   if(time_1s_counter > 9){
 				 	time_1s_counter =0;
 				    dht11_read_temp_humidity_value();
 				    //#if DEBUG_ENABLE
@@ -869,7 +869,7 @@ static void power_off_handler(void)
 
 		  case 5:
 
-		     if(time_1s_counter > 2){
+		     if(time_1s_counter > 15){
 				 	time_1s_counter =0;
 				    dht11_read_temp_humidity_value();
 				   // #if DEBUG_ENABLE
@@ -885,7 +885,7 @@ static void power_off_handler(void)
 
 		 
 
-			 if(wifi_connected_success_f ==1 &&  gpro_t.time_3s_f> 5 ){//10ms*800 =8000ms =8s
+			 if(wifi_connected_success_f ==1 &&  gpro_t.time_3s_f> 12 ){//10ms*800 =8000ms =8s
       
 			       gpro_t.time_3s_f =0;
 				   Subscriber_Data_FromCloud_Handler();
@@ -899,7 +899,7 @@ static void power_off_handler(void)
 		case 7:
 			
 
-		    if(wifi_connected_success_f ==1 &&   gpro_t.time_4s_f> 8){
+		    if(wifi_connected_success_f ==1 &&   gpro_t.time_4s_f> 16){
 				gpro_t.time_4s_f=0;
 				fan_warning_f = 0;
 			    ptc_high_temperature_f =0;
@@ -913,7 +913,7 @@ static void power_off_handler(void)
 		break;
 
 		case 8:
-			if(setting_timing_second > 6 && wifi_connected_success_f ==1 ){
+			if(setting_timing_second > 14 && wifi_connected_success_f ==1 ){
 				setting_timing_second =0;
                MqttData_Publish_PowerOff_Ref(); 
 			   wait_timeout = tx_time_get()+ 20;   
@@ -1364,10 +1364,10 @@ void System_Status_PowerOn(void)
 
 
 	if(wifi_app_timer_power_on_f==0){ //手机定时开机
-		gpro_t.g_power_flag = 1;			// 总输出使能
+		gpro_t.g_power_flag = true;			// 总输出使能
 		ptc_heat_open_f= true;		  // 默认开启加热
-		ultra_sound_open_f = 1; 	// 默认开启超声波
-		plasma_open_f = 1;			// 默认开启等离子
+		ultra_sound_open_f = true; 	// 默认开启超声波
+		plasma_open_f = true;			// 默认开启等离子
 		power_on_peripheral_handler();
     }
 
@@ -1378,7 +1378,7 @@ void System_Status_PowerOn(void)
 	set_temperature_value_f =0; 
 	ptc_high_temperature_f =0;	//高温报警标志位,清零
 	read_ntc_temperature_value =0;
-	heat_open_close_f=0; //WT.EIDT 2026-07-13
+
 	//wifi
 	wifi_run_step=0;
 	wifi_off_step=0;
@@ -1430,9 +1430,9 @@ void System_Status_PowerOff(void)
 	is_doing_connet_wifi_f =0;
 
 
-	ptc_heat_open_f= 0;		// 默认--from smart phone define.
-	ultra_sound_open_f = 0;	 // 默
-	plasma_open_f = 0; 		 // 默
+	ptc_heat_open_f= false;		// 默认--from smart phone define.
+	ultra_sound_open_f = false;	 // 默
+	plasma_open_f = false; 		 // 默
 	set_temperature_value_f =0; 
 	// 2. 重置所有功能模式标志
 	AI_led_open_f = 0;
