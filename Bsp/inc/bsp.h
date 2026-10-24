@@ -67,8 +67,10 @@
 #define DEBUG_ENABLE    0
 
 
+#define SECONDS_TO_TICKS(s)    ((s) * 100) // 1秒100个tick (10ms一个tick)
 
-
+#define MILLISENCOD_TO_TICKS(ms)    ((ms) /10) // 10毫秒 1个tick (10ms一个tick)
+//wait_timeout = tx_time_get() + SECONDS_TO_TICKS(20);
 
 #if(Enable_EventRecorder == 1)
 	#include "EventRecorder.h"
@@ -87,6 +89,7 @@ typedef struct _main_ref{
 
  uint8_t get_rx_beijing_time_enable;
  bool temp_value_to_wifi_flag;
+ bool beijing_time_flag;
 
 
  volatile uint8_t time_10ms_f;

@@ -308,7 +308,7 @@ TimeSharingTask_t g_tasks[] = {
     {0, 980,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state}, 
     {0, 14,        handler_link_wifi},                  //10*10ms =100ms
-    {0, 8000,      handler_repeat_link_net},        //10ms * 1000 = 10s   
+    {0, 38000,      handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
     {0, 32000,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
@@ -661,7 +661,7 @@ static void handler_repeat_link_net(void)
 
 	if(ptc_high_temperature_f == 1 || fan_warning_f ==1 ||is_doing_connet_wifi_f==true)  return ;
 		
-	if(is_doing_connet_wifi_f==0 &&	wifi_linking_tencent_f ==0){
+	if(is_doing_connet_wifi_f== false &&	wifi_linking_tencent_f ==0){
 		
 #if DEBUG_ENABLE
 		printf("reconnection wifi ! \n\r");
@@ -694,7 +694,7 @@ static void handler_repeat_link_net(void)
 static void handler_link_wifi(void)
 {
 
-   if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+   if(ptc_high_temperature_f == 1 || fan_warning_f ==1 || is_doing_connet_wifi_f== false) return ;
 	
     if(is_doing_connet_wifi_f)
 	{
@@ -726,18 +726,7 @@ static void handler_wifi_get_beijing_time(void)
 {
   if(ptc_high_temperature_f == 1 || fan_warning_f ==1 || wifi_connected_success_f == false ) return ;
 
-   if(gpro_t.get_rx_beijing_time_enable !=1 || gpro_t.get_rx_beijing_time_enable !=2){
-            //disable publish data to tencent cloud.
-            Get_BeiJing_Time_Cmd();
-    	    tx_thread_sleep(30);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
-    	   
-             gpro_t.get_rx_beijing_time_enable=1;
-        	 rx_wifi_data_counter=0;
-        	 Get_Beijing_Time();
-			
-             tx_thread_sleep(200);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
-             
-   	}             
+   get_beijing_thime_handler();
         	
 }
 static void Get_BeiJing_Time_Cmd(void)
@@ -1021,125 +1010,6 @@ void works_run_two_hours_state(void)
 
 }
 
-
-
-#if 0
-
-	
-
-	switch(works_interval_f){
-
-	case 0:
-
-
-	break;
-
-	case 1:
-	if(works_interval_f== true){
-
-		gpro_t.time_1m_f = 0;
-		gpro_t.time_base_1s_counter=0;
-		fan_one_minute_cuonter =0;
-		interval_state++;
-
-	}
-	else if(works_interval_f == false){
-		interval_state=0;
-
-	}
-
-	if(interval_10m_f == 1 && works_interval_f==0){
-             interval_10m_f ++;
-		     fan_wind_speed_full();
-		  if(ptc_prohibit_off_f == 0 &&  ptc_heat_open_f== 1){
-		
-		      RELAY_ON();
-		  
-		  	}
-		 
-	}
-	break;
-	}
-
-
-	 peripheral_hardware_handler();
-
-}
-
-
-	
-
-	if(gpro_t.external_display_flag == false){
-	 
-		#if  0 //DEBUG_ENABLE 
-			if(gpro_t.time_1m_f >11 && works_interval_f==0){
-		#else 
-			if(gpro_t.time_1m_f > 119 && works_interval_f==0){
-
-		#endif 
-
-			gpro_t.time_1m_f = 0;
-		    gpro_t.time_base_1s_counter=0;
-			works_interval_f=1;
-			fan_one_minute_cuonter =0;
-			
-		#if DEBUG_ENABLE 
-			printf("works_interval_f = %d \n\r",works_interval_f);
-		#endif 
-		}
-
-		#if 0
-		  else if(works_interval_f==1 && gpro_t.time_1m_f >9){
-		#else 
-		  else if(works_interval_f==1 && gpro_t.time_1m_f >10){
-
-		#endif 
-				gpro_t.time_1m_f = 0;  
-				works_interval_f =0;
-		        gpro_t.time_base_1s_counter=0;
-				interval_10m_f = 1;
-				
-		#if DEBUG_ENABLE 
-			printf("works_interval_f = %d \n\r",works_interval_f);
-		#endif 
-		}
-
-
-		if(interval_10m_f == 1 && works_interval_f==0){
-             interval_10m_f ++;
-		     fan_wind_speed_full();
-		  if(ptc_prohibit_off_f == 0 &&  ptc_heat_open_f== 1){
-		
-		      RELAY_ON();
-		  
-		  	}
-		 
-		}
-		if(Is_countdown_timer_f ==1 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
-            Countdown_timer_Handler();
-	   	 }
-
-	}
-	else{
-
-         if(works_interval_f== true && interval_state==0){
-              
-			gpro_t.time_1m_f = 0;
-		    gpro_t.time_base_1s_counter=0;
-			fan_one_minute_cuonter =0;
-			interval_state++;
-		
-         }
-		 else if(works_interval_f == false){
-		   interval_state=0;
-
-          }
-
-		}
-	}
-   }	
- }
-#endif 
 /**
 	*
 	*@brief environment temperature value compare set temperater value
@@ -1150,9 +1020,11 @@ void works_run_two_hours_state(void)
 void Heat_Process(void)
 {
      static uint8_t default_init = 0xff;   // 第一次比较标志
+
+	 if(ptc_prohibit_off_f == 1 || set_temperature_value_f ==1 ) return ;
      
      if(gpro_t.g_power_flag == 1 && gpro_t.external_display_flag == false){
-	   if(ptc_prohibit_off_f == 1 || set_temperature_value_f ==1 ) return ;
+	 
 
 	  uint8_t target_temp;
 
@@ -1468,6 +1340,26 @@ void System_Status_PowerOff(void)
 	TM1639_Display_ON_OFF(0);
 }
 
+/**
+* @brief	获取北京时间
+* @note	
+*/
+void get_beijing_thime_handler(void)
+{
 
+   if(gpro_t.get_rx_beijing_time_enable !=1 || gpro_t.get_rx_beijing_time_enable !=2){
+            //disable publish data to tencent cloud.
+            Get_BeiJing_Time_Cmd();
+    	    tx_thread_sleep(30);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
+    	   
+             gpro_t.get_rx_beijing_time_enable=1;
+        	 rx_wifi_data_counter=0;
+        	 Get_Beijing_Time();
+			
+             tx_thread_sleep(200);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
+             
+   	}             
+
+}
 
 

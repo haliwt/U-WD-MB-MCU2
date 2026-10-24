@@ -252,6 +252,7 @@ void System_Status_PowerOff(void) ;
 void System_Status_PowerOn(void) ;
 
 
+void get_beijing_thime_handler(void);
 
 
 

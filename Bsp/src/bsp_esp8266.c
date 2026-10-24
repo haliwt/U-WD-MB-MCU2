@@ -1,6 +1,8 @@
 #include "bsp.h"
 
 
+// wait_timeout = tx_time_get() + SECONDS_TO_TICKS(20);
+
  
  uint8_t link_wifi_the_first_f;
  /**
@@ -94,6 +96,18 @@ void wifi_auto_detected_link_state(void)
 		time_link_net_counter =0;
 
      }
+     else if(wifi_connected_success_f==1 && link_wifi_the_first_f==2){
+		
+        if(gpro_t.beijing_time_flag==false){
+		     get_beijing_thime_handler();
+		}
+		else{
+		  link_wifi_the_first_f++ ;
+
+       }
+
+     }
+   
     if(gpro_t.get_rx_beijing_time_enable ==2){
 	   parse_wifi_time();
 
@@ -120,10 +134,10 @@ void auto_connect_wifi_handler(void)
   //static uint8_t link_wifi_f=0;
   static uint32_t wait_timeout = 0 ;
 
-  if(tx_time_get()< wait_timeout){
-	  return ;
-  }
-
+  // 安全的时间差比较（防止 Tick 溢出）
+   if ((int32_t)(tx_time_get() - wait_timeout) < 0) {
+        return;
+   }
   
   switch(dc_connect_net_step){
 
@@ -189,7 +203,7 @@ void auto_connect_wifi_handler(void)
 
 	 case 5:
        
-		    dc_connect_net_step =8;//wifi connect net is success .
+		   
 		    if(wifi_cofig_success_f ==0){
 				wifi_linking_tencent_f=0;
 				time_autolink_counter=0;
@@ -199,7 +213,8 @@ void auto_connect_wifi_handler(void)
 				
 		    }
 			else{
-				 wifi_linking_tencent_f =0;
+				dc_connect_net_step =8;//wifi connect net is success .
+				wifi_linking_tencent_f =0;
                 SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
 			    tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 
@@ -242,13 +257,13 @@ void wifi_power_on_handler(void)
 {
     static uint8_t sw_flag=0;
 	static uint8_t counter_1=0,counter=0,send_times=0;
-//	static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
+	static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
     
     
     // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
-//    if (tx_time_get() < wait_timeout) {
-//        return; 
-//    }
+    if ((int32_t)(tx_time_get() - wait_timeout) < 0) {
+       return;
+     }
 
 	if(is_doing_connet_wifi_f == 1 || gpro_t.g_power_flag == 0 || wifi_connected_success_f==0) return ;
 		
@@ -267,8 +282,8 @@ void wifi_power_on_handler(void)
     
 		   if(gpro_t.g_power_flag){
 		         MqttData_Publish_SetOpen(1);  
-				// wait_timeout=tx_time_get()+20;// tx_thread_sleep(20);
-				 //delay_ms(100);
+				 wait_timeout=tx_time_get()+20;// tx_thread_sleep(20);
+				
 				 wifi_run_step =1;
 		  }
 		
@@ -290,7 +305,7 @@ void wifi_power_on_handler(void)
 	   }
 	   else if(wifi_connected_success_f ==1 && wifi_app_timer_power_on_f ==0){
 		    MqttData_Publish_Update_Data();  
-		    //wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
+		    wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 	        wifi_run_step =2;
 		}
 		else{
@@ -319,7 +334,7 @@ void wifi_power_on_handler(void)
 
            	fan_speed_level = 100;//gctl_t.set_wind_speed_value=100;
             MqttData_Publis_SetFan(fan_speed_level);//WT.EDIT 2025.12.19
-            //wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
+            wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 			wifi_run_step = 4;
 
 	 		}
@@ -336,7 +351,7 @@ void wifi_power_on_handler(void)
             setting_temperature=40;
            
             MqttData_Publis_SetTemp(setting_temperature);
-			//wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
+			wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 			    
 		    wifi_app_timer_power_on_f++;
 			wifi_run_step = 5;

@@ -1026,6 +1026,7 @@ int8_t parse_wifi_time(void) //, DateTime_t *dt)
         time_t.minute = m;
         time_t.second = s;
 		if(time_t.year > 2000){
+		   gpro_t.beijing_time_flag = true;
 	       SendWifiData_To_PanelTime(time_t.hour,time_t.minute,time_t.second);
 		   tx_thread_sleep(3);
         }
