@@ -620,9 +620,9 @@ void link_wifi_net_handler(void)
 	message[0] = '\0'; // 只需将第一个字符设为结束符，逻辑上就成了空字符串
 
 	// 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
-//    if (tx_time_get() < wait_timeout) {
-//        return; 
-//    }
+    if (tx_time_get() < wait_timeout) {
+       return; 
+    }
 
 	
     switch(link_net_step){
@@ -643,7 +643,7 @@ void link_wifi_net_handler(void)
                // WIFI_IC_ENABLE();
               
                 send_usart2_data((const uint8_t *)"AT+CWMODE=3\r\n", strlen("AT+CWMODE=3\r\n"));
-                tx_thread_sleep(20);
+                //tx_thread_sleep(20);
                 wait_timeout = tx_time_get() + 200;//tx_thread_sleep(200);
                 uid =Get_Unique_ID_32bit();
 			  
@@ -664,9 +664,9 @@ void link_wifi_net_handler(void)
             			
                        message_len = sprintf((char *)message, "AT+TCPRDINFOSET=1,\"%s\",\"%s\",\"UYIJIA01-%d\"\r\n", PRODUCT_ID, DEVICE_SECRET,uid);
             		   send_usart2_data((const uint8_t *)message,message_len);
-            	  	   tx_thread_sleep(1000);
+            	  	   //tx_thread_sleep(1000);
                       
-                        //tx_thread_sleep(300);//10ms * 100 
+              
                         wait_timeout = tx_time_get() + 300;//10ms * 300 =3s
                
 						link_net_step  = 3;
@@ -683,9 +683,9 @@ void link_wifi_net_handler(void)
                   
                 send_usart2_data((const uint8_t *)"AT+TCDEVREG\r\n", strlen("AT+TCDEVREG\r\n"));
               
-			     tx_thread_sleep(200);//10ms * 100 
+			    // tx_thread_sleep(200);//10ms * 100 
 
-				 wait_timeout = tx_time_get() + 200;
+				 wait_timeout = tx_time_get() + 500;
 
 				 link_net_step  = 4;
 		
@@ -717,8 +717,8 @@ void link_wifi_net_handler(void)
             //  uid =Get_Unique_ID_32bit();
 	          message_len =  sprintf((char *)message, "AT+TCSAP=\"UYIJIA01-%d\"\r\n",uid);
               send_usart2_data((const uint8_t *)message,message_len);
-	            tx_thread_sleep(200);//10ms * 100 
-	            wait_timeout = tx_time_get() + 300;
+	           // tx_thread_sleep(200);//10ms * 100 
+	            wait_timeout = tx_time_get() + 1000;
 				link_net_step  = 20;
 		
                 time_link_net_counter  = 0;
@@ -729,7 +729,7 @@ void link_wifi_net_handler(void)
 
 			case 20 : //WT.EDIT 2026-07-03 add item
 
-			  if(time_link_net_counter  > 4){//4
+			  if(time_link_net_counter  > 10){//4
 				   time_link_net_counter  = 0;
 				 
 
