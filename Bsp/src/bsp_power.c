@@ -343,6 +343,7 @@ static void power_on_initial(void)
 
    case 0:
    	  gon_t.off_step = 0;
+
       wifi_off_step =0; //WT.EDT 2026.05.15
       
       System_Status_PowerOn() ;
@@ -1418,7 +1419,7 @@ void System_Status_PowerOn(void)
 void System_Status_PowerOff(void) 
 {
 	// 1. 关闭所有输出负载标志
-
+    gon_t.on_step =0;
 	gpro_t.g_power_flag = 0;
 	wifi_app_timer_power_on_f =0; //smart app power on by timer timing clear .
 

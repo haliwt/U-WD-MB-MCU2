@@ -10,8 +10,9 @@
 void Relay_Ctrl(void)
 {
    
-	if(gpro_t.g_power_flag){
-		 if((ptc_heat_open_f==true) && ptc_prohibit_off_f == false && works_interval_f == false){
+	if(ptc_prohibit_off_f == true) return ;
+	
+		 if((ptc_heat_open_f==true)  && works_interval_f == false){
                    
 			  RELAY_ON();
 					
@@ -21,9 +22,9 @@ void Relay_Ctrl(void)
 			  RELAY_OFF();
 					
 			}
-		}
+}
 
 	
 		
-}
+
 

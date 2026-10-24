@@ -557,7 +557,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 	case 0x22: //PTC ON OR OFF by compare temperature value .don't buzzer sound.
 
-	    if(ptc_prohibit_off_f  == 1)return ;
+	    if(ptc_prohibit_off_f  == true)return ;
 		
         if(pdata[3]== 0x01){ //ptc open 
 		   

@@ -237,6 +237,7 @@ void direct_compare_set_temp_value(void)
 
     
     // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
+    
    
 	if(temperature >= setting_temperature){
 	     ptc_prohibit_off_f = 0;

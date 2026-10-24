@@ -457,7 +457,8 @@ static void evt_open_on(void)
     {
         BEEP_ON();
 		gpro_t.g_power_flag = 1;
-        System_Status_PowerOn();
+		gon_t.on_step =0;
+       // System_Status_PowerOn();
   
 
         if (disp_second_f == 1){
@@ -476,7 +477,8 @@ static void evt_open_off(void)
     {
         BEEP_ON();
         gpro_t.g_power_flag = 0;
-        System_Status_PowerOff();
+		gon_t.off_step = 0;
+       // System_Status_PowerOff();
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x20, 0x00);
