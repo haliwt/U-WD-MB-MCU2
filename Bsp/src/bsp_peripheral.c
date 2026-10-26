@@ -242,7 +242,8 @@ void direct_compare_set_temp_value(void)
 	if(temperature >= setting_temperature){
 	     ptc_prohibit_off_f = 0;
 	     ptc_heat_open_f= 0;   // 立即关闭
-	     RELAY_OFF();
+	    
+         RELAY_OFF();
 		 //LED_PTC_OFF();
 		
 
@@ -251,7 +252,7 @@ void direct_compare_set_temp_value(void)
 	    ptc_prohibit_off_f = 0;
 		ptc_heat_open_f= 1;   // 立即open
 		//LED_PTC_ON();
-		if(works_interval_f == 0)RELAY_ON();
+		if(works_interval_f == false)RELAY_ON();
 		 
 	}
 

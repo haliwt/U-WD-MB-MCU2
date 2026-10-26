@@ -43,7 +43,7 @@ void wifi_auto_detected_link_state(void)
            wifi_linking_tencent_f =0;//wifi_t.linking_tencent_cloud_doing = 0;
            time_link_net_counter =0;
         
-          if(gpro_t.g_power_flag==1){
+          if(gpro_t.g_power_flag== true){
 		  	 MqttData_Publish_SetOpen(0);
 			 tx_thread_sleep(20);//wait_timeout = tx_time_get()+30;
 		     //MqttData_Publish_Update_Data();//MqttData_Publish_PowerOn_Ref();
@@ -51,12 +51,10 @@ void wifi_auto_detected_link_state(void)
              
 
           }
-		  else if(gpro_t.g_power_flag==0){
+		  else if(gpro_t.g_power_flag== false){
 		  	  MqttData_Publish_SetOpen(0);
-			  tx_thread_sleep(10);//wait_timeout = tx_time_get()+30;
-              MqttData_Publish_PowerOff_Ref(); //
-              //tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;
-
+			  tx_thread_sleep(20);//wait_timeout = tx_time_get()+30;
+            
 		  }
           
           Subscriber_Data_FromCloud_Handler();
@@ -72,14 +70,14 @@ void wifi_auto_detected_link_state(void)
    else if(wifi_connected_success_f==1 && link_wifi_the_first_f==1){
 		link_wifi_the_first_f++ ;
 
-		if(gpro_t.g_power_flag==1){
+		if(gpro_t.g_power_flag== true){
 		
 		   MqttData_Publish_Update_Data();//MqttData_Publish_PowerOn_Ref();
 		    tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;//tx_thread_sleep(20);// delay_ms(200);//HAL_Delay(200);
 
 
 		}
-		else if(gpro_t.g_power_flag==0){
+		else if(gpro_t.g_power_flag== false){
 		   MqttData_Publish_PowerOff_Ref(); //
 		    tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;
 
@@ -270,7 +268,7 @@ void wifi_power_on_handler(void)
      switch(wifi_run_step){
 
 	 case 0:
-
+        send_times =0;
 	   if(wifi_app_timer_power_on_f ==1){
 
 	        smartphone_timer_power_on_handler();
@@ -367,26 +365,8 @@ void wifi_power_on_handler(void)
 	    break;
 
 
-	 case 5: 
-
-	   counter_1 ++;
-
-        if(wifi_connected_success_f ==1 &&  wifi_app_timer_power_on_f ==0 &&  counter_1 > 3){
-      
-	     counter_1 =0;
-		   Subscriber_Data_FromCloud_Handler();
-    	   //wait_timeout=tx_time_get()+20; //tx_thread_sleep(20);//delay_ms(100);
-	         wifi_run_step = 6;
-		}
-		else{
-		 wifi_run_step = 6;
-		}
-    
-     
-     break; 
-
-	 case 6:
-		counter++;
+     case 5:
+		
          if(wifi_connected_success_f ==1 &&  wifi_app_timer_power_on_f ==0 && wifi_first_connectoed_cloud_f==0){
           
 	      if(gpro_t.g_power_flag){
@@ -395,85 +375,72 @@ void wifi_power_on_handler(void)
 			    //wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 			 }
 			 wifi_first_connectoed_cloud_f++;
-			  wifi_run_step = 7;
+			  wifi_run_step = 6;
          }
 		 else{
-		  wifi_run_step = 7;
+		  wifi_run_step = 6;
 		 }
 		 
 	break;
-		 
-	 case 7:
-			 
-		if(wifi_connected_success_f ==1  && soft_version == 0){ //WT.EDIT 2026.02.27
 
-			sw_flag = sw_flag ^ 0x01;
-			if(sw_flag == 1){
-				if(disp_second_f == 1){
-					SendWifiData_olderCmd(0x1F,0x01);//SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
-                    tx_thread_sleep(2);
-				   //wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
-				}
-			}
-			else{
-				if(disp_second_f == 1){
-					SendWifiData_To_Data(0x1F,0x01);
-				      tx_thread_sleep(2);//wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
-			       }
-			}
-             wifi_run_step = 8;
-		}
-		else if(wifi_connected_success_f ==0 && counter > 1 && soft_version ==0){ //WT.EDIT 2026.02.27
-			counter =0;
-			sw_flag = sw_flag ^ 0x01;
-			if(sw_flag == 1){
-				if(disp_second_f == 1){
-					SendWifiData_olderCmd(0x1F,0x0);//SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
-				      tx_thread_sleep(2);//wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
-					}
-			}
-			else{
-				if(disp_second_f == 1){
-				SendWifiData_To_Data(0x1F,0x0);
-				  tx_thread_sleep(2);//wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
-				}
-			}
-			 wifi_run_step = 8;
+
+	case 6: 
+
+	   counter_1 ++;
+
+        if(wifi_connected_success_f ==1 &&  wifi_app_timer_power_on_f ==0 &&  counter_1 > 4){
+      
+	       counter_1 =0;
+		   Subscriber_Data_FromCloud_Handler();
+    	   //wait_timeout=tx_time_get()+20; //tx_thread_sleep(20);//delay_ms(100);
+
+		   
+		
+	         wifi_run_step = 7;
 		}
 		else{
-             wifi_run_step = 8;
+		 wifi_run_step = 7;
 		}
-
-	 break;
-
-	 case 8://3mm run once 
-       if(is_doing_connet_wifi_f ==0 && wifi_connected_success_f ==1 && wifi_app_timer_power_on_f ==0 && wifi_first_connectoed_cloud_f ==1){
     
-            wifi_first_connectoed_cloud_f++;
-		   if(disp_second_f == 1){
-		   	SendData_Set_Command(0x1F,0x01);//SendWifiData_To_Data(0x1F,0x01);
-               tx_thread_sleep(2);//wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
-			    wifi_run_step =9;
-		   	}
-	    }
-	    else{
-		   wifi_run_step =9;
-		}
+     
+     break; 
+		 
+	 
 
-	   
-
-	 break;
+	
 		
-      case 9:
-	  
+      case 7:
+	  	
+	      counter++;
+		  send_times ++;
 	  	  if(wifi_connected_success_f ==1 &&  send_times < 4){
-		  	    	 send_times ++ ;
+		  	    
 			
 				Update_Dht11_Totencent_Value();
               //   wait_timeout=tx_time_get()+10;//tx_thread_sleep(20);// delay_ms(200);
-        }
+              if(disp_second_f== 1){
+			  SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
+			   tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
+		   	}
+          }
+		  else if(wifi_connected_success_f ==1 &&  send_times > 6){
+		  	    	 send_times =0 ;
+			
+				Update_Dht11_Totencent_Value();
+              //   wait_timeout=tx_time_get()+10;//tx_thread_sleep(20);// delay_ms(200);
+           
+          }
+		  else if(wifi_connected_success_f ==0 && counter > 3) {
+               counter = 0;
+		      if(disp_second_f== 1){
+					 SendWifiData_To_Cmd(0x1F,0); //link wifi order 1 --link wifi net is success.
+					  tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
+			}
 
-	    wifi_run_step =7;
+
+		  }
+
+	    wifi_run_step =5;
 
 	 break;
 

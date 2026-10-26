@@ -500,8 +500,7 @@ static void evt_ptc_on(void)
         ptc_heat_open_f= 1;
         ptc_prohibit_off_f = 0;
 
-       // LED_PTC_ON();
-        RELAY_ON();
+        if(works_interval_f == false)RELAY_ON();
 
         key_input_temp_f = 1;
 
@@ -693,7 +692,7 @@ static void evt_temperature(void)
 			tx_thread_sleep(2);
         }
         //TM1639_Display_Temperature(setting_temperature);
-		direct_compare_set_temp_value();
+        direct_compare_set_temp_value();
 
         MqttData_Publis_SetTemp(setting_temperature);
 		
@@ -889,7 +888,7 @@ void automatic_network_reconnection(void)
 {
     static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
 
-  if(gpro_t.get_rx_beijing_time_enable==1 || gpro_t.get_rx_beijing_time_enable==2) return;
+  //if(gpro_t.get_rx_beijing_time_enable==1 || gpro_t.get_rx_beijing_time_enable==2) return;
 
  if(wifi_check_net_f != 1){
 
@@ -963,7 +962,7 @@ void check_wifi_connect_net_state(void)
 }
 /********************************************************************************
 	*
-	*Functin Name:void automatic_network_reconnection(void)
+	*Functin Name:
 	*Functin :
 	*Input Ref: NO
 	*Return Ref:NO

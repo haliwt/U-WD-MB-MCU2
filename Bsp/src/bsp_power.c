@@ -301,17 +301,17 @@ volatile uint8_t time_slot ;
 // --- 4. 初始化分时任务表 ---
 TimeSharingTask_t g_tasks[] = {
  
-    {0, 100,       handler_wifi_update_data},         //140*10ms = 1.4s
+    {0, 300,       handler_wifi_update_data},         //140*10ms = 1.4s
     {0, 10000,     handler_works_hours},            //
     {0, 570,       handler_fan_adc},
     {0, 80000,     handler_wifi_update_temp_humidity},
     {0, 980,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state}, 
     {0, 14,        handler_link_wifi},                  //10*10ms =100ms
-    {0, 38000,      handler_repeat_link_net},        //10ms * 1000 = 10s   
+    {0, 54000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
-    {0, 32000,      handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
+    {0, 32000,     handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
    
     
 	
@@ -481,8 +481,8 @@ static void handler_wifi_update_data(void)
 			   	gpro_t.temp_value_to_wifi_flag = false;
 				MqttData_Publis_SetTemp(setting_temperature);
 					   
-		    }
-		   wifi_power_on_handler();
+		  }
+		  wifi_power_on_handler();
       }
     
 }
@@ -625,7 +625,7 @@ static void handler_read_dht11(void)
 
      if( ptc_high_temperature_f == 0 && fan_warning_f ==0 ){
 			disp_counter=0;	
-		display_temperature_humidigy_handler();
+		//display_temperature_humidigy_handler();
 
 	 }
 
@@ -660,6 +660,8 @@ static void handler_repeat_link_net(void)
 {
 
 	if(ptc_high_temperature_f == 1 || fan_warning_f ==1 ||is_doing_connet_wifi_f==true)  return ;
+
+	if(gpro_t.get_rx_beijing_time_enable == 1 || gpro_t.get_rx_beijing_time_enable == 2) return;
 		
 	if(is_doing_connet_wifi_f== false &&	wifi_linking_tencent_f ==0){
 		
