@@ -159,7 +159,7 @@ extern uint8_t disp_set_hours_time_f;
 extern uint8_t  key_input_temp_f;
 extern uint8_t  time_10ms_f;
 
-extern uint8_t heat_open_close_f;
+extern bool heat_open_close_f;
 
 
 

@@ -220,7 +220,7 @@ void compare_set_temp_value(void)
 		//wait_timeout = tx_time_get()+20;
 	}
 
-	if(ptc_heat_open_f== 1 && wifi_connected_success_f==1){
+	if(ptc_heat_open_f== true && wifi_connected_success_f==1){
      	MqttData_Publish_SetPtc(1);
 
 	}

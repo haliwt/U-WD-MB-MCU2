@@ -672,14 +672,15 @@ static void smartphone_timer_power_on_handler(void)
 
 
 
-	if(ptc_heat_open_f==1){
+	if(ptc_heat_open_f== true){
+	   ptc_prohibit_off_f =false;
 
 	if(disp_second_f == 1){
 		SendWifiData_To_Cmd(0x02,0x01);
 	    tx_thread_sleep(2);//wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);//delay_ms(100);
 		}
 	}
-	else if(ptc_heat_open_f ==0){
+	else if(ptc_heat_open_f == false){
 		ptc_prohibit_off_f =1;
 		RELAY_OFF();
 		if(disp_second_f == 1){

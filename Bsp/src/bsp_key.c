@@ -194,7 +194,7 @@ void Handle_Value_Adjustment(uint8_t is_up)
 	    time_set_hours_counter =0;
 		key_be_pressed_inc_or_dec_f =0;
 		key_input_temp_f= 1;
-		heat_open_close_f= 1;//WT.EDIT 2026.05-15
+	    
 		key_pressed_set_temp_f =1;
 		if(AI_led_open_f == 0){//if(g_pro.set_timing_or_timer_time_flag ==TIMER_TIME){
 			         
@@ -205,6 +205,7 @@ void Handle_Value_Adjustment(uint8_t is_up)
 
 		}
 	   gpro_t.key_inc_or_dec_f = true;
+	   gpro_t.set_temp_flag = true;
        TM1639_Display_Temperature(setting_temperature);
 	   direct_compare_set_temp_value();
     }

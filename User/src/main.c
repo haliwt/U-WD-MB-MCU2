@@ -52,7 +52,7 @@ int main(void)
 	
     gpio_init();//GPIO_Configuration();          //IO口配置
 	
-   Clear_Ram();                   //变量初始化
+  // Clear_Ram();                   //变量初始化
 	
     UART1_Configuration(9600);    //串口1 用于和外接显示板通信
 	
