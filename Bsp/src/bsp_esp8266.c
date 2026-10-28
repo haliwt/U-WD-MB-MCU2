@@ -94,13 +94,15 @@ void wifi_auto_detected_link_state(void)
 		time_link_net_counter =0;
 
      }
-     else if(wifi_connected_success_f==1 && link_wifi_the_first_f==2){
+     else if(wifi_connected_success_f==1 && link_wifi_the_first_f==2 && gpro_t.beijing_time_flag==false && gpro_t.g_power_flag == true){
 		
         if(gpro_t.beijing_time_flag==false){
 		     get_beijing_thime_handler();
+			  link_wifi_the_first_f++ ;
 		}
 		else{
-		  link_wifi_the_first_f++ ;
+		 
+	       link_wifi_the_first_f++ ;
 
        }
 

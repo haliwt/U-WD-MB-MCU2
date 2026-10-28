@@ -753,9 +753,13 @@ static void Get_Beijing_Time(void)
  ************************************************************************/
 static void power_off_handler(void)
 {
-   static uint8_t dc_on=0,fan_one_f=0, times_counter;
+   static uint8_t dc_on=0,fan_one_f=0, times_counter,switch_flag;
 
    static uint32_t wait_timeout = 0;
+
+    if ((int32_t)(tx_time_get() - wait_timeout) < 0) {
+        return;
+   }
   
 
 	switch(gon_t.off_step){
@@ -801,19 +805,20 @@ static void power_off_handler(void)
 
 		case 2:
         if(wifi_connected_success_f ==1){
-			     gon_t.off_step = 3;
+			     
 			
 				fan_warning_f = 0;
 			    ptc_high_temperature_f =0;
-			    Publish_Data_fan_Warning(0); //fan warning .
+				MqttData_Publish_PowerOff_Ref(); 
+			    //Publish_Data_fan_Warning(0); //fan warning .
 
-				Publish_Data_Ptc_Temp_Warning(0);
+				//Publish_Data_Ptc_Temp_Warning(0);
 				//wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);///delay_ms(200);
 		    }
-            else{
+            
 
-                gon_t.off_step = 3;
-			}
+             gon_t.off_step = 3;
+			
 
 		break;
 
@@ -840,7 +845,7 @@ static void power_off_handler(void)
 		 case 4 :
 
 		    
-		   if(time_1s_counter > 9){
+		   if(time_1s_counter > 15){
 				 	time_1s_counter =0;
 				    dht11_read_temp_humidity_value();
 				    //#if DEBUG_ENABLE
@@ -854,18 +859,6 @@ static void power_off_handler(void)
 		  break;
 
 		  case 5:
-
-		     if(time_1s_counter > 15){
-				 	time_1s_counter =0;
-				    dht11_read_temp_humidity_value();
-				   // #if DEBUG_ENABLE
-                     /// printf(" gon_t.off_step = %d \n\r", gon_t.off_step );
-				    //#endif 
-			}
-		
-		    gon_t.off_step =6;
-
-		  break;
 
 		  case 6:
 
@@ -884,14 +877,15 @@ static void power_off_handler(void)
 
 		case 7:
 			
-
+            switch_flag = switch_flag ^ 0x01;
 		    if(wifi_connected_success_f ==1 &&   gpro_t.time_4s_f> 16){
 				gpro_t.time_4s_f=0;
 				fan_warning_f = 0;
 			    ptc_high_temperature_f =0;
-			    Publish_Data_fan_Warning(0); //fan warning .
-
-				Publish_Data_Ptc_Temp_Warning(0);
+				if(switch_flag)
+			       Publish_Data_fan_Warning(0); //fan warning .
+                else
+				   Publish_Data_Ptc_Temp_Warning(0);
 				//wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);///delay_ms(200);
 		    }
 		    gon_t.off_step = 8;
@@ -899,12 +893,13 @@ static void power_off_handler(void)
 		break;
 
 		case 8:
-			if(setting_timing_second > 14 && wifi_connected_success_f ==1 ){
-				//setting_timing_second =0;
+			if(gpro_t.time_2s_f > 14 && wifi_connected_success_f ==1 ){
+				gpro_t.time_2s_f=0;
                MqttData_Publish_PowerOff_Ref(); 
-			   wait_timeout = tx_time_get()+ 20;   
+			   wait_timeout = tx_time_get()+ 200;   
 			}
-			else if(setting_timing_second > 20 && wifi_connected_success_f ==1){
+			else if(setting_timing_second > 30 && wifi_connected_success_f ==1){
+				setting_timing_second =0;
 
                 get_beijing_thime_handler();
 
