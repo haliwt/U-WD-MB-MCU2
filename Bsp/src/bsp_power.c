@@ -365,11 +365,12 @@ static void power_on_initial(void)
 
    break;
 
+
    case 2:
    	 
-       //dht11_read_temp_humidity_value();
-	   //display_digital_3_numbers();
-	   gon_t.on_step =0xfe;
+       if(wifi_connected_success_f ==1) SendData_Set_Command(0x1F,0X01);
+	    tx_thread_sleep(2);
+	    gon_t.on_step =0xfe;
 
    break;
 
@@ -622,13 +623,9 @@ static void handler_wifi_update_temp_humidity(void)
 **/
 static void handler_read_dht11(void)
 {
-
-     if( ptc_high_temperature_f == 0 && fan_warning_f ==0 ){
-			disp_counter=0;	
-		//display_temperature_humidigy_handler();
-
-	 }
-
+     if( ptc_high_temperature_f == true || fan_warning_f == true) return ;
+	 
+    //display_temperature_humidigy_handler(); //S01 or S02 be used tu this item
 }
 
 /**
@@ -906,9 +903,14 @@ static void power_off_handler(void)
 
 		case 8:
 			if(setting_timing_second > 14 && wifi_connected_success_f ==1 ){
-				setting_timing_second =0;
+				//setting_timing_second =0;
                MqttData_Publish_PowerOff_Ref(); 
 			   wait_timeout = tx_time_get()+ 20;   
+			}
+			else if(setting_timing_second > 20 && wifi_connected_success_f ==1){
+
+                get_beijing_thime_handler();
+
 			}
 		
           gon_t.off_step = 3;

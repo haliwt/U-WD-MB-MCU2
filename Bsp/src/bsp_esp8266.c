@@ -313,7 +313,8 @@ void wifi_power_on_handler(void)
 	 break;
 	 
 	 case 2:
-			
+
+	    get_beijing_thime_handler();
 		if(wifi_app_timer_power_on_f ==1 && gpro_t.g_power_flag == 1){
 		     	//smartphone_timer_power_on_handler();
 				// wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//Publish_Data_fan_Warning(2);//fan warning 
@@ -352,15 +353,15 @@ void wifi_power_on_handler(void)
 			wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 			    
 		    wifi_app_timer_power_on_f++;
-			wifi_run_step = 5;
+		
            #if 0
               printf("wifi_app_f = %d \r\n",wifi_app_timer_power_on_f);
 		   #endif 
 			
 	      }
-		  else{
+		
 		   wifi_run_step = 5;
-		  }
+		  
 
 	    break;
 
@@ -375,12 +376,11 @@ void wifi_power_on_handler(void)
 			    //wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 			 }
 			 wifi_first_connectoed_cloud_f++;
-			  wifi_run_step = 6;
+			  
          }
-		 else{
-		  wifi_run_step = 6;
-		 }
-		 
+		
+		 get_beijing_thime_handler();
+		 wifi_run_step = 6;
 	break;
 
 
@@ -440,7 +440,7 @@ void wifi_power_on_handler(void)
 
 		  }
 
-	    wifi_run_step =5;
+	    wifi_run_step =6;
 
 	 break;
 
