@@ -407,7 +407,7 @@ void power_on_handler(void)
             gpro_t.key_inc_or_dec_f = false;
 		    disp_key_input_handler();
 
-			if(gpro_t.set_temp_flag == true&& ptc_high_temperature_f == 0 && fan_warning_f ==0)
+			if(gpro_t.set_temp_flag == true && ptc_high_temperature_f == 0 && fan_warning_f ==0)
 	        {
 	            // 立即清除触发标志，防止重复执行
 	            gpro_t.set_temp_flag= false ;
@@ -1346,13 +1346,13 @@ void get_beijing_thime_handler(void)
    if(gpro_t.get_rx_beijing_time_enable !=1 || gpro_t.get_rx_beijing_time_enable !=2){
             //disable publish data to tencent cloud.
             Get_BeiJing_Time_Cmd();
-    	    tx_thread_sleep(30);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
+    	    tx_thread_sleep(20);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
     	   
              gpro_t.get_rx_beijing_time_enable=1;
         	 rx_wifi_data_counter=0;
         	 Get_Beijing_Time();
 			
-             tx_thread_sleep(200);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
+             tx_thread_sleep(20);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
              
    	}             
 
