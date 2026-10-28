@@ -24,7 +24,18 @@ void Relay_Ctrl(void)
 			}
 }
 
-	
+
+
+void relay_ctrl_on(void)
+{
+	if((ptc_heat_open_f==true)	&& works_interval_f == false){
+					  
+				 RELAY_ON();
+					   
+	}
+
+
+}
 		
 
 

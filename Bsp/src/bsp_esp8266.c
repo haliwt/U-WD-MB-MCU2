@@ -253,10 +253,12 @@ void auto_connect_wifi_handler(void)
 	*Return Ref:NO
 	*
 ************************************************************************/
+ uint8_t sub_counter,counter_1;
 void wifi_power_on_handler(void)
 {
     static uint8_t sw_flag=0;
-	static uint8_t counter_1=0,counter=0,send_times=0;
+	//static uint8_t counter_1=0,
+	static uint8_t counter=0,send_times=0;
 	static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
     
     
@@ -308,10 +310,11 @@ void wifi_power_on_handler(void)
 		    wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
 	        wifi_run_step =2;
 		}
-		else{
-		 wifi_run_step =2;
+		
+       send_times=0;
+	   wifi_run_step =2;
 			
-		}
+		
 	 break;
 	 
 	 case 2:
@@ -393,16 +396,18 @@ void wifi_power_on_handler(void)
         if(wifi_connected_success_f ==1 &&  wifi_app_timer_power_on_f ==0 &&  counter_1 > 4){
       
 	       counter_1 =0;
+		   
 		   Subscriber_Data_FromCloud_Handler();
+		   sub_counter ++ ;
     	   //wait_timeout=tx_time_get()+20; //tx_thread_sleep(20);//delay_ms(100);
 
 		   
 		
-	         wifi_run_step = 7;
+	        
 		}
-		else{
-		 wifi_run_step = 7;
-		}
+		
+		wifi_run_step = 7;
+		
     
      
      break; 
@@ -414,10 +419,10 @@ void wifi_power_on_handler(void)
       case 7:
 	  	
 	      counter++;
-		  send_times ++;
-	  	  if(wifi_connected_success_f ==1 &&  send_times < 4){
+		  
+	  	  if(wifi_connected_success_f ==1 &&  send_times < 3){
 		  	    
-			
+			    send_times ++;
 				Update_Dht11_Totencent_Value();
               //   wait_timeout=tx_time_get()+10;//tx_thread_sleep(20);// delay_ms(200);
               if(disp_second_f== 1){
@@ -425,14 +430,16 @@ void wifi_power_on_handler(void)
 			   tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 		   	}
           }
-		  else if(wifi_connected_success_f ==1 &&  send_times > 6){
-		  	    	 send_times =0 ;
-			
-				Update_Dht11_Totencent_Value();
-              //   wait_timeout=tx_time_get()+10;//tx_thread_sleep(20);// delay_ms(200);
-           
-          }
-		  else if(wifi_connected_success_f ==0 && counter > 3) {
+		  else if(wifi_connected_success_f ==1 && counter > 5){
+				counter = 0;
+
+                if(disp_second_f== 1){
+			    SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
+			     tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
+		   	 }
+
+		  }
+		  else if(wifi_connected_success_f ==0 && counter > 5) {
                counter = 0;
 		      if(disp_second_f== 1){
 					 SendWifiData_To_Cmd(0x1F,0); //link wifi order 1 --link wifi net is success.
@@ -657,14 +664,14 @@ static void smartphone_timer_power_on_handler(void)
 	}
 
 
-	if(ultra_sound_open_f==1){
+	if(ultra_sound_open_f== true){
 
 	if(disp_second_f == 1){
 		SendWifiData_To_Cmd(0x04,0x01);
 	    tx_thread_sleep(2);//wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);//delay_ms(100);
 		}
 	}
-	else {
+	else if(ultra_sound_open_f== false){
 	ultra_sound_open_f=0;
 	if(disp_second_f == 1){
 		SendWifiData_To_Cmd(0x04,0x0);

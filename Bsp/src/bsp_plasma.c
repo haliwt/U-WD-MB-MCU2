@@ -8,7 +8,7 @@
 **/
 void Plasma_Ctrl(void)
 {
-	  if(gpro_t.g_power_flag){
+	  if(works_interval_f == false){
         if(plasma_open_f==true)
 		    {
 		        PLASMA_ON();

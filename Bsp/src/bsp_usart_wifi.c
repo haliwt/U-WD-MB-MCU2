@@ -266,6 +266,8 @@ void Parse_Tencent_Data(void)
 		
 	
 		   wifi_t.wifi_rx_signal_f= OPEN_OFF_ITEM;
+		 
+	 
 	       memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 
 		   return ;
@@ -547,13 +549,15 @@ static void evt_anion_on(void)
     {
         BEEP_ON();
         plasma_open_f = 1;
+		
+		if(works_interval_f == false) PLASMA_ON();
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x03, 0x01);
 			tx_thread_sleep(2);
         }
-	   Plasma_Ctrl();
-      //Ultra_Sound_Ctrl();
+
+     
 
         MqttData_Publish_SetPlasma(1);
 		
@@ -575,8 +579,8 @@ static void evt_anion_off(void)
 
 		   tx_thread_sleep(2);
        }
-       Plasma_Ctrl();
-      //Ultra_Sound_Ctrl();
+        //Plasma_Ctrl();
+        PLASMA_OFF();
         MqttData_Publish_SetPlasma(0);
 	
 
@@ -591,13 +595,14 @@ static void evt_sonic_on(void)
         BEEP_ON();
         ultra_sound_open_f = 1;
 
+		if(ultra_sound_open_f==true)ultra_sound_on(20); 
+
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x04, 0x01);
 			tx_thread_sleep(2);
         }
-            // Plasma_Ctrl();
-        Ultra_Sound_Ctrl();
-        MqttData_Publish_SetUltrasonic(1);
+		
+         MqttData_Publish_SetUltrasonic(1);
 		
 
         wifi_t.wifi_rx_signal_f = 0xfe;
@@ -610,15 +615,16 @@ static void evt_sonic_off(void)
     {
         BEEP_ON();
         ultra_sound_open_f = 0;
+		ultra_sound_off();
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x04, 0x00);
 
 			tx_thread_sleep(2);
 
-        	}
-         //    Plasma_Ctrl();
-        Ultra_Sound_Ctrl();
+        }
+  
+       
         MqttData_Publish_SetUltrasonic(0);
 
         wifi_t.wifi_rx_signal_f = 0xfe;

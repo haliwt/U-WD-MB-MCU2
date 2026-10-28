@@ -10,6 +10,7 @@
 void Relay_Ctrl(void);
 
 
+void relay_ctrl_on(void);
 
 
 
