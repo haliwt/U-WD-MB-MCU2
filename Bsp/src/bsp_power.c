@@ -1346,13 +1346,13 @@ void get_beijing_thime_handler(void)
    if(gpro_t.get_rx_beijing_time_enable !=1 || gpro_t.get_rx_beijing_time_enable !=2){
             //disable publish data to tencent cloud.
             Get_BeiJing_Time_Cmd();
-    	    tx_thread_sleep(20);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
+    	    tx_thread_sleep(10);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
     	   
              gpro_t.get_rx_beijing_time_enable=1;
         	 rx_wifi_data_counter=0;
         	 Get_Beijing_Time();
 			
-             tx_thread_sleep(20);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
+             tx_thread_sleep(10);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
              
    	}             
 
