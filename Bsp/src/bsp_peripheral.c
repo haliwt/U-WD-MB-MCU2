@@ -155,37 +155,38 @@ void Beep(Beep_TypeDef music)
 **/
 void workd_interval_time_peripheral_handle(void)
 {
-	if(gpro_t.g_power_flag){
+	if(works_interval_f == false){
 
-		if((ptc_heat_open_f==1)&& ptc_prohibit_off_f == 0)
+		if((ptc_heat_open_f== true)&& ptc_prohibit_off_f == 0)
 		{
-			//LED_PTC_ON();
+			 RELAY_ON();
         }
 		else if(ptc_heat_open_f==0)
 		{
-			//LED_PTC_OFF();
-
+			
+           RELAY_OFF();
 
 		}
 		
 		if(ultra_sound_open_f)
 		{
 
-			//LED_MOUSE_ON();
+			ultra_sound_on(1);
 		}
 		else
 		{
-
-			//LED_MOUSE_OFF();
+            ultra_sound_off();
+			
 		}
 		
 		if(plasma_open_f)
 		{
-
+            PLASMA_ON()  ;
 		//LED_PLASMA_ON();
 		}
-			else
+		else
 		{
+		  PLASMA_OFF()  ;
 
 		//LED_PLASMA_OFF();
 		}

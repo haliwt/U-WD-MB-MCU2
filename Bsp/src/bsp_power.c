@@ -62,7 +62,7 @@ uint8_t time_1s_counter;
 
 //display second board
 uint8_t disp_second_f;
-bool heat_open_close_f;
+
 uint8_t  key_pressed_set_temp_f;
 
 
@@ -401,7 +401,8 @@ void power_on_handler(void)
         }
 	 // ✨【新增：紧急事件拦截响应】✨
         // 如果按键任务设置完温度，将 g_pro.g_immediate_heat_f 置为 1
-       
+
+		 
          if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0 && gpro_t.key_inc_or_dec_f == true){
 		    time_10ms_f=0;
             gpro_t.key_inc_or_dec_f = false;
@@ -415,9 +416,8 @@ void power_on_handler(void)
 	            // 确保底层硬件（如继电器、PWM、PTC）在 20ms 内得到响应
 	           compare_set_temp_value(); //set_temperature_value_handler(); 
 	        }
-			    
-
-         }
+	     }
+	
 		
 		  power_on_cycle_handler();
 

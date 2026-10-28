@@ -516,8 +516,9 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		}
 		else if(pdata[3]==0){
 			  works_interval_f=false;//WT.EDIT 2026.01.26
+		
 			
-		      if(ptc_prohibit_off_f==false && heat_open_close_f== true){
+		      if(ptc_prohibit_off_f==false && ptc_heat_open_f == true){
 			  	       RELAY_ON();
 				
               }
