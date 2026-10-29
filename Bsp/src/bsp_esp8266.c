@@ -391,32 +391,8 @@ void wifi_power_on_handler(void)
 
 	case 6: 
 
-	   counter_1 ++;
-
-        if(wifi_connected_success_f ==1 &&  wifi_app_timer_power_on_f ==0 &&  counter_1 > 4){
-      
-	       counter_1 =0;
-		   
-		   Subscriber_Data_FromCloud_Handler();
-		   sub_counter ++ ;
-    	   //wait_timeout=tx_time_get()+20; //tx_thread_sleep(20);//delay_ms(100);
-
-		   
-		
-	        
-		}
-		
-		wifi_run_step = 7;
-		
-    
-     
-     break; 
-		 
-	 
-
-	
-		
-      case 7:
+	  
+	case 7:
 	  	
 	      counter++;
 		  

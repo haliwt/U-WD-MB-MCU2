@@ -308,7 +308,7 @@ TimeSharingTask_t g_tasks[] = {
     {0, 980,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state}, 
     {0, 14,        handler_link_wifi},                  //10*10ms =100ms
-    {0, 54000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
+    {0, 74000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
     {0, 42000,     handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
@@ -690,7 +690,11 @@ static void handler_repeat_link_net(void)
 static void handler_link_wifi(void)
 {
 
+   static uint8_t counter_run;
+
    if(ptc_high_temperature_f == 1 || fan_warning_f ==1 || is_doing_connet_wifi_f== false) return ;
+
+   couter_run++;
 	
     if(is_doing_connet_wifi_f)
 	{
@@ -707,6 +711,14 @@ static void handler_link_wifi(void)
 			link_wifi_net_handler();
 		}
 	} 
+
+	if(wifi_connected_success_f ==1 &&  wifi_app_timer_power_on_f ==0 &&  is_doing_connet_wifi_f ==0 && counter_run >10){
+      
+	       counter_run =0;
+		   
+		   Subscriber_Data_FromCloud_Handler();
+		
+    }
 		  
 
 }

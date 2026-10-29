@@ -269,6 +269,8 @@ void Parse_Tencent_Data(void)
 		 
 	 
 	       memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+	       wifi_t.rx_recoder_counter = 0;
+	   
 
 		   return ;
 	 }
@@ -277,6 +279,7 @@ void Parse_Tencent_Data(void)
         
 		wifi_t.wifi_rx_signal_f= OPEN_ON_ITEM;
 		memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+	     wifi_t.rx_recoder_counter = 0;
 	    return ;
 	   
 	 }
@@ -286,7 +289,7 @@ void Parse_Tencent_Data(void)
 			 
 	         wifi_t.wifi_rx_signal_f= PTC_OFF_ITEM;
 			 memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
-			   
+			  wifi_t.rx_recoder_counter = 0; 
                
 				return;
     }
@@ -296,7 +299,7 @@ void Parse_Tencent_Data(void)
 	   
 		wifi_t.wifi_rx_signal_f= PTC_ON_ITEM;
 		memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);    
-	 
+	 wifi_t.rx_recoder_counter = 0;
 
 		return ;
 	}
@@ -308,7 +311,7 @@ void Parse_Tencent_Data(void)
 	       
 			wifi_t.wifi_rx_signal_f= ANION_OFF_ITEM;
 	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
-			
+			wifi_t.rx_recoder_counter = 0;
 
 		     return ;
 		  
@@ -321,6 +324,7 @@ void Parse_Tencent_Data(void)
 	       
 			wifi_t.wifi_rx_signal_f= ANION_ON_ITEM;
 			 memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+			 wifi_t.rx_recoder_counter = 0;
 	
 		     return ;
             
@@ -334,6 +338,7 @@ void Parse_Tencent_Data(void)
 			 
 			wifi_t.wifi_rx_signal_f= SONIC_OFF_ITEM;
 			memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+			wifi_t.rx_recoder_counter = 0;
 
         return ;
                 
@@ -348,7 +353,7 @@ void Parse_Tencent_Data(void)
 	        
 			wifi_t.wifi_rx_signal_f= SONIC_ON_ITEM;
 	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
-         
+           wifi_t.rx_recoder_counter = 0;
 
 		return ;
        
@@ -363,6 +368,7 @@ void Parse_Tencent_Data(void)
 	       
 			wifi_t.wifi_rx_signal_f= STATE_AI_MODEL_ITEM;
 			memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+			wifi_t.rx_recoder_counter = 0;
 
 		
 			return ;
@@ -378,6 +384,7 @@ void Parse_Tencent_Data(void)
 	        
 			wifi_t.wifi_rx_signal_f= STATE_TIMER_MODEL_ITEM;
 		    memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+			wifi_t.rx_recoder_counter = 0;
 			 return ;
             
 			
@@ -392,12 +399,13 @@ void Parse_Tencent_Data(void)
 	        
 		   wifi_t.wifi_rx_signal_f= FAN_ITEM;
 		  memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
-
+			wifi_t.rx_recoder_counter = 0;
 		
 		    return ;
 
-		} 
-        else if((p1 = strstr((const char *)wifi_t.rx_data_array, "\"temperature\":")) != NULL && gpro_t.g_power_flag == 1){
+		}
+	 
+        if((p1 = strstr((const char *)wifi_t.rx_data_array, "\"temperature\":")) != NULL && gpro_t.g_power_flag == 1){
 	 
 
        setting_temperature =  atoi(p1 + 14);
@@ -406,6 +414,7 @@ void Parse_Tencent_Data(void)
 
 	   wifi_t.wifi_rx_signal_f= TEMPERATURE_ITEM;
 		  memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+		  wifi_t.rx_recoder_counter = 0;
 
         return ;
 		}
@@ -414,31 +423,45 @@ void Parse_Tencent_Data(void)
 		if (strstr((const  char *)wifi_t.rx_data_array, "+TCMQTTRECONNECTING") != NULL)
         {
              //wifi_state = WIFI_MQTT_RECONNECTING;
-             rc_counter ++;
-			 if(rc_counter > 7){
-                rc_counter =0;
+          
                  wifi_connected_success_f  = 0;
 				 dc_connect_net_step = 0;
 				 wifi_off_step=0;
 			     wifi_run_step = 0;
-			     wifi_connected_success_f =0;
+			
 				 wifi_app_timer_power_on_f = 0;
-			 }
-
+			  memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+              wifi_t.rx_recoder_counter = 0;
 			 return ;
         }
 
 		if(strstr((const char*)wifi_t.rx_data_array, "+TCMQTTCONN:FAIL,202") != NULL){
 
-                 if(gpro_t.time_2m_f > 1){
-				 	 gpro_t.time_2m_f = 0;
+               
+				 
 					 wifi_connected_success_f  = 0;
 					 dc_connect_net_step = 0;
 					 wifi_off_step=0;
 				     wifi_run_step = 0;
-				     wifi_connected_success_f =0;
+				    
 					 wifi_app_timer_power_on_f = 0;
-                 }
+                  memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+				  wifi_t.rx_recoder_counter = 0;
+                return ;
+				
+		}
+
+		if(strstr((const char*)wifi_t.rx_data_array, "+CME ERROR:208") != NULL){
+
+                
+					 wifi_connected_success_f  = 0;
+					 dc_connect_net_step = 0;
+					 wifi_off_step=0;
+				     wifi_run_step = 0;
+				  
+					 wifi_app_timer_power_on_f = 0;
+                  memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
+				  wifi_t.rx_recoder_counter = 0;
                 return ;
 				
 		}
