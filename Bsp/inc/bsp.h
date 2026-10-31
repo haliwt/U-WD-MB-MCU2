@@ -91,6 +91,7 @@ typedef struct _main_ref{
  bool temp_value_to_wifi_flag;
  bool beijing_time_flag;
  bool set_temp_flag ;
+ uint8_t send_cmd_0x09_waiting_ack ;
 
 
 
@@ -110,15 +111,11 @@ typedef struct _main_ref{
  volatile uint8_t time_2s_f;
  volatile uint8_t time_1s_f;
  volatile uint8_t time_3s_f;
- volatile uint8_t time_4s_f;
-
-
+ 
  volatile uint8_t time_7s_f;
- volatile uint8_t time_10s_f;
-
- volatile uint8_t time_1m_f;
-
- volatile uint8_t time_2m_f;
+ volatile uint8_t  gTimer_get_beijing_counter;
+ volatile uint8_t  gTimer_sub_counter;
+ volatile uint8_t  gTimer_cmd_ack ;
 
 
 

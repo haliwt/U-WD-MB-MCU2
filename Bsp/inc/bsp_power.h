@@ -177,7 +177,7 @@ extern  uint8_t  wifi_off_step;
 
 extern  uint8_t  wifi_first_connectoed_cloud_f;
 extern  uint8_t  wifi_read_net_data_f;
-extern  uint8_t  wifi_check_net_f;
+extern  uint8_t   wifi_check_net_f;
 extern  uint8_t dc_connect_net_step	;
 volatile extern  uint8_t  rx_wifi_data_success;
 volatile extern  uint8_t   rx_wifi_data_counter;

@@ -114,7 +114,12 @@ void wifi_auto_detected_link_state(void)
 	}
 	else
        check_wifi_connect_net_state();
-   
+
+	if(gpro_t.gTimer_get_beijing_counter > 5 && (gpro_t.get_rx_beijing_time_enable ==1 || gpro_t.get_rx_beijing_time_enable ==2)){
+
+	    gpro_t.get_rx_beijing_time_enable =0;
+
+	} 
 }
 
 

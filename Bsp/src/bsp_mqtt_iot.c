@@ -419,6 +419,8 @@ void Subscriber_Data_FromCloud_Handler(void)
          send_usart2_data((const uint8_t *)message,message_len);
          tx_thread_sleep(20);
 }
+
+
 /*******************************************************************************
 **
 *Function Name:void Publish_Data_ToCloud(void)
@@ -620,7 +622,7 @@ void link_wifi_net_handler(void)
 	message[0] = '\0'; // 只需将第一个字符设为结束符，逻辑上就成了空字符串
 
 	// 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
-    if (tx_time_get() < wait_timeout) {
+    if (tx_time_get() - wait_timeout < 0) {
        return; 
     }
 

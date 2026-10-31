@@ -481,9 +481,10 @@ static void evt_open_on(void)
     if (wifi_connected_success_f == 1)
     {
         BEEP_ON();
+	   
 		gpro_t.g_power_flag = 1;
 		gon_t.on_step =0;
-       // System_Status_PowerOn();
+        works_interval_f = 0;
   
 
         if (disp_second_f == 1){
@@ -501,8 +502,11 @@ static void evt_open_off(void)
     if (wifi_connected_success_f == 1)
     {
         BEEP_ON();
+		
+		
         gpro_t.g_power_flag = 0;
 		gon_t.off_step = 0;
+		works_interval_f = 0;
        // System_Status_PowerOff();
 
         if (disp_second_f == 1){
@@ -522,6 +526,8 @@ static void evt_ptc_on(void)
     if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+		if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+		
         ptc_heat_open_f= 1;
         ptc_prohibit_off_f = 0;
 
@@ -546,6 +552,8 @@ static void evt_ptc_off(void)
     if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+
+	   if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
         ptc_heat_open_f= 0;
         ptc_prohibit_off_f = 1;
 
@@ -571,6 +579,9 @@ static void evt_anion_on(void)
     if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+	if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+
+	
         plasma_open_f = 1;
 		
 		if(works_interval_f == false) PLASMA_ON();
@@ -595,6 +606,9 @@ static void evt_anion_off(void)
     if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+
+	   if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+	   
         plasma_open_f = 0;
 
         if (disp_second_f == 1){
@@ -616,6 +630,9 @@ static void evt_sonic_on(void)
     if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+
+       if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+		
         ultra_sound_open_f = 1;
 
 		if(ultra_sound_open_f==true)ultra_sound_on(20); 
@@ -637,6 +654,10 @@ static void evt_sonic_off(void)
     if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+
+	  if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+
+		
         ultra_sound_open_f = 0;
 		ultra_sound_off();
 
@@ -664,6 +685,9 @@ static void evt_timer_mode(void)
     if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+		
+	  if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+	  
         AI_led_open_f = 0;
 
        // LED_AI_OFF();
@@ -689,7 +713,9 @@ static void evt_ai_mode(void)
  
 	if (gpro_t.g_power_flag == 1)
     {
-     
+       if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+
+	   
         key_mode_short_handler();
        
 
@@ -711,6 +737,8 @@ static void evt_temperature(void)
 	if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+
+	    if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
 
         ptc_prohibit_off_f = 0;
         key_input_temp_f = 4;
@@ -743,6 +771,8 @@ static void evt_fan(void)
 	if (gpro_t.g_power_flag == 1)
     {
         BEEP_ON();
+
+	    if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
 		wifiFan_Ctrl_Process();
         MqttData_Publis_SetFan(fan_speed_level);
 		

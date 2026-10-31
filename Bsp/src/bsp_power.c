@@ -10,6 +10,8 @@
 
 #include "bsp.h"
 
+#define FAN_THRESHOLD_ADC    350
+
 power_state gon_t;
 
 
@@ -208,7 +210,7 @@ void Clear_Ram(void)
 	  gpro_t.time_400ms_f =0;
 	  gpro_t.time_500ms_f =0;
 	  gpro_t.time_1s_f = 0;
-	  gpro_t.time_1m_f=0;
+
 	
 
 	  Times10msCnt = 0;
@@ -295,7 +297,10 @@ static void handler_repeat_link_net(void);
 static void handler_wifi_report(void);
 static void handler_wifi_get_beijing_time(void);
 
-volatile uint8_t time_slot ;
+static void handler_copy_order_waiting_ack(void);
+
+
+//volatile uint8_t time_slot ;
 
 
 // --- 4. 初始化分时任务表 ---
@@ -311,8 +316,8 @@ TimeSharingTask_t g_tasks[] = {
     {0, 74000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
-    {0, 42000,     handler_wifi_get_beijing_time}   //10ms * 1000 = 30000,30s
-   
+    {0, 71000,     handler_wifi_get_beijing_time},   //10ms * 1000 = 30000,30s
+    {0, 20,        handler_copy_order_waiting_ack}
     
 	
 };
@@ -543,10 +548,21 @@ static void handler_wifi_report(void)
 *@retval
 *
 **/
+
+uint8_t fan_error;
 static void handler_fan_adc(void)
 {
 
-   static uint8_t fan_counter = 0,fan_error;
+   static uint8_t fan_counter ,counter_sound;
+
+
+     if(fan_warning_f == true ){
+          counter_sound ++;
+		  if(counter_sound > 5){
+		  	counter_sound =0;
+             beep_high_temperature_sound();
+		  }
+	 }
    
 	  if( ptc_high_temperature_f == 0 && fan_warning_f ==0 && works_interval_f==0){
             fan_counter =1;
@@ -554,33 +570,39 @@ static void handler_fan_adc(void)
 		    AD_Filter();
 	  }
 
-	   if(fan_counter ==1){
+	   if(fan_counter==1){
 		   	  fan_counter ++; 
 			  #if 0
 				  printf("fan_current  = %d \n\r",fan_current );
 				  printf("temperature = %d \n\r",read_ntc_temperature_value);
 			  #endif 
-           if(fan_current < 20  &&  fan_warning_f == 0 && works_interval_f==0){
+           if(fan_current < FAN_THRESHOLD_ADC   &&  fan_warning_f == 0 && works_interval_f== false){
 		  	    
                  fan_error ++ ;
 				 #if 0
 				 
 				  printf("fan_error= %d \n\r",fan_error);
 			    #endif 
-			     if(fan_error > 6){
-				  fan_warning_f = 1;
-				    //   LED_PTC_OFF();
+			     if(fan_error > 10){
+				 	  fan_error = 0;
+				  fan_warning_f = true;
+				 
 					    RELAY_OFF(); 
-						SMG_Display_Err(02);
+						//SMG_Display_Err(02);
+						gpro_t.send_cmd_0x09_waiting_ack = 1;
+						gpro_t.gTimer_cmd_ack =0 ;
+						SendData_Set_Command(0x09,0x01);
+						tx_thread_sleep(2);
 						if(wifi_connected_success_f ==1){
                             Publish_Data_fan_Warning(0x01);//fan warning
 						}
+						
 						beep_high_temperature_sound();
 						
 	            }
 				 
 			}
-		    else if(fan_current  >19   &&  fan_warning_f == 0 && works_interval_f==0){
+		    else if(fan_current  >= FAN_THRESHOLD_ADC    &&  fan_warning_f == false && works_interval_f==0){
 
 			   fan_error  =0;
 
@@ -675,9 +697,6 @@ static void handler_repeat_link_net(void)
 
 	}
 	
-
-
-
 }
 /**
 	*
@@ -689,12 +708,8 @@ static void handler_repeat_link_net(void)
 **/
 static void handler_link_wifi(void)
 {
+    if(ptc_high_temperature_f == 1 || fan_warning_f ==1 || is_doing_connet_wifi_f== false) return ;
 
-   static uint8_t counter_run;
-
-   if(ptc_high_temperature_f == 1 || fan_warning_f ==1 || is_doing_connet_wifi_f== false) return ;
-
-   couter_run++;
 	
     if(is_doing_connet_wifi_f)
 	{
@@ -712,13 +727,7 @@ static void handler_link_wifi(void)
 		}
 	} 
 
-	if(wifi_connected_success_f ==1 &&  wifi_app_timer_power_on_f ==0 &&  is_doing_connet_wifi_f ==0 && counter_run >10){
-      
-	       counter_run =0;
-		   
-		   Subscriber_Data_FromCloud_Handler();
-		
-    }
+	
 		  
 
 }
@@ -737,23 +746,25 @@ static void handler_wifi_get_beijing_time(void)
    get_beijing_thime_handler();
         	
 }
-static void Get_BeiJing_Time_Cmd(void)
-{
 
-  send_usart2_data((const uint8_t *)"AT+CIPSNTPCFG=1,8\r\n", strlen("AT+CIPSNTPCFG=1,8\r\n"));
+/**
+	*
+	*@brief 
+	*@notice
+	*@param
+	*@retval
+	*
+**/
+static void handler_copy_order_waiting_ack(void)
+{
+    if(wifi_connected_success_f ==1 &&  is_doing_connet_wifi_f ==0 &&  gpro_t.gTimer_sub_counter >30){
+          gpro_t.gTimer_sub_counter = 0;
+	     Subscriber_Data_FromCloud_Handler();
+	     //tx_thread_sleep(20);
+		
+    }
 
 }
-
-static void Get_Beijing_Time(void)
-{
-
-//   HAL_UART_Transmit(&huart2, "AT+CIPSNTPTIME?\r\n", strlen("AT+CIPSNTPTIME?\r\n"), 0xffff);//�?始连�?
-     send_usart2_data((const uint8_t *)"AT+CIPSNTPTIME?\r\n", strlen("AT+CIPSNTPTIME?\r\n"));
-
-
-}
-
-
 
 /************************************************************************
  *
@@ -890,8 +901,8 @@ static void power_off_handler(void)
 		case 7:
 			
             switch_flag = switch_flag ^ 0x01;
-		    if(wifi_connected_success_f ==1 &&   gpro_t.time_4s_f> 16){
-				gpro_t.time_4s_f=0;
+		    if(wifi_connected_success_f ==1 &&   gpro_t.gTimer_get_beijing_counter > 16){
+				 gpro_t.gTimer_get_beijing_counter = 0;
 				fan_warning_f = 0;
 			    ptc_high_temperature_f =0;
 				if(switch_flag)
@@ -1270,7 +1281,7 @@ void System_Status_PowerOn(void)
 	setting_temperature = 40;	// 默认设定温度 40°C
 	setting_timing_hour = 0;	// 默认不设置定时（常开模式）
 	gpro_t.time_base_1s_counter=0;	// 重置工作时间累计
-	gpro_t.time_1m_f = 0;			// 重置工作时间累计
+
 	// 3. 状态显示切换
 	Is_time_setting_f = 0;
 	Is_countdown_timer_f = 0;
@@ -1322,7 +1333,7 @@ void System_Status_PowerOff(void)
 	Is_countdown_timer_f = 0;
 	works_interval_f =0;
 	gpro_t.time_base_1s_counter=0;// 重置工作时间累计
-	gpro_t.time_1m_f = 0;// 重置工作时间累计
+
 
 	//wifi
 	wifi_run_step=0;
@@ -1359,15 +1370,37 @@ void get_beijing_thime_handler(void)
             //disable publish data to tencent cloud.
             Get_BeiJing_Time_Cmd();
     	    tx_thread_sleep(10);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10//HAL_Delay(20);
-    	   
-             gpro_t.get_rx_beijing_time_enable=1;
-        	 rx_wifi_data_counter=0;
+    	    gpro_t.get_rx_beijing_time_enable=1;
+            gpro_t.gTimer_get_beijing_counter = 0;
+        	rx_wifi_data_counter=0;
         	 Get_Beijing_Time();
-			
-             tx_thread_sleep(10);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
+			 tx_thread_sleep(10);//tx_thread_sleep(100);//HAL_Delay(20); //WT.EDIT .2024.08.10
              
    	}             
 
 }
+/**
+	*
+	*@brief 
+	*@notice
+	*@param
+	*@retval
+	*
+**/
 
+static void Get_BeiJing_Time_Cmd(void)
+{
+
+  send_usart2_data((const uint8_t *)"AT+CIPSNTPCFG=1,8\r\n", strlen("AT+CIPSNTPCFG=1,8\r\n"));
+
+}
+
+static void Get_Beijing_Time(void)
+{
+
+//   HAL_UART_Transmit(&huart2, "AT+CIPSNTPTIME?\r\n", strlen("AT+CIPSNTPTIME?\r\n"), 0xffff);//�?始连�?
+     send_usart2_data((const uint8_t *)"AT+CIPSNTPTIME?\r\n", strlen("AT+CIPSNTPTIME?\r\n"));
+
+
+}
 
