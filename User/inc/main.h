@@ -45,6 +45,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN constants */
+#define OLDER_DISPLAY_MAINBOARD_S06   0
 
 /* USER CODE END constants */
 

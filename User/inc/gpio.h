@@ -18,6 +18,8 @@
 
 #include "stdint.h"
 
+#define OLDER_PCB   1
+
 
 
 //CTL GPIO 
@@ -80,8 +82,8 @@
 #define ADC_PTC_GPIO_Port 						GPIOA
 #define LL_ADC_PTC_Pin 							LL_GPIO_PIN_1
 
-#define ULTR_PWM_GPIO_Port GPIOA
-#define LL_ULTR_PWM_Pin LL_GPIO_PIN_8
+#define ULTR_PWM_GPIO_Port 						GPIOA
+#define LL_ULTR_PWM_Pin 						LL_GPIO_PIN_8
 
 #define BEEP_PWM_GPIO_Port 							GPIOB
 #define LL_BEEP_PWM_Pin 							LL_GPIO_PIN_1
@@ -89,9 +91,14 @@
 #define FAN_PWM_GPIO_Port 							GPIOA
 #define LL_FAN_PWM_Pin 								LL_GPIO_PIN_6
 
+#if OLDER_PCB
 #define FAN_RUN_GPIO_Port 						GPIOF
 #define LL_FAN_RUN_Pin 							LL_GPIO_PIN_4
-
+//new PCB
+#else
+#define FAN_RUN_GPIO_Port 						GPIOF
+#define LL_FAN_RUN_Pin 							LL_GPIO_PIN_1
+#endif 
 //
 
 #define DSP1_TX_GPIO_Port GPIOA

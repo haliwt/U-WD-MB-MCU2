@@ -7,6 +7,10 @@
 
   * @u-wd-mb-mcu32t031c8t6 
   * @data   2026-09-09
+  * @data:  2026-11-01 be used new PCB ,fan by adjust PWM GPIO be changed.
+  * @data:  2026.11-25 add compatible older version parts codes .
+  *         older display board S06 is USART baud rat is 115200 ,
+  *         need selection.
   * 
   ******************************************************************************
   * @attention
@@ -26,6 +30,8 @@
 #include "bsp.h"
 
 #include "tx_api.h"
+
+
 
 ///* ThreadX 强制要求的应用定义入口 */
 //void tx_application_define(void *first_unused_memory)
@@ -53,8 +59,12 @@ int main(void)
     gpio_init();//GPIO_Configuration();          //IO口配置
 	
   // Clear_Ram();                   //变量初始化
-	
-    UART1_Configuration(9600);    //串口1 用于和外接显示板通信
+	#if OLDER_DISPLAY_MAINBOARD_S06 //older display mainbord
+    UART1_Configuration(115200);    //串口1 用于和外接显示板通信
+	#else 
+	UART1_Configuration(9600); 
+
+	#endif 
 	
 	UART2_Configuration(115200);     //串口2 用于和WIFI模组通信
 	

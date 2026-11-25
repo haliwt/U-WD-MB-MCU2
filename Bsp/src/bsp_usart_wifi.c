@@ -71,7 +71,7 @@ process_t wifi_t;
 void wifi_parse_tencennt_hadler(void)
 {
 
-  //Tencent_Cloud_Rx_Handler();
+
    Parse_Tencent_Data() ;	
    Wifi_Event_Process();
 		 
@@ -488,8 +488,14 @@ static void evt_open_on(void)
   
 
         if (disp_second_f == 1){
-            SendWifiData_To_Cmd(0x20, 0x01);
-			tx_thread_sleep(3);
+            SendWifiData_To_Cmd(0x01, 0x01);
+			tx_thread_sleep(2);
+
+			SendWifiData_To_Cmd(0x31, 0x01);//older version software. DATA.2026.11.25
+			tx_thread_sleep(2);
+
+		
+		    
         }
 		MqttData_Publish_SetOpen(1);
 		tx_thread_sleep(20);
@@ -510,8 +516,10 @@ static void evt_open_off(void)
        // System_Status_PowerOff();
 
         if (disp_second_f == 1){
-            SendWifiData_To_Cmd(0x20, 0x00);
+            SendWifiData_To_Cmd(0x01, 0x00);
             tx_thread_sleep(3);
+		    SendWifiData_To_Cmd(0x31, 0);//older version software. DATA.2026.11.25
+			tx_thread_sleep(2);
         }
 
         MqttData_Publish_PowerOff_Ref();
@@ -745,8 +753,16 @@ static void evt_temperature(void)
         time_1s_counter = 0;
 
         if (disp_second_f == 1){
-            SendWifiData_To_Data(0x2A, setting_temperature);
+           
+			SendWifiData_To_Data(0x2A, setting_temperature);
 			tx_thread_sleep(2);
+
+			if(soft_version==0){// compatible older version software.DATA.2026-11-25
+
+			    SendWifiData_To_Data(0x3A, setting_temperature);
+				tx_thread_sleep(2);
+			}
+		  
         }
         //TM1639_Display_Temperature(setting_temperature);
         direct_compare_set_temp_value();

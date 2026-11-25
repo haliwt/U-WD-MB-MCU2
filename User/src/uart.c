@@ -30,6 +30,7 @@ void UART2_Send_Str(uint8_t *String,uint8_t s2);
 
 
 // UART1 ≥ı ºªØ≈‰÷√
+// Be used to display board conntector .
 void UART1_Configuration(uint32_t BaudRate1)
 {
     UART_InitTypeDef UART_InitStructure;

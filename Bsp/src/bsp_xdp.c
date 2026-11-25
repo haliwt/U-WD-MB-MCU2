@@ -134,6 +134,7 @@ typedef struct Msg
 	uint8_t   total_data_length;
     uint8_t   rx_end_code;
 	uint8_t   rx_total_numbers;
+	bool     decoder_copy_cmd_flag ;
 	uint8_t   rx_data[4];
 	uint8_t   usData[12];
 	uint8_t   desData[12];
@@ -181,29 +182,34 @@ void usart1_isr_callback_handler(uint8_t data)
 	 case 1:
 			rx_usart1_data_counter++;
 			gl_tMsg.usData[rx_usart1_data_counter]=data;
-
-	        if(gl_tMsg.usData[rx_usart1_data_counter]==0x01 || gl_tMsg.usData[rx_usart1_data_counter]==0x02){
+            if(gl_tMsg.usData[rx_usart1_data_counter]==0x01 || gl_tMsg.usData[rx_usart1_data_counter]==0x02){
 			 
-				 rx_state = 2;
-			 }
-			 else{
-				rx_state = 0;
-				
-             }
+				rx_state = 2;
+			}
+			else{
+
+               rx_state = 0;
+			}
+			 
 
 	 break;
-
-	 case 2:
 	 
-		   rx_usart1_data_counter++;
+	 case 2:
+	       rx_usart1_data_counter++;
            gl_tMsg.usData[rx_usart1_data_counter]=data;
-		   
-		  if(gl_tMsg.usData[rx_usart1_data_counter]==0xFE && rx_usart1_data_counter> 4){
+
+		   if(rx_usart1_data_counter == 0x02 && gl_tMsg.usData[rx_usart1_data_counter]==0xFF){
+
+			   rx_state = 4;
+
+          }
+		  else if(gl_tMsg.usData[rx_usart1_data_counter]==0xFE && rx_usart1_data_counter> 4){
 		      rx_state = 3;
 		  }
-		 
-     break;
-			 
+	 
+	 
+	 break;
+
 	 case 3:
 		       rx_usart1_data_counter++;
 	           gl_tMsg.usData[rx_usart1_data_counter]=data;
@@ -214,12 +220,43 @@ void usart1_isr_callback_handler(uint8_t data)
 			   gl_tMsg.rx_end_code = 0;
 			   
 		       //gpro_t.decoder_success_flag=1;
+		       gl_tMsg.decoder_copy_cmd_flag = false;
 
 			   gl_tMsg.bcc_check_code = data;
 
                wifi_semaphore_xtask();//display_board_xtask_notice();
 
 	 break;
+
+	 case 4:
+	 	rx_usart1_data_counter++;
+		gl_tMsg.usData[rx_usart1_data_counter]=data;
+	     if(gl_tMsg.usData[rx_usart1_data_counter]==0xFE && rx_usart1_data_counter> 4){//if(gl_tMsg.usData[rx_usart1_data_counter]==0x01 || gl_tMsg.usData[rx_usart1_data_counter]==0x02){
+				  
+				 rx_state = 5;
+		}
+
+	 break;
+
+	 case 5:
+		rx_usart1_data_counter++;
+		gl_tMsg.usData[rx_usart1_data_counter]=data;
+
+		rx_state = 0;
+		gl_tMsg.rx_total_numbers = rx_usart1_data_counter;
+
+		gl_tMsg.rx_end_code = 0;
+
+		gl_tMsg.decoder_copy_cmd_flag = true;
+
+		gl_tMsg.bcc_check_code = data;
+
+		wifi_semaphore_xtask();//display_board_xtask_notice();
+
+
+	 break;
+
+	
 
 	 default:
 	   rx_state =0;
@@ -261,9 +298,9 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	            tx_thread_sleep(2);//10ms *2 
 				 gpro_t.g_power_flag  = true;//gpro_t.gpower_on = power_on;
 				  fan_wind_speed_full();//fan_full_run();//WT.EDIT 2026.01.26
-				   PLASMA_ON();//PLASMA_ON();;
-                   ultra_sound_on(20);//(159); //ultra_sound_on(uint16_t us_duty);   //ultra_sound_on(40);   //ultrasnoic ON 
-                   RELAY_ON();//RELAY_ON();
+				   PLASMA_ON();
+                   ultra_sound_on(20);
+                   RELAY_ON();
 
 
 	    }
@@ -498,6 +535,16 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 	 break;
 
+	 case 0x0D://s06s display board AI of key
+
+	    if(pdata[3] == 0x01){
+		    BEEP_ON();
+
+        }
+
+
+	 break;
+
 	 case 0x18: 
        
 	 break;
@@ -540,12 +587,8 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 	  break;
 
-	  case 0x1A: //read dht11 temperatuare and humidity value 
-
-	  break;
-
-  
-	  case 0x1B: //
+	
+     case 0x1B: //
 	  
       break;
      
@@ -614,46 +657,54 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	 break;
 
 
-	 
+	 case 0x1A: //older version protocol
 	 case 0x2A: // is data //phone or display  board set temperature .receive.
 	 
 		   if(pdata[4]==0x01 && gpro_t.g_power_flag == true){//pdata[4] :表示数据的长度。
 
-		      if(wifi_connected_success_f==1){
-			       setting_temperature = pdata[5] ;
-			   	   gpro_t.temp_value_to_wifi_flag = true;
-				  //MqttData_Publis_SetTemp(setting_temperature);
-					   
-			  }
-			  #if 0
-			   if(pdata[5] >19 && pdata[5] < 41){
-			   	ptc_prohibit_off_f  = 0;
+		      
 			    setting_temperature = pdata[5] ;
-			  
-			   if(setting_temperature > temperature && works_interval_f ==false){
-			
-			         ptc_onoff_default++;
-                      ptc_heat_open_f = true;
-				      RELAY_ON();
-					  gpro_t.app_open_ptc_flag = true;
-			   }
-			   else{
-			   	   ptc_onoff_default++;
-				   ptc_heat_open_f = false;
-				   ptc_prohibit_off_f =0 ;//gctl_t.gDry =0;
-				   gpro_t.app_open_ptc_flag = false;
 
-			       RELAY_OFF();
-		       }
-              #endif 
-		
-			
+		        gpro_t.temp_value_to_wifi_flag = true;
+			    ptc_prohibit_off_f = false;
+
+			   if(setting_temperature > temperature){
+
+			       ptc_heat_open_f = true;
 			   	
-			  }
-		   
-			
-		
-		
+		          if(works_interval_f == false){
+		            RELAY_ON();
+		           }
+			   	}
+			    else{
+				   ptc_heat_open_f = false;
+				   RELAY_OFF();
+                }
+                
+           }
+		   else if(pdata[4]==0x01 && gpro_t.g_power_flag == false){
+                  gpro_t.external_display_flag = true;
+	              gpro_t.g_power_flag  = true;//gpro_t.gpower_on = power_on;
+
+				  setting_temperature = pdata[5] ;
+				  
+				  fan_wind_speed_full();//fan_full_run();//WT.EDIT 2026.01.26
+
+				  
+				   PLASMA_ON();//PLASMA_ON();;
+                   ultra_sound_on(20);//(159); //ultra_sound_on(uint16_t us_duty);   //ultra_sound_on(40);   //ultrasnoic ON 
+
+				   if(setting_temperature > temperature){
+                  
+				       RELAY_ON();
+                   }
+				   else{
+
+				      RELAY_OFF();
+
+				   }
+
+		   	}
 	 break;
 
 	 case 0x2B: //display or phone set timer time value 
@@ -694,16 +745,17 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		   #endif 
 
     break;
+   	}
+}
 
+//	case 0xFF: //copy comand or notice or data.
 
-	case 0xFF: //copy comand or notice or data.
+//	     //  parse_recieve_copy_data(pdata) ;
 
-	       parse_recieve_copy_data(pdata) ;
+//	break;
 
-	break;
-
-	}
-  }
+	//}
+ // }
 
 /**********************************************************************
 	*
@@ -759,9 +811,14 @@ void decoder_handler(void)
 {
    // gpro_t.decoder_success_flag=0;
 	check_bcc_code = bcc_check(gl_tMsg.usData,gl_tMsg.rx_total_numbers);
-	if(check_bcc_code == gl_tMsg.bcc_check_code){
+	if(check_bcc_code == gl_tMsg.bcc_check_code && gl_tMsg.decoder_copy_cmd_flag == false){
 		usart1_protocol_state_machine(gl_tMsg.usData);
     }
+	else if(check_bcc_code == gl_tMsg.bcc_check_code && gl_tMsg.decoder_copy_cmd_flag == true){
+
+	     parse_recieve_copy_data(gl_tMsg.usData) ;
+
+	}
 }
 
 

@@ -10,7 +10,12 @@
 
 #include "bsp.h"
 
+#if OLDER_DISPLAY_MAINBOARD_S06
+#define FAN_THRESHOLD_ADC    30
+
+#else 
 #define FAN_THRESHOLD_ADC    350
+#endif 
 
 power_state gon_t;
 
@@ -271,6 +276,10 @@ void Clear_Ram(void)
 
 #define TASK_NUM (sizeof(g_tasks) / sizeof(TimeSharingTask_t))
 
+/* 1 tick = 10ms，即 1s = 100 ticks，纯乘法/常量，无除法 */
+#define SEC_TO_TICKS(s)     ((uint32_t)(s) * 100U)
+
+
 
 typedef struct{
 
@@ -299,6 +308,7 @@ static void handler_wifi_get_beijing_time(void);
 
 static void handler_copy_order_waiting_ack(void);
 
+static void handler_wifi_notice(void);
 
 //volatile uint8_t time_slot ;
 
@@ -306,18 +316,19 @@ static void handler_copy_order_waiting_ack(void);
 // --- 4. 初始化分时任务表 ---
 TimeSharingTask_t g_tasks[] = {
  
-    {0, 300,       handler_wifi_update_data},         //140*10ms = 1.4s
-    {0, 10000,     handler_works_hours},            //
+    {0, 300,       handler_wifi_update_data},         //10ms * 300 = 3s
+    {0, 10000,     handler_works_hours},            //10ms * 10000= 100s=
     {0, 570,       handler_fan_adc},
-    {0, 60000,     handler_wifi_update_temp_humidity},
+    {0, 63000,     handler_wifi_update_temp_humidity},//10ms * 63000 = 630s=10.5 分钟
     {0, 980,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state}, 
     {0, 14,        handler_link_wifi},                  //10*10ms =100ms
-    {0, 74000,     handler_repeat_link_net},        //10ms * 1000 = 10s   
+    {0, 30000U,    handler_repeat_link_net},        //10ms * 30000 = 300s = 5 分钟 
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
-    {0, 71000,     handler_wifi_get_beijing_time},   //10ms * 1000 = 30000,30s
-    {0, 20,        handler_copy_order_waiting_ack}
+    {0, 18000,     handler_wifi_get_beijing_time},   /* 18000 ticks = 180.0s = 3分钟 */
+    {0, 20,        handler_copy_order_waiting_ack},
+    {0, 12400,     handler_wifi_notice}         //10ms * 12400 =124s = 2 minutes 4s
     
 	
 };
@@ -479,10 +490,16 @@ static void power_on_cycle_handler(void)
 **/
 static void handler_wifi_update_data(void)
 {
+
+  static uint8_t default_tem_value = 0xff ;
    if(wifi_connected_success_f==1 && ptc_high_temperature_f == false && fan_warning_f ==false){
    	      if(gpro_t.temp_value_to_wifi_flag == true){
 			   	gpro_t.temp_value_to_wifi_flag = false;
-				MqttData_Publis_SetTemp(setting_temperature);
+				if(default_tem_value != setting_temperature){
+				  default_tem_value = setting_temperature;
+				  MqttData_Publis_SetTemp(setting_temperature);
+
+				}
 					   
 		  }
 		  wifi_power_on_handler();
@@ -499,10 +516,12 @@ static void handler_wifi_update_data(void)
  **/
 static void handler_works_hours(void)
 {
-
+   
 	if( ptc_high_temperature_f == 1 ||  fan_warning_f ==1) return ;
 	
+	 
 	  works_run_two_hours_state();
+	 
 	
 }
 /**
@@ -540,6 +559,40 @@ static void handler_wifi_report(void)
   	module_wifi_report_handler();
 
 }
+/**
+*
+*@brief  for compatible older verstion software .
+*@notice  DATA.2026-11-25
+*@param
+*@retval
+*
+**/
+uint8_t wifi_notice_counter;
+static void handler_wifi_notice(void)
+{
+    static uint8_t send_switch;
+	wifi_notice_counter++;
+   if(wifi_connected_success_f== false) return;
+	send_switch++;
+   if(send_switch ==1){
+		if(wifi_connected_success_f== true){
+			SendData_Set_Command(0x1F,0x01);
+			tx_thread_sleep(2);
+		 }
+	}
+	else{
+		send_switch=0;
+	   if(wifi_connected_success_f== true){ //older software DATA.2026-11-25
+			SendWifiData_To_Data(0x1F,0x01);
+			tx_thread_sleep(4);
+		 }
+
+
+	}
+		
+
+}
+
 /**
 *
 *@brief 
