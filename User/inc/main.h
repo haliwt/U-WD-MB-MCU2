@@ -45,7 +45,9 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN constants */
-#define OLDER_DISPLAY_MAINBOARD_S06   0
+#define OLDER_DISPLAY_MAINBOARD_S06   0       //
+#define OLDER_PCB   1                         //WT.EDIT 2026-11-25
+
 
 /* USER CODE END constants */
 

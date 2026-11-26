@@ -540,7 +540,7 @@ static void handler_read_dht11_to_outside_diplay(void)
 	if(gpro_t.external_display_flag ==1){
      flag_id = DHT11_ReadData(&humidity,&temperature);
      sendData_Real_TimeHum(humidity,temperature);
-     tx_thread_sleep(2);
+     tx_thread_sleep(3);
 	}
   
 
@@ -572,12 +572,18 @@ static void handler_wifi_notice(void)
 {
     static uint8_t send_switch;
 	wifi_notice_counter++;
-   if(wifi_connected_success_f== false) return;
+   
 	send_switch++;
    if(send_switch ==1){
 		if(wifi_connected_success_f== true){
 			SendData_Set_Command(0x1F,0x01);
-			tx_thread_sleep(2);
+			tx_thread_sleep(3);
+		 }
+		 else{
+
+		    SendData_Set_Command(0x1F,0);
+			tx_thread_sleep(3);
+
 		 }
 	}
 	else{
@@ -585,7 +591,11 @@ static void handler_wifi_notice(void)
 	   if(wifi_connected_success_f== true){ //older software DATA.2026-11-25
 			SendWifiData_To_Data(0x1F,0x01);
 			tx_thread_sleep(4);
-		 }
+		}
+	    else{
+		   SendWifiData_To_Data(0x1F,0);
+			tx_thread_sleep(4);
+		}
 
 
 	}
