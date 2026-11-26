@@ -272,7 +272,7 @@ void wifi_power_on_handler(void)
        return;
      }
 
-	if(is_doing_connet_wifi_f == 1 || gpro_t.g_power_flag == 0 || wifi_connected_success_f==0) return ;
+	if(is_doing_connet_wifi_f == 1 || gpro_t.g_power_flag == false || wifi_connected_success_f==0) return ;
 		
      switch(wifi_run_step){
 
@@ -395,11 +395,7 @@ void wifi_power_on_handler(void)
 
 
 	case 6: 
-
-	  
-	case 7:
-	  	
-	      counter++;
+		  counter++;
 		  
 	  	  if(wifi_connected_success_f ==1 &&  send_times < 3){
 		  	    
@@ -419,6 +415,8 @@ void wifi_power_on_handler(void)
 			     tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 		   	 }
 
+				 wifi_run_step = 7;
+
 		  }
 		  else if(wifi_connected_success_f ==0 && counter > 5) {
                counter = 0;
@@ -427,18 +425,21 @@ void wifi_power_on_handler(void)
 					  tx_thread_sleep(2);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 			}
 
-
+              wifi_run_step = 7;
 		  }
 
-	    wifi_run_step =6;
+	  
 
-	 break;
+	break;
+
+	case 7:
+	  wifi_run_step = 0xfe;
+
+	break;
+    }
 
 
-     	}
-
-}
-
+ }
 /**
 *@breif : power off connector to tencent cloud .
 *@note:

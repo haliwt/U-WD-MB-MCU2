@@ -316,7 +316,7 @@ static void handler_wifi_notice(void);
 // --- 4. 初始化分时任务表 ---
 TimeSharingTask_t g_tasks[] = {
  
-    {0, 13000,     handler_wifi_update_data},         //130s = 130 *100ms = 2分16秒
+    {0, 300,       handler_wifi_update_data},      //3s = 1 *100ms = 
     {0, 10000,     handler_works_hours},            //100s= 100 * 100ms = 1分 6秒
     {0, 570,       handler_fan_adc},
     {0, 24000,     handler_wifi_update_temp_humidity},//10ms * 240 = 240s=4 分钟
