@@ -306,7 +306,7 @@ static void handler_repeat_link_net(void);
 static void handler_wifi_report(void);
 static void handler_wifi_get_beijing_time(void);
 
-static void handler_copy_order_waiting_ack(void);
+static void handler_report_wifi_tecent(void);
 
 static void handler_wifi_notice(void);
 
@@ -316,19 +316,19 @@ static void handler_wifi_notice(void);
 // --- 4. 初始化分时任务表 ---
 TimeSharingTask_t g_tasks[] = {
  
-    {0, 300,       handler_wifi_update_data},         //10ms * 300 = 3s
-    {0, 10000,     handler_works_hours},            //10ms * 10000= 100s=
+    {0, 13000,     handler_wifi_update_data},         //130s = 130 *100ms = 2分16秒
+    {0, 10000,     handler_works_hours},            //100s= 100 * 100ms = 1分 6秒
     {0, 570,       handler_fan_adc},
-    {0, 63000,     handler_wifi_update_temp_humidity},//10ms * 63000 = 630s=10.5 分钟
+    {0, 24000,     handler_wifi_update_temp_humidity},//10ms * 240 = 240s=4 分钟
     {0, 980,       handler_read_dht11},
     {0, 220,       handler_fan_speed_state}, 
-    {0, 14,        handler_link_wifi},                  //10*10ms =100ms
-    {0, 30000U,    handler_repeat_link_net},        //10ms * 30000 = 300s = 5 分钟 
+    {0, 14,        handler_link_wifi},               //14*1ms =140ms
+    {0, 30000U,    handler_repeat_link_net},        //5分钟 = 换算关系5 * 60 = 300 秒，300 * 100 = 30000 个 tick；
     {0, 270,       handler_wifi_report},
     {0, 300,       handler_read_dht11_to_outside_diplay},
     {0, 18000,     handler_wifi_get_beijing_time},   /* 18000 ticks = 180.0s = 3分钟 */
-    {0, 20,        handler_copy_order_waiting_ack},
-    {0, 12400,     handler_wifi_notice}         //10ms * 12400 =124s = 2 minutes 4s
+    {0, 6300,      handler_report_wifi_tecent},  /*63s = 63 * 100ms =  6300   */
+    {0, 12400,     handler_wifi_notice}         // 124s = 124 *100ms =124 *1000ms= 124s = 2 minutes 4s (1 tick = 10ms)
     
 	
 };
@@ -818,10 +818,10 @@ static void handler_wifi_get_beijing_time(void)
 	*@retval
 	*
 **/
-static void handler_copy_order_waiting_ack(void)
+static void handler_report_wifi_tecent(void)
 {
-    if(wifi_connected_success_f ==1 &&  is_doing_connet_wifi_f ==0 &&  gpro_t.gTimer_sub_counter >30){
-          gpro_t.gTimer_sub_counter = 0;
+    if(wifi_connected_success_f ==1 &&  is_doing_connet_wifi_f ==0 ){
+        
 	     Subscriber_Data_FromCloud_Handler();
 	     //tx_thread_sleep(20);
 		

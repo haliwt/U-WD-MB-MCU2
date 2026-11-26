@@ -71,15 +71,10 @@ process_t wifi_t;
 void wifi_parse_tencennt_hadler(void)
 {
 
-
    Parse_Tencent_Data() ;	
    Wifi_Event_Process();
 		 
-  
-   
 }
-
-
 /*******************************************************************************
    **
    *Function Name:void usart2_rx_callback_invoke(uint8_t data)
@@ -789,6 +784,8 @@ static void evt_fan(void)
         BEEP_ON();
 
 	    if(ptc_high_temperature_f == 1 || fan_warning_f ==1) return ;
+		SendWifiData_To_PanelWindSpeed(fan_speed_level); //EDIT.2026-11-26 Compatible older version 
+		tx_thread_sleep(3);
 		wifiFan_Ctrl_Process();
         MqttData_Publis_SetFan(fan_speed_level);
 		

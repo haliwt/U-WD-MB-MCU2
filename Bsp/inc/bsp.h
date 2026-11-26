@@ -114,7 +114,7 @@ typedef struct _main_ref{
  
  volatile uint8_t time_7s_f;
  volatile uint8_t  gTimer_get_beijing_counter;
- volatile uint8_t  gTimer_sub_counter;
+
  volatile uint8_t  gTimer_cmd_ack ;
 
 
