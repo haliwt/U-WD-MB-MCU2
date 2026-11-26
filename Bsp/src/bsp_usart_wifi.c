@@ -44,7 +44,7 @@ typedef struct PROCESS_T{
    uint8_t  rx_data_state;
   // uint16_t rx_counter;
    uint16_t rx_recoder_counter;
-   uint8_t  received_data_from_tencent_cloud ;
+
  //  uint8_t  rx_data_success;
    uint8_t  wifi_rx_signal_f;
    
@@ -91,15 +91,20 @@ void usart2_rx_callback_invoke(uint8_t data)
 	 case 1:
              wifi_t.rx_inputBuf[0] =data;
 
-			wifi_t.rx_data_array[wifi_rx_numbers] =wifi_t.rx_inputBuf[0];
-			wifi_rx_numbers++;//wifi_t.rx_numbers++;
+            if(wifi_rx_numbers < 255){
+		        wifi_t.rx_data_array[wifi_rx_numbers] =wifi_t.rx_inputBuf[0];
+				wifi_rx_numbers++;//wifi_t.rx_numbers++;
+            }
 
 			if(*wifi_t.rx_inputBuf==0x0A) // 0x0A = "\n"
 			{
+                wifi_t.rx_data_array[wifi_rx_numbers] = '\0'; // 强制补结束符
 				wifi_read_net_data_f = 1;
 			    wifi_rx_numbers=0;//wifi_t.rx_numbers=0;
 				
 			}
+
+            
 
 	  
 	 break;
@@ -109,12 +114,13 @@ void usart2_rx_callback_invoke(uint8_t data)
 	 	  wifi_t.rx_inputBuf[0] =data;
 	 	
 		  if(wifi_check_net_f ==1){
-
-		       wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
-		       rx_wifi_data_counter++;
+               if(rx_wifi_data_counter < 99){
+			       wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
+			       rx_wifi_data_counter++;
+               	}
                   
 				if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A && wifi_check_net_f ==1){
-                    
+                    wifi_t.rx_check_wifi[rx_wifi_data_counter] = '\0'; // 切断旧数据残留
              
 				    wifi_check_net_f =2;
 				    rx_wifi_data_counter =0;
@@ -125,38 +131,36 @@ void usart2_rx_callback_invoke(uint8_t data)
           }
 		  else if(gpro_t.get_rx_beijing_time_enable==1){
 
-		        wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
-		        rx_wifi_data_counter++;
+		        if(rx_wifi_data_counter < 99){
+		         wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
+		          rx_wifi_data_counter++;
+		        }
                   
 				//if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A && wifi_check_net_f ==1){
                 if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A){  
-             
+                    wifi_t.rx_check_wifi[rx_wifi_data_counter] = '\0'; // 切断旧数据残留
 				    gpro_t.get_rx_beijing_time_enable=2;
 				    rx_wifi_data_counter =0;
 
 				}		
           }
-		  else if(rx_wifi_data_success==0){
-			  wifi_t.rx_data_array[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
-		      rx_wifi_data_counter++;
-			  if(*wifi_t.rx_inputBuf==0x0A &&  rx_wifi_data_success==0 && rx_wifi_data_counter > 10) // 0x0A = "\n"
+		  else if(rx_wifi_data_success==false){
+		  	  if(rx_wifi_data_counter < 255){
+				  wifi_t.rx_data_array[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
+			      rx_wifi_data_counter++;
+		  	  }
+			  if(*wifi_t.rx_inputBuf==0x0A &&  rx_wifi_data_success== false && rx_wifi_data_counter > 10) // 0x0A = "\n"
 			  {
-	             rx_wifi_data_success=1;
+                 wifi_t.rx_data_array[rx_wifi_data_counter] = '\0'; // 强制补结束符
+				 rx_wifi_data_success= true;
 				 wifi_t.rx_recoder_counter=rx_wifi_data_counter;
 				 rx_wifi_data_counter=0;
 				 
 				
 			   }
 	 	  }
-       #if 1
-		  if(rx_wifi_data_success > 2){
-			rx_wifi_data_success=0;
-			 rx_wifi_data_counter=0;
-		   
-		  }
-		  if(wifi_t.received_data_from_tencent_cloud > 100)wifi_t.received_data_from_tencent_cloud=0;
-		 #endif 
-	 
+   
+		
 	 break;
 	 }
 }
@@ -169,14 +173,19 @@ void usart2_rx_callback_invoke(uint8_t data)
 *Return Ref:NO
 *
 ********************************************************************************/
+#if 0
 void Parse_Tencent_Data(void) 
 {
    
 	char *p =  NULL;
 	char *p1 = NULL;
 	static uint8_t rc_counter = 0;
-	 if(rx_wifi_data_success==1){
-	   rx_wifi_data_success=0;
+
+     if(rx_wifi_data_success != true) return ;
+
+	
+	 if(rx_wifi_data_success== true){
+	   rx_wifi_data_success=false;
       
 
 		
@@ -463,6 +472,152 @@ void Parse_Tencent_Data(void)
 
 		}
 }
+#else 
+static void Clear_Tencent_Rx_Buf(void)
+{
+    uint16_t len = wifi_t.rx_recoder_counter;
+    if (len == 0U || len > sizeof(wifi_t.rx_data_array))
+    {
+        len = sizeof(wifi_t.rx_data_array);
+    }
+    memset(wifi_t.rx_data_array, 0, len);
+    wifi_t.rx_recoder_counter = 0U;
+}
+
+static void Reset_Mqtt_Link_Steps(void)
+{
+    wifi_connected_success_f  = 0;
+    dc_connect_net_step       = 0;
+    wifi_off_step             = 0;
+    wifi_run_step             = 0;
+    wifi_app_timer_power_on_f = 0;
+}
+
+void Parse_Tencent_Data(void)
+{
+    const char *buf = (const char *)wifi_t.rx_data_array;
+    const char *p = NULL;
+
+    if (rx_wifi_data_success != 1U)
+    {
+        return;
+    }
+    rx_wifi_data_success = 0U;
+
+    if (gpro_t.g_power_flag == false)
+    {
+        if (strstr(buf, "\"sonic\":1") != NULL)
+        {
+            ultra_sound_open_f = 1;
+            wifi_app_timer_power_on_f = 1;
+            wifi_connected_success_f = 1;
+        }
+        else if (strstr(buf, "\"sonic\":0") != NULL)
+        {
+            ultra_sound_open_f = 0;
+            wifi_app_timer_power_on_f = 1;
+            wifi_connected_success_f = 1;
+        }
+
+        if (strstr(buf, "\"Anion\":1") != NULL)
+        {
+            plasma_open_f = 1;
+            wifi_app_timer_power_on_f = 1;
+            wifi_connected_success_f = 1;
+        }
+        else if (strstr(buf, "\"Anion\":0") != NULL)
+        {
+            plasma_open_f = 0;
+            wifi_app_timer_power_on_f = 1;
+            wifi_connected_success_f = 1;
+        }
+
+        if (strstr(buf, "\"ptc\":0") != NULL)
+        {
+            ptc_heat_open_f = 0;
+            ptc_prohibit_off_f = 1;
+            wifi_app_timer_power_on_f = 1;
+            wifi_connected_success_f = 1;
+        }
+        else if (strstr(buf, "\"ptc\":1") != NULL)
+        {
+            ptc_heat_open_f = 1;
+            ptc_prohibit_off_f = 0;
+            wifi_app_timer_power_on_f = 1;
+            wifi_connected_success_f = 1;
+        }
+    }
+
+    if (strstr(buf, "\"open\":0") != NULL)
+    {
+        wifi_t.wifi_rx_signal_f = OPEN_OFF_ITEM;
+    }
+    else if (strstr(buf, "\"open\":1") != NULL)
+    {
+        wifi_t.wifi_rx_signal_f = OPEN_ON_ITEM;
+    }
+    else if (strstr(buf, "\"ptc\":0") != NULL && gpro_t.g_power_flag == 1U)
+    {
+        wifi_t.wifi_rx_signal_f = PTC_OFF_ITEM;
+    }
+    else if (strstr(buf, "\"ptc\":1") != NULL && gpro_t.g_power_flag == 1U)
+    {
+        wifi_t.wifi_rx_signal_f = PTC_ON_ITEM;
+    }
+    else if (strstr(buf, "\"Anion\":0") != NULL && gpro_t.g_power_flag == 1U)
+    {
+        plasma_open_f = 0;
+        wifi_t.wifi_rx_signal_f = ANION_OFF_ITEM;
+    }
+    else if (strstr(buf, "\"Anion\":1") != NULL && gpro_t.g_power_flag == 1U)
+    {
+        plasma_open_f = 1;
+        wifi_t.wifi_rx_signal_f = ANION_ON_ITEM;
+    }
+    else if (strstr(buf, "\"sonic\":0") != NULL && gpro_t.g_power_flag == 1U)
+    {
+        ultra_sound_open_f = 0;
+        wifi_t.wifi_rx_signal_f = SONIC_OFF_ITEM;
+    }
+    else if (strstr(buf, "\"sonic\":1") != NULL && gpro_t.g_power_flag == 1U)
+    {
+        ultra_sound_open_f = 1;
+        wifi_t.wifi_rx_signal_f = SONIC_ON_ITEM;
+    }
+    else if (strstr(buf, "\"state\":1") != NULL && gpro_t.g_power_flag == 1U)
+    {
+        AI_led_open_f = 1;
+        wifi_t.wifi_rx_signal_f = STATE_AI_MODEL_ITEM;
+    }
+    else if (strstr(buf, "\"state\":2") != NULL && gpro_t.g_power_flag == 1U)
+    {
+        AI_led_open_f = 0;
+        wifi_t.wifi_rx_signal_f = STATE_TIMER_MODEL_ITEM;
+    }
+    else if ((p = strstr(buf, "\"find\":")) != NULL && gpro_t.g_power_flag == 1U)
+    {
+        fan_speed_level = (uint8_t)atoi(p + 7);
+        wifi_t.wifi_rx_signal_f = FAN_ITEM;
+    }
+    else if ((p = strstr(buf, "\"temperature\":")) != NULL && gpro_t.g_power_flag == 1U)
+    {
+        setting_temperature = (uint8_t)atoi(p + 14);
+        wifi_t.wifi_rx_signal_f = TEMPERATURE_ITEM;
+    }
+    else if (strstr(buf, "+TCMQTTRECONNECTING") != NULL ||
+             strstr(buf, "+TCMQTTCONN:FAIL,202") != NULL ||
+             strstr(buf, "+CME ERROR:208") != NULL)
+    {
+        Reset_Mqtt_Link_Steps();
+    }
+
+    Clear_Tencent_Rx_Buf();
+}
+
+
+
+
+#endif 
 /*******************************************************************************
 **
 *Function Name:
@@ -1065,10 +1220,12 @@ int parse_month(const char *mon_str) {
  * @param dt     输出的时间结构体指针
  * @return 1 表示成功，0 表示失败
  */
-uint16_t matched;
+#if 0
 int8_t parse_wifi_time(void) //, DateTime_t *dt) 
 {
-    char week[8], mon[8];
+   uint16_t matched;
+
+	char week[8], mon[8];
     int d, h, m, s, y;
 
 	if(gpro_t.get_rx_beijing_time_enable==2){
@@ -1111,4 +1268,74 @@ int8_t parse_wifi_time(void) //, DateTime_t *dt)
   return 0; // 防止外层 if 不满足时没有返回值
 }
 
+#else 
+static inline int parse_digits(const char *str, uint8_t len)
+{
+    uint16_t matched;
+	int val = 0;
+    for (uint8_t i = 0; i < len; i++)
+    {
+        if (str[i] >= '0' && str[i] <= '9')
+        {
+            val = val * 10 + (str[i] - '0');
+        }
+    }
+    return val;
+}
 
+int8_t parse_wifi_time(void)
+{
+    if (gpro_t.get_rx_beijing_time_enable == 2)
+    {
+        char *p = strstr((const char *)wifi_t.rx_check_wifi, "+CIPSNTPTIME:");
+        if (p == NULL)
+        {
+            gpro_t.get_rx_beijing_time_enable = 4;
+            return 0;
+        }
+
+        /* "+CIPSNTPTIME:" 共 14 字节，跳过后紧跟星期与时间串 */
+        p += (sizeof("+CIPSNTPTIME:") - 1U);
+
+        if (strlen(p) >= 24U)
+        {
+            char mon[4] = {p[4], p[5], p[6], '\0'};
+            int month = parse_month(mon);
+            int d = parse_digits(p + 8, 2);
+            int h = parse_digits(p + 11, 2);
+            int m = parse_digits(p + 14, 2);
+            int s = parse_digits(p + 17, 2);
+            int y = parse_digits(p + 20, 4);
+
+            if (y > 2000 && y < 2100 && month >= 1 && month <= 12)
+            {
+                time_t.year   = y;
+                time_t.month  = month;
+                time_t.day    = d;
+                time_t.hour   = h;
+                time_t.minute = m;
+                time_t.second = s;
+
+                gpro_t.beijing_time_flag = true;
+                SendWifiData_To_PanelTime(time_t.hour, time_t.minute, time_t.second);
+                tx_thread_sleep(3);
+
+                gpro_t.get_rx_beijing_time_enable = 5;
+                return 1;
+            }
+        }
+
+        gpro_t.get_rx_beijing_time_enable++;
+        return 0;
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+#endif

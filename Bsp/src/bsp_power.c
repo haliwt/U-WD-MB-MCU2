@@ -145,7 +145,7 @@ uint8_t  wifi_off_step;
 uint8_t  wifi_first_connectoed_cloud_f;
 uint8_t  wifi_read_net_data_f;
 uint8_t  wifi_check_net_f;
-volatile uint8_t  rx_wifi_data_success;
+volatile bool  rx_wifi_data_success;
 volatile uint8_t   rx_wifi_data_counter;
 
 
